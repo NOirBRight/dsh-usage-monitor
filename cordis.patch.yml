@@ -1,0 +1,4 @@
+# Register the usage monitor Host plugin. The Web face loads from dsh.client.
+- insert:
+    - id: usage-monitor
+      name: 'dsh-usage-monitor'

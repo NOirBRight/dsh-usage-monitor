@@ -1,0 +1,10 @@
+lib/types/**/*.js
+lib/types/**/*.js.map
+lib/types/**/*.d.ts.map
+node_modules/
+.pnpm-store/
+*.tgz
+*.tsbuildinfo
+coverage/
+*.log
+prototypes/
