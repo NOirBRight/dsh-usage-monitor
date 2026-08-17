@@ -4,6 +4,8 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的用量看板。从会话日志里折出供应商上报的 token usage，在设置页画图。
 
+![设置 → 用量：汇总格、堆叠图、供应商表](docs/screenshots/settings-usage.png)
+
 ## 展示
 
 - Tokens、请求数、输出 token、缓存命中率

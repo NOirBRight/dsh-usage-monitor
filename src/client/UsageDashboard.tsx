@@ -50,17 +50,16 @@ const pageStyle: CSSProperties = {
 }
 
 const toolbarStyle: CSSProperties = {
-  display: 'grid',
-  gap: 8,
   minWidth: 0,
   width: '100%',
 }
 
 const segmentStyle: CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.25fr)',
-  width: '100%',
-  minWidth: 0,
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  height: 32,
+  width: 'max-content',
   boxSizing: 'border-box',
   padding: 3,
   borderRadius: 999,
@@ -69,8 +68,11 @@ const segmentStyle: CSSProperties = {
 }
 
 const pillStyle = (active: boolean): CSSProperties => ({
-  height: 26,
-  minWidth: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  margin: 0,
   border: 'none',
   borderRadius: 999,
   padding: '0 8px',
@@ -81,6 +83,7 @@ const pillStyle = (active: boolean): CSSProperties => ({
   boxShadow: active ? '0 1px 2px rgba(15, 23, 42, 0.08)' : 'none',
   fontSize: 11,
   fontWeight: 650,
+  lineHeight: 1,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
 })
@@ -145,24 +148,33 @@ const USAGE_CSS = `
   gap: 8px;
 }
 .dsh-um-toolbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   width: 100%;
   min-width: 0;
 }
-.dsh-um-toolbar > * {
+.dsh-um-toolbar-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
   min-width: 0;
 }
+.dsh-um-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
 .dsh-um-range {
-  overflow: hidden;
+  flex: 0 0 auto;
+  width: max-content;
+  height: 32px;
+  margin-left: auto;
 }
 @container (min-width: 560px) {
   .dsh-um-tiles {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .dsh-um-toolbar {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(228px, 1.9fr);
   }
 }
 .dsh-um-chart,
@@ -223,22 +235,21 @@ function UsageDropdown<T extends string>({
 }) {
   const menuId = `dsh-um-${label.replace(/\s+/gu, '-').toLowerCase()}`
   return (
-    <div style={{ position: 'relative', minWidth: 0, width: '100%' }}>
+    <div className="dsh-um-menu">
       <button
         type="button"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-controls={open ? menuId : undefined}
+        aria-label={`${label} ${valueLabel}`}
         onClick={onToggle}
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 6,
-          width: '100%',
+          gap: 4,
+          width: 'max-content',
           height: 32,
-          minWidth: 0,
-          padding: '0 10px',
+          padding: '0 8px 0 10px',
           border: 'none',
           borderRadius: 999,
           background: 'var(--dsw-alias-bg-layer-1)',
@@ -247,10 +258,11 @@ function UsageDropdown<T extends string>({
           fontSize: 11,
           fontWeight: 650,
           cursor: 'pointer',
+          whiteSpace: 'nowrap',
         }}
       >
         <span>{label}</span>
-        <span style={{ color: 'var(--dsw-alias-label-primary)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{valueLabel}</span>
+        <span style={{ color: 'var(--dsw-alias-label-primary)' }}>{valueLabel}</span>
         <Chevron />
       </button>
       {open && (
@@ -434,6 +446,7 @@ export function UsageDashboard(props: UsageDashboardProps) {
     <section className="dsh-um" style={pageStyle}>
       <style>{USAGE_CSS}</style>
       <div className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
+        <div className="dsh-um-toolbar-row">
         <UsageDropdown
           label={t?.('metric') ?? 'Metric'}
           value={metric}
@@ -497,8 +510,9 @@ export function UsageDashboard(props: UsageDashboardProps) {
             </button>
           ))}
         </div>
+        </div>
         {range === 'custom' && (
-          <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, minWidth: 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, minWidth: 0 }}>
             <input
               type="date"
               aria-label={t?.('customStart') ?? 'Start date'}

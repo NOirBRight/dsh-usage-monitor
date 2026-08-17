@@ -14,6 +14,7 @@ import { UsageDashboard } from './UsageDashboard.tsx'
 import type { UsageDashboardFace } from './UsageDashboard.tsx'
 import { en, zh } from './locales.ts'
 import type { UsageLocaleKey } from './locales.ts'
+import { installUsageNavIcon } from './nav-icon.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
@@ -54,4 +55,6 @@ export function apply(ctx: ClientContext): void {
     label: () => t('nav'),
     inject: (): UsageDashboardFace => ({ t, queryUsage }),
   }, UsageDashboard))
+
+  ctx.effect(installUsageNavIcon, 'dsh-usage-monitor: settings nav icon')
 }
