@@ -476,6 +476,8 @@ export function UsageChart({
             padding: '8px 8px 8px',
             background: 'var(--dsw-alias-bg-module-platform)',
             borderTop: '1px solid var(--dsw-alias-border-l2)',
+            borderBottomLeftRadius: 13,
+            borderBottomRightRadius: 13,
           }}
         >
           {series.map(item => {
