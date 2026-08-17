@@ -61,6 +61,7 @@ const segmentStyle: CSSProperties = {
   gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.25fr)',
   width: '100%',
   minWidth: 0,
+  boxSizing: 'border-box',
   padding: 3,
   borderRadius: 999,
   background: 'var(--dsw-alias-bg-layer-1)',
@@ -69,6 +70,7 @@ const segmentStyle: CSSProperties = {
 
 const pillStyle = (active: boolean): CSSProperties => ({
   height: 26,
+  minWidth: 0,
   border: 'none',
   borderRadius: 999,
   padding: '0 8px',
@@ -123,6 +125,10 @@ const tileValueStyle: CSSProperties = {
 }
 
 const USAGE_CSS = `
+.dsh-um,
+.dsh-um * {
+  box-sizing: border-box;
+}
 .dsh-um {
   container-type: inline-size;
   display: grid;
@@ -144,6 +150,12 @@ const USAGE_CSS = `
   gap: 8px;
   width: 100%;
   min-width: 0;
+}
+.dsh-um-toolbar > * {
+  min-width: 0;
+}
+.dsh-um-range {
+  overflow: hidden;
 }
 @container (min-width: 560px) {
   .dsh-um-tiles {
