@@ -28,6 +28,11 @@ export declare const en: {
     pending: string;
     customStart: string;
     customEnd: string;
+    dailyBreakdown: string;
+    weeklyBreakdown: string;
+    dailyTotal: string;
+    weeklyTotal: string;
+    cumulativeTotal: string;
 };
 export declare const zh: {
     nav: string;
@@ -58,6 +63,11 @@ export declare const zh: {
     pending: string;
     customStart: string;
     customEnd: string;
+    dailyBreakdown: string;
+    weeklyBreakdown: string;
+    dailyTotal: string;
+    weeklyTotal: string;
+    cumulativeTotal: string;
 };
 export type UsageLocaleKey = keyof typeof en;
 //# sourceMappingURL=locales.d.ts.map

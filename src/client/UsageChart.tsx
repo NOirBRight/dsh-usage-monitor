@@ -13,7 +13,7 @@ import {
 
 const STACK_AREA_OPACITY = 0.24
 const STACK_SEPARATOR = 'rgba(255, 255, 255, 0.78)'
-const TOOLTIP_WIDTH = 250
+const TOOLTIP_WIDTH = 300
 const DAY_TICK_MIN_PX = 44
 const WEEK_TICK_MIN_PX = 76
 
@@ -40,6 +40,9 @@ export interface UsageChartProps {
   loading?: string
   refreshing?: boolean
   group?: UsageGroup
+  breakdownLabel: string
+  totalLabel: string
+  cumulativeTotalLabel: string
   onToggleSeries: (key: string) => void
 }
 
@@ -77,6 +80,23 @@ const formatAxisNumber = (value: number, locale: string): string => {
 const compact = (value: number): string => {
   if (Math.abs(value) >= 10 || Number.isInteger(value)) return value.toFixed(0)
   return value.toFixed(1).replace(/\.0$/u, '')
+}
+
+const formatTooltipNumber = (value: number, locale: string): string => {
+  const abs = Math.abs(value)
+  if (abs >= 1_000_000_000) return `${compact(value / 1_000_000_000)}B`
+  if (abs >= 1_000_000) return `${compact(value / 1_000_000)}M`
+  if (abs >= 1_000) return `${compact(value / 1_000)}K`
+  return formatNumber(value, locale)
+}
+
+const formatTooltipPercent = (value: number, total: number): string =>
+  `${total <= 0 ? '0.0' : ((value / total) * 100).toFixed(1)}%`
+
+const formatTooltipSegmentLabel = (key: string, label: string): string => {
+  if (!key.startsWith('model:')) return label
+  const separator = label.indexOf(' / ')
+  return separator < 0 ? label : label.slice(separator + 3)
 }
 
 const bucketX = (index: number, count: number): number =>
@@ -146,6 +166,9 @@ export function UsageChart({
   loading,
   refreshing = false,
   group = 'day',
+  breakdownLabel,
+  totalLabel,
+  cumulativeTotalLabel,
   onToggleSeries,
 }: UsageChartProps) {
   const [hover, setHover] = useState<ChartHover | null>(null)
@@ -195,6 +218,7 @@ export function UsageChart({
     .sort((left, right) => right.value - left.value)
 
   const tooltipWidth = TOOLTIP_WIDTH
+  const cumulativeTotal = visibleSeries.reduce((sum, item) => sum + item.total, 0)
   const activeSegmentSignature = activeSegments
     .map(segment => `${segment.key}:${segment.value}`)
     .join('|')
@@ -418,45 +442,82 @@ export function UsageChart({
               width: tooltipWidth,
               zIndex: 20,
               pointerEvents: 'none',
-              padding: 10,
-              borderRadius: 12,
+              padding: '9px 11px 8px',
+              borderRadius: 10,
               border: '1px solid var(--dsw-alias-border-l2)',
               background: 'var(--dsw-alias-bg-layer-1)',
-              boxShadow: '0 12px 32px rgba(15, 23, 42, 0.16)',
+              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.12)',
+              color: 'var(--dsw-alias-label-primary)',
               fontSize: 12,
+              lineHeight: 1.25,
             }}
           >
-            <div style={{ marginBottom: 8, fontWeight: 700 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, lineHeight: '17px' }}>
               {formatBucketTooltipDate(activeBucket, locale)}
             </div>
-            <div style={{ display: 'grid', gap: 6 }}>
+            <div style={{ marginBottom: 4, color: 'var(--dsw-alias-label-tertiary)', lineHeight: '15px' }}>
+              {breakdownLabel}
+            </div>
+            <div style={{ display: 'grid' }}>
               {activeSegments.map(segment => (
                 <div
                   key={segment.key}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'auto minmax(0, 1fr) auto',
-                    alignItems: 'start',
-                    gap: 8,
+                    gridTemplateColumns: '6px minmax(0, 1fr) auto 38px',
+                    alignItems: 'center',
+                    columnGap: 5,
+                    minHeight: 19,
                   }}
                 >
                   <i
                     style={{
-                      width: 8,
-                      height: 8,
-                      marginTop: 4,
+                      width: 5,
+                      height: 5,
                       borderRadius: 99,
                       background: segment.fillColor,
                     }}
                   />
-                  <span style={{ minWidth: 0, color: 'var(--dsw-alias-label-secondary)', lineHeight: 1.35 }}>
-                    {segment.label}
+                  <span
+                    style={{
+                      minWidth: 0,
+                      overflow: 'hidden',
+                      color: 'var(--dsw-alias-label-secondary)',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {formatTooltipSegmentLabel(segment.key, segment.label)}
                   </span>
                   <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>
-                    {formatNumber(segment.value, locale)}
+                    {formatTooltipNumber(segment.value, locale)}
+                  </span>
+                  <span
+                    style={{
+                      color: 'var(--dsw-alias-label-tertiary)',
+                      fontVariantNumeric: 'tabular-nums',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {formatTooltipPercent(segment.value, activeBucket.total)}
                   </span>
                 </div>
               ))}
+            </div>
+            <div style={{ height: 1, margin: '6px 0', background: 'var(--dsw-alias-border-l2)' }} />
+            <div style={{ display: 'grid', gap: 6 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', fontWeight: 700 }}>
+                <span>{totalLabel}</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {formatTooltipNumber(activeBucket.total, locale)}
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', fontWeight: 700 }}>
+                <span>{cumulativeTotalLabel}</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {formatTooltipNumber(cumulativeTotal, locale)}
+                </span>
+              </div>
             </div>
           </div>
         )}

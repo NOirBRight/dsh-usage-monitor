@@ -1,7 +1,7 @@
 {
   "name": "dsh-usage-monitor",
   "description": "Session-log usage dashboard for DeepSeek Harness",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publishConfig": {
     "access": "public"
   },

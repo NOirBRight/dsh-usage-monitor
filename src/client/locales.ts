@@ -29,6 +29,11 @@ export const en = {
   pending: '—',
   customStart: 'Start date',
   customEnd: 'End date',
+  dailyBreakdown: 'Daily breakdown',
+  weeklyBreakdown: 'Weekly breakdown',
+  dailyTotal: 'Daily total',
+  weeklyTotal: 'Weekly total',
+  cumulativeTotal: 'Cumulative total',
 }
 
 export const zh = {
@@ -60,6 +65,11 @@ export const zh = {
   pending: '—',
   customStart: '开始日期',
   customEnd: '结束日期',
+  dailyBreakdown: '当日明细',
+  weeklyBreakdown: '本周明细',
+  dailyTotal: '当日总计',
+  weeklyTotal: '本周总计',
+  cumulativeTotal: '累计总计',
 }
 
 export type UsageLocaleKey = keyof typeof en

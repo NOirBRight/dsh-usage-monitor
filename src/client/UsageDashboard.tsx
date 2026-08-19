@@ -560,6 +560,9 @@ export function UsageDashboard(props: UsageDashboardProps) {
           loading={t?.('loading')}
           refreshing={load.status === 'loading' || (load.status === 'ready' && load.refreshing)}
           group={group}
+          breakdownLabel={group === 'week' ? (t?.('weeklyBreakdown') ?? 'Weekly breakdown') : (t?.('dailyBreakdown') ?? 'Daily breakdown')}
+          totalLabel={group === 'week' ? (t?.('weeklyTotal') ?? 'Weekly total') : (t?.('dailyTotal') ?? 'Daily total')}
+          cumulativeTotalLabel={t?.('cumulativeTotal') ?? 'Cumulative total'}
           onToggleSeries={toggleSeries}
         />
       </div>

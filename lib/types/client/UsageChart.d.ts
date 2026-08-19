@@ -9,7 +9,10 @@ export interface UsageChartProps {
     loading?: string;
     refreshing?: boolean;
     group?: UsageGroup;
+    breakdownLabel: string;
+    totalLabel: string;
+    cumulativeTotalLabel: string;
     onToggleSeries: (key: string) => void;
 }
-export declare function UsageChart({ buckets, series, hidden, locale, empty, loading, refreshing, group, onToggleSeries, }: UsageChartProps): import("react").JSX.Element;
+export declare function UsageChart({ buckets, series, hidden, locale, empty, loading, refreshing, group, breakdownLabel, totalLabel, cumulativeTotalLabel, onToggleSeries, }: UsageChartProps): import("react").JSX.Element;
 //# sourceMappingURL=UsageChart.d.ts.map
