@@ -14,6 +14,7 @@ import {
 import { stat } from 'node:fs/promises'
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
 import { FoldCache, collectUsage, type SessionCorpus, type WorkspaceIndex } from './collect.ts'
+import { UsageProjection, defaultUsageProjectionPath } from './projection.ts'
 import type { FoldableEvent } from './fold.ts'
 
 export {
@@ -25,6 +26,7 @@ export {
 export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from './client-contract.ts'
 export { foldSessionUsage } from './fold.ts'
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts'
+export { UsageProjection, defaultUsageProjectionPath } from './projection.ts'
 export { queryUsage } from './query.ts'
 export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts'
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts'
@@ -292,23 +294,36 @@ export function apply(ctx: Context): void {
   const sessionQuery = ctx.get('sessionQuery') as SessionQueryLike
   const workspaceRegistry = ctx.get('workspaceRegistry') as WorkspaceRegistryLike
   const persistence = ctx.get('sessionPersistence') as PersistenceLike
+  const corpus = corpusFrom(
+    sessionQuery,
+    persistence,
+    () => ctx.get('sessions') as SessionStoreLike | undefined,
+  )
+  const workspaces = workspacesFrom(workspaceRegistry)
   const cache = new FoldCache()
+  let projection: UsageProjection | undefined
+  try {
+    projection = new UsageProjection(defaultUsageProjectionPath())
+    ctx.effect(() => () => projection?.close(), 'dsh-usage-monitor: close usage projection')
+  } catch {
+    // Keep the in-memory collector as a safe fallback when the sidecar cannot open.
+  }
   const inflight = new Map<string, Promise<UsageSnapshot>>()
   const collect = (query: UsageQueryRequest) => {
     const key = `${query.start}:${query.end}`
     const pending = inflight.get(key)
     if (pending !== undefined) return pending
-    const next = collectUsage({
-      corpus: corpusFrom(
-        sessionQuery,
-        persistence,
-        () => ctx.get('sessions') as SessionStoreLike | undefined,
-      ),
-      workspaces: workspacesFrom(workspaceRegistry),
+    const fallback = () => collectUsage({
+      corpus,
+      workspaces,
       query,
       cache,
       concurrency: READ_CONCURRENCY,
-    }).finally(() => {
+    })
+    const next = (projection === undefined
+      ? fallback()
+      : projection.query({ corpus, workspaces, query, concurrency: READ_CONCURRENCY }).catch(() => fallback())
+    ).finally(() => {
       inflight.delete(key)
     })
     inflight.set(key, next)

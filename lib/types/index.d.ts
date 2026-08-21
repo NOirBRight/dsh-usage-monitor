@@ -11,6 +11,7 @@ export { USAGE_RPC_CHANNEL, USAGE_QUERY_ENDPOINT, decodeUsageQueryRequest, decod
 export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from './client-contract.ts';
 export { foldSessionUsage } from './fold.ts';
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts';
+export { UsageProjection, defaultUsageProjectionPath } from './projection.ts';
 export { queryUsage } from './query.ts';
 export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts';
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts';
