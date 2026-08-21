@@ -33,7 +33,14 @@ export interface WorkspaceIndex {
 export const UNKNOWN_WORKSPACE_ID = 'unknown'
 export const UNKNOWN_WORKSPACE_TITLE = 'Unknown'
 
-export const FOLD_CACHE_LIMIT = 512
+/**
+ * Cache capacity must cover the whole session working set. A corpus larger
+ * than the limit evicts entries mid-pass, so every query re-reads and re-folds
+ * the same tail of full session logs from disk (seconds to minutes on real
+ * homes). Fold rows are small step aggregates, so sizing for thousands of
+ * sessions costs little memory.
+ */
+export const FOLD_CACHE_LIMIT = 4096
 
 /** In-memory fold cache keyed by session id + persistence revision. */
 export class FoldCache {

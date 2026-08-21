@@ -34,17 +34,31 @@ interface SessionQueryLike {
     }>>;
 }
 interface PersistenceLike {
-    listSnapshots(signal?: AbortSignal): Promise<Array<{
+    listSnapshots?(signal?: AbortSignal): Promise<Array<{
         header: SessionHeaderLike;
         revision: unknown;
     }>>;
+    locate?(meta: SessionHeaderLike): {
+        path: string;
+    } | undefined;
     readFrom?(id: unknown, fromSeq: number, signal?: AbortSignal): Promise<{
         events: readonly FoldableEvent[];
     }>;
     inspect?(id: unknown, signal?: AbortSignal): Promise<{
         events: readonly FoldableEvent[];
     }>;
+    readRaw?(id: unknown, signal?: AbortSignal): Promise<{
+        content: string;
+    } | undefined>;
 }
+/**
+ * Parse one raw artifact's text into foldable events. The backend hands back
+ * the stored bytes verbatim — including the header line and event types this
+ * host does not validate — so every line must fend for itself: unparseable
+ * lines and records without a string `type` plus finite numeric `time` are
+ * skipped rather than rejected.
+ */
+export declare function parseRawEvents(content: string): readonly FoldableEvent[];
 interface LiveSessionLike {
     id: unknown;
     seq: number;

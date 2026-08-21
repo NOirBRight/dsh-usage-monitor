@@ -11,6 +11,7 @@ import {
   USAGE_RPC_CHANNEL,
   decodeUsageQueryRequest,
 } from './client-contract.ts'
+import { stat } from 'node:fs/promises'
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
 import { FoldCache, collectUsage, type SessionCorpus, type WorkspaceIndex } from './collect.ts'
 import type { FoldableEvent } from './fold.ts'
@@ -114,12 +115,42 @@ interface SessionQueryLike {
 }
 
 interface PersistenceLike {
-  listSnapshots(signal?: AbortSignal): Promise<Array<{
+  listSnapshots?(signal?: AbortSignal): Promise<Array<{
     header: SessionHeaderLike
     revision: unknown
   }>>
+  locate?(meta: SessionHeaderLike): { path: string } | undefined
   readFrom?(id: unknown, fromSeq: number, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
   inspect?(id: unknown, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
+  readRaw?(id: unknown, signal?: AbortSignal): Promise<{ content: string } | undefined>
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/**
+ * Parse one raw artifact's text into foldable events. The backend hands back
+ * the stored bytes verbatim — including the header line and event types this
+ * host does not validate — so every line must fend for itself: unparseable
+ * lines and records without a string `type` plus finite numeric `time` are
+ * skipped rather than rejected.
+ */
+export function parseRawEvents(content: string): readonly FoldableEvent[] {
+  const events: FoldableEvent[] = []
+  for (const line of content.split('\n')) {
+    if (line.length === 0) continue
+    let record: unknown
+    try {
+      record = JSON.parse(line)
+    } catch {
+      continue
+    }
+    if (!isRecord(record)) continue
+    const { type, time, data } = record
+    if (typeof type !== 'string' || typeof time !== 'number' || !Number.isFinite(time)) continue
+    events.push({ type, time, ...(data === undefined ? {} : { data }) })
+  }
+  return events
 }
 
 interface LiveSessionLike {
@@ -152,11 +183,21 @@ const findLive = (
   sessions?.list()?.find(session => String(session.id) === sessionId)
   ?? sessions?.get(sessionId)
 
+/**
+ * Read one persisted session's events. The raw-artifact path comes first: it
+ * skips the host's strict event validation, so sessions carrying event types
+ * unknown to this build still fold instead of failing their read outright —
+ * a failed read is never cached and would be retried on every single query.
+ */
 async function readPersistedEvents(
   persistence: PersistenceLike,
   sessionId: string,
 ): Promise<readonly FoldableEvent[]> {
   return withBudget(READ_BUDGET_MS, async (signal) => {
+    if (persistence.readRaw !== undefined) {
+      const raw = await persistence.readRaw(sessionId, signal)
+      if (raw !== undefined) return parseRawEvents(raw.content)
+    }
     if (persistence.readFrom !== undefined) {
       return (await persistence.readFrom(sessionId, 0, signal)).events
     }
@@ -165,6 +206,39 @@ async function readPersistedEvents(
     }
     return []
   }, 'session read timed out')
+}
+
+/**
+ * Build the session-id → cache-revision index. The backend's own snapshot
+ * listing wins; when that rejects — one malformed artifact poisons the whole
+ * listing — fall back to stat-ing each located artifact so unchanged sessions
+ * keep hitting the fold cache.
+ */
+async function resolveRevisionIndex(
+  persistence: PersistenceLike,
+  records: readonly { header: SessionHeaderLike }[],
+  signal: AbortSignal,
+): Promise<Map<string, string>> {
+  if (persistence.listSnapshots !== undefined) {
+    const snapshots = await persistence.listSnapshots(signal).catch(() => undefined)
+    if (snapshots !== undefined) {
+      return new Map(snapshots.map(snapshot => [String(snapshot.header.id), String(snapshot.revision)]))
+    }
+  }
+  const revisions = new Map<string, string>()
+  if (persistence.locate === undefined) return revisions
+  for (const record of records) {
+    signal.throwIfAborted()
+    try {
+      const location = persistence.locate(record.header)
+      if (location === undefined) continue
+      const info = await stat(location.path, { bigint: true })
+      revisions.set(String(record.header.id), `${info.size}:${info.mtimeNs}`)
+    } catch {
+      // Absent artifact or unusable location: leave the session revision-less.
+    }
+  }
+  return revisions
 }
 
 export function corpusFrom(
@@ -177,13 +251,8 @@ export function corpusFrom(
     async listSessions() {
       const store = getSessions()
       return withBudget(READ_BUDGET_MS, async (signal) => {
-        const [records, snapshots] = await Promise.all([
-          sessionQuery.listSessions(signal),
-          persistence.listSnapshots(signal).catch(() => []),
-        ])
-        const revisionById = new Map(
-          snapshots.map(snapshot => [String(snapshot.header.id), String(snapshot.revision)]),
-        )
+        const records = await sessionQuery.listSessions(signal)
+        const revisionById = await resolveRevisionIndex(persistence, records, signal)
         return records.map(record => {
           const id = String(record.header.id)
           const live = record.live === true ? findLive(store, id) : undefined

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { FoldCache, collectUsage, resolveWorkspace, UNKNOWN_WORKSPACE_ID } from '../src/collect.ts'
+import { FOLD_CACHE_LIMIT, FoldCache, collectUsage, resolveWorkspace, UNKNOWN_WORKSPACE_ID } from '../src/collect.ts'
 
 describe('resolveWorkspace', () => {
   const workspaces = [
@@ -231,5 +231,37 @@ describe('collectUsage', () => {
     })
     const second = await collectUsage(input as never)
     expect(second.summary.tokens).toBe(11)
+  })
+
+  it('keeps every fold cached for a realistic corpus across passes', async () => {
+    // 600 sessions exceeds the previously shipped 512-entry cache: the LRU
+    // cascaded (each miss evicted the next session in line) and every query
+    // re-read the whole corpus from disk.
+    const sessionCount = 600
+    expect(sessionCount).toBeGreaterThan(512)
+    expect(sessionCount).toBeLessThanOrEqual(FOLD_CACHE_LIMIT)
+    let reads = 0
+    const cache = new FoldCache()
+    const corpus = {
+      listSessions: async () => Array.from({ length: sessionCount }, (_, index) => ({ id: `s${index}`, revision: `r${index}` })),
+      readEvents: async () => {
+        reads += 1
+        return [
+          { type: 'request/header', time: 1, data: { header: { config: { provider: 'kimi-coding', model: 'k3' } } } },
+          {
+            type: 'assistant/message',
+            time: 2,
+            data: { turn: 1, step: 1, usage: { inputTokens: 1, outputTokens: 1 } },
+          },
+        ]
+      },
+    }
+    const input = { query: { start: 0, end: 10 }, pricing: {}, cache, workspaces: { list: () => [] }, corpus }
+    const first = await collectUsage(input)
+    expect(first.summary.requests).toBe(sessionCount)
+    expect(reads).toBe(sessionCount)
+    const second = await collectUsage(input)
+    expect(second.summary.requests).toBe(sessionCount)
+    expect(reads).toBe(sessionCount)
   })
 })
