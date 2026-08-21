@@ -117,6 +117,60 @@ describe('UsageProjection', () => {
     projection.close()
   })
 
+  it('preserves createdAt eligibility for historical windows', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-created-at-'))
+    tempDirs.push(dir)
+    const sessions = [{ id: 'future', cwd: '/repo', createdAt: 20, revision: 'r1' }]
+    let reads = 0
+    const corpus = {
+      listSessions: async () => sessions,
+      readEvents: async () => {
+        reads += 1
+        return [header('kimi-coding', 'k3'), message(2, 2)]
+      },
+    }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const historical = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
+    expect(historical.summary.requests).toBe(0)
+    const current = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 30 } })
+    expect(current.summary.requests).toBe(1)
+    expect(reads).toBe(1)
+    projection.close()
+  })
+
+  it('rechecks revisions when a concurrent query joins a refresh', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-concurrent-'))
+    tempDirs.push(dir)
+    let sessions = [{ id: 's1', revision: 'r1' }]
+    let reads = 0
+    let releaseFirst: (() => void) | undefined
+    let signalFirstRead: (() => void) | undefined
+    const firstReadStarted = new Promise<void>(resolve => { signalFirstRead = resolve })
+    const corpus = {
+      listSessions: async () => sessions,
+      readEvents: async () => {
+        reads += 1
+        if (reads === 1) {
+          signalFirstRead?.()
+          await new Promise<void>(resolve => { releaseFirst = resolve })
+          return [header('kimi-coding', 'k3'), message(2, 2)]
+        }
+        return [header('kimi-coding', 'k3'), message(8, 8)]
+      },
+    }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const first = projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
+    await firstReadStarted
+    sessions = [{ id: 's1', revision: 'r2' }]
+    const second = projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
+    releaseFirst?.()
+    const [firstResult, secondResult] = await Promise.all([first, second])
+    expect(firstResult.summary.tokens).toBe(9)
+    expect(secondResult.summary.tokens).toBe(9)
+    expect(reads).toBe(2)
+    projection.close()
+  })
+
   it('keeps a corpus above the old 4096-entry cache limit warm', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'usage-projection-scale-'))
     tempDirs.push(dir)

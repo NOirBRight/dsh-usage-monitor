@@ -45,6 +45,10 @@ export function defaultUsageProjectionPath(): string {
 export class UsageProjection {
   private readonly db: DatabaseSync
   private refreshPromise: Promise<void> | undefined
+  /** Number of reconciliation requests observed by callers. */
+  private refreshRequested = 0
+  /** Number of requests covered by completed passes. */
+  private refreshCompleted = 0
   private sessions = new Map<string, CorpusSession>()
   private volatile = new Map<string, readonly StepUsage[]>()
   private closed = false
@@ -71,16 +75,30 @@ export class UsageProjection {
     })
   }
 
-  /** Rebuild only missing/changed source revisions; concurrent callers share one pass. */
+  /**
+   * Rebuild only missing/changed source revisions. Concurrent callers share
+   * work, but every caller arriving during a pass also forces one follow-up
+   * listing so a live revision that advanced during the read is not hidden by
+   * the earlier pass.
+   */
   async reconcile(corpus: SessionCorpus, workspaces: WorkspaceIndex, concurrency: number): Promise<void> {
     if (this.closed) throw new Error('usage projection is closed')
-    if (this.refreshPromise !== undefined) return this.refreshPromise
-    const next = this.reconcileNow(corpus, workspaces, concurrency)
-    this.refreshPromise = next
-    try {
-      await next
-    } finally {
-      if (this.refreshPromise === next) this.refreshPromise = undefined
+    ++this.refreshRequested
+    while (this.refreshCompleted < this.refreshRequested) {
+      const pending = this.refreshPromise
+      if (pending !== undefined) {
+        await pending
+        continue
+      }
+      const passTarget = this.refreshRequested
+      const next = this.reconcileNow(corpus, workspaces, concurrency)
+      this.refreshPromise = next
+      try {
+        await next
+        this.refreshCompleted = Math.max(this.refreshCompleted, passTarget)
+      } finally {
+        if (this.refreshPromise === next) this.refreshPromise = undefined
+      }
     }
   }
 

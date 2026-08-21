@@ -25,12 +25,21 @@ export declare function defaultUsageProjectionPath(): string;
 export declare class UsageProjection {
     private readonly db;
     private refreshPromise;
+    /** Number of reconciliation requests observed by callers. */
+    private refreshRequested;
+    /** Number of requests covered by completed passes. */
+    private refreshCompleted;
     private sessions;
     private volatile;
     private closed;
     constructor(path: string);
     query(input: UsageProjectionInput): Promise<UsageSnapshot>;
-    /** Rebuild only missing/changed source revisions; concurrent callers share one pass. */
+    /**
+     * Rebuild only missing/changed source revisions. Concurrent callers share
+     * work, but every caller arriving during a pass also forces one follow-up
+     * listing so a live revision that advanced during the read is not hidden by
+     * the earlier pass.
+     */
     reconcile(corpus: SessionCorpus, workspaces: WorkspaceIndex, concurrency: number): Promise<void>;
     close(): void;
     private reconcileNow;
