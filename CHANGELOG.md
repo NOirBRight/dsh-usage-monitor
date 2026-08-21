@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Add a plugin-owned SQLite usage projection keyed by session revision. The first build still scans the historical corpus, but later windows read only indexed final usage samples and changed sessions are rebuilt individually across restarts.
-- Keep source logs authoritative: same-step replacement semantics are folded before time filtering, failed rebuilds remove stale rows, and current workspace names are resolved at query time.
+- Keep source logs authoritative: same-step replacement semantics are folded before time filtering, failed rebuilds remove stale rows, current workspace names are resolved at query time, and concurrent refreshes recheck revisions before responding.
+- Preserve the existing createdAt eligibility rule for historical windows.
 
 ## 0.1.2
 
