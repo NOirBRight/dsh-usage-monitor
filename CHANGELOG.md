@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Widen Host peer ranges to `>=0.1.0-rc.6 <0.1.1 || >=0.1.1-rc.1 <1.0.0`
+
 ## 0.2.1
 
 - Ignore conversation DOM mutations when patching the Settings → Usage nav icon. Keep watching `document.body` so a dynamically mounted settings dialog still gets the glyph.
