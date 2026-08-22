@@ -20,7 +20,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.1.1
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.1
 dsh web
 ```
 

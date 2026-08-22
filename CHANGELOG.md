@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Ignore conversation DOM mutations when patching the Settings → Usage nav icon. Keep watching `document.body` so a dynamically mounted settings dialog still gets the glyph.
+
 ## 0.2.0
 
 - Add a plugin-owned SQLite usage projection keyed by session revision. The first build still scans the historical corpus, but later windows read only indexed final usage samples and changed sessions are rebuilt individually across restarts.
