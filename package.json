@@ -32,6 +32,8 @@
     "lib/client.js",
     "lib/types/**/*.d.ts",
     "cordis.patch.yml",
+    "docs/decisions/0001-bounded-on-demand-projection.md",
+    "scripts/benchmark-projection.mjs",
     "README.md",
     "README.zh.md",
     "LICENSE"

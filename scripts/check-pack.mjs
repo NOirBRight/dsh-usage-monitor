@@ -12,8 +12,10 @@ const required = [
   'LICENSE',
   'README.md',
   'README.zh.md',
+  'docs/decisions/0001-bounded-on-demand-projection.md',
   'package.json',
   'cordis.patch.yml',
+  'scripts/benchmark-projection.mjs',
   'lib/index.js',
   'lib/client.js',
   'lib/types/index.d.ts',
@@ -23,7 +25,8 @@ for (const file of required) {
   if (!files.has(file)) throw new Error(`packed plugin is missing ${file}`)
 }
 for (const file of files) {
-  if (/^(?:src|tests|scripts|node_modules|prototypes)\//u.test(file)
+  if (/^(?:src|tests|node_modules|prototypes)\//u.test(file)
+    || (/^scripts\//u.test(file) && file !== 'scripts/benchmark-projection.mjs')
     || /(?:^|\/)\.env(?:\.|$)/u.test(file)
     || /(?:credential|token|auth\.json)/iu.test(file)) {
     throw new Error(`packed plugin contains forbidden path ${file}`)
