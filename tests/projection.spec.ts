@@ -183,6 +183,111 @@ describe('UsageProjection', () => {
     await projection.close()
   })
 
+  it('keeps a wide revision-less snapshot exact when a narrow query joins its read', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-wide-narrow-'))
+    tempDirs.push(dir)
+    let reads = 0
+    let listings = 0
+    let releaseRead: (() => void) | undefined
+    let signalRead: (() => void) | undefined
+    const readStarted = new Promise<void>(resolve => { signalRead = resolve })
+    const corpus = {
+      listSessions: async () => {
+        listings += 1
+        return [{ id: 'live', createdAt: 10 }]
+      },
+      readEvents: async () => {
+        reads += 1
+        if (reads === 1) {
+          signalRead?.()
+          await new Promise<void>(resolve => { releaseRead = resolve })
+        }
+        return [header('provider', 'model'), message(12, 1)]
+      },
+    }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const workspaceIndex = { list: () => [] as const }
+    const wide = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 20 } })
+    await readStarted
+    const narrow = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 5 } })
+    releaseRead?.()
+    const [wideResult, narrowResult] = await Promise.all([wide, narrow])
+    expect(wideResult.summary.requests).toBe(1)
+    expect(narrowResult.summary.requests).toBe(0)
+    expect(reads).toBe(2)
+    expect(listings).toBeGreaterThanOrEqual(4)
+    await projection.close()
+  })
+
+  it('widens a narrow pass when a wider query joins before the first listing returns', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-narrow-wide-'))
+    tempDirs.push(dir)
+    let reads = 0
+    let listings = 0
+    let releaseList: (() => void) | undefined
+    let signalList: (() => void) | undefined
+    const listStarted = new Promise<void>(resolve => { signalList = resolve })
+    const corpus = {
+      listSessions: async () => {
+        listings += 1
+        if (listings === 1) {
+          signalList?.()
+          await new Promise<void>(resolve => { releaseList = resolve })
+        }
+        return [{ id: 'live', createdAt: 10 }]
+      },
+      readEvents: async () => {
+        reads += 1
+        return [header('provider', 'model'), message(12, 1)]
+      },
+    }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const workspaceIndex = { list: () => [] as const }
+    const narrow = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 5 } })
+    await listStarted
+    const wide = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 20 } })
+    releaseList?.()
+    const [narrowResult, wideResult] = await Promise.all([narrow, wide])
+    expect(narrowResult.summary.requests).toBe(0)
+    expect(wideResult.summary.requests).toBe(1)
+    expect(reads).toBe(1)
+    expect(listings).toBeGreaterThanOrEqual(4)
+    await projection.close()
+  })
+
+  it('retains the widest active end across three joined windows', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-three-windows-'))
+    tempDirs.push(dir)
+    let reads = 0
+    let releaseRead: (() => void) | undefined
+    let signalRead: (() => void) | undefined
+    const readStarted = new Promise<void>(resolve => { signalRead = resolve })
+    const corpus = {
+      listSessions: async () => [{ id: 'live', createdAt: 20 }],
+      readEvents: async () => {
+        reads += 1
+        if (reads === 1) {
+          signalRead?.()
+          await new Promise<void>(resolve => { releaseRead = resolve })
+        }
+        return [header('provider', 'model'), message(22, 1)]
+      },
+    }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const workspaceIndex = { list: () => [] as const }
+    const wide = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 30 } })
+    await readStarted
+    const narrow = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 5 } })
+    const medium = projection.query({ corpus, workspaces: workspaceIndex, query: { start: 0, end: 15 } })
+    releaseRead?.()
+    const [wideResult, narrowResult, mediumResult] = await Promise.all([wide, narrow, medium])
+    expect(wideResult.summary.requests).toBe(1)
+    expect(narrowResult.summary.requests).toBe(0)
+    expect(mediumResult.summary.requests).toBe(0)
+    expect(reads).toBe(2)
+    await projection.close()
+  })
+
   it('keeps a corpus above the old 4096-entry cache limit warm', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'usage-projection-scale-'))
     tempDirs.push(dir)
@@ -437,5 +542,40 @@ describe('UsageProjection', () => {
     expect((await active).summary.requests).toBe(1)
     await closing
     expect(closed).toBe(true)
+  })
+
+  it('waits for a direct reconciliation before closing and rejects later direct work', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-projection-reconcile-dispose-'))
+    tempDirs.push(dir)
+    let release: (() => void) | undefined
+    let started: (() => void) | undefined
+    const readStarted = new Promise<void>(resolve => { started = resolve })
+    const corpus = {
+      listSessions: async () => [{ id: 's1', revision: 'r1' }],
+      readEvents: async () => {
+        started?.()
+        await new Promise<void>(resolve => { release = resolve })
+        return [header('provider', 'model'), message(5, 1)]
+      },
+    }
+    const workspaces = { list: () => [] as const }
+    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const request = {
+      corpus,
+      workspaces,
+      end: 10,
+      readConcurrency: 1,
+      transactionBatchSize: 8,
+    }
+    const reconciling = projection.reconcile(request)
+    await readStarted
+    const closing = projection.close()
+    expect(await Promise.race([closing.then(() => 'closed'), Promise.resolve('pending')])).toBe('pending')
+    release?.()
+    await expect(reconciling).resolves.toBeUndefined()
+    await closing
+    await expect(projection.query({ corpus, workspaces, query: { start: 0, end: 10 } }))
+      .rejects.toThrow('usage projection is closing')
+    await expect(projection.reconcile(request)).rejects.toThrow('usage projection is closing')
   })
 })

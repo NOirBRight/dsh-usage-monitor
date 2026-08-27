@@ -12,6 +12,7 @@ export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from 
 export { foldRawSessionUsage, foldSessionUsage } from './fold.ts';
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts';
 export { UsageProjection, defaultUsageProjectionPath } from './projection.ts';
+export type { UsageProjectionInput, UsageProjectionReconcileInput } from './projection.ts';
 export { queryUsage } from './query.ts';
 export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts';
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts';

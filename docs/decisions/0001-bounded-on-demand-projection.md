@@ -4,7 +4,7 @@ Status: accepted
 
 ## Decision
 
-The Host opens its SQLite sidecar and registers the loopback RPC during plugin startup, but it does not list sessions or read history. The first RPC starts one shared reconciliation worker. Concurrent RPCs join that worker, and a request arriving during a pass requires a follow-up listing before either response can use the projection.
+The Host opens its SQLite sidecar and registers the loopback RPC during plugin startup, but it does not list sessions or read history. The first RPC starts one shared reconciliation worker. Concurrent RPCs join that worker, and a request arriving during a pass requires a follow-up listing before any joined response can use the projection. Each worker epoch retains the maximum exclusive end among all unresolved queries and returns an immutable session/revision-less snapshot to those queries; a later narrow query cannot discard a wider query's live-session fold.
 
 A query excludes sessions whose known `createdAt` is at or after the requested exclusive end. Every other missing, incomplete, old-version, revision-less, or revision-changed session is read and folded before the response. The worker lists sessions again after folding and repeats reconciliation when the source identity set changed. Only rows joined to a complete session record for the current projection version can answer the range.
 

@@ -12,19 +12,32 @@ import { type PricingTable } from './pricing.ts';
 export declare const DEFAULT_PROJECTION_READ_CONCURRENCY = 1;
 /** Default number of sessions committed by one SQLite transaction. */
 export declare const DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE = 8;
-interface ReconcileRequest {
+/** Direct projection reconciliation request. */
+export interface UsageProjectionReconcileInput {
+    /** Authoritative session source. */
     corpus: SessionCorpus;
+    /** Workspace view used while folding new rows. */
     workspaces: WorkspaceIndex;
+    /** Exclusive end used to skip sessions known to start later. */
     end: number;
+    /** Maximum concurrent source reads. */
     readConcurrency: number;
+    /** Maximum sessions committed in one transaction. */
     transactionBatchSize: number;
 }
+/** One exact range query against the projection. */
 export interface UsageProjectionInput {
+    /** Authoritative session source. */
     corpus: SessionCorpus;
+    /** Current workspace view. */
     workspaces: WorkspaceIndex;
+    /** Requested half-open time window. */
     query: UsageQueryRequest;
+    /** Pricing table; built-in rates are used when omitted. */
     pricing?: PricingTable;
+    /** Maximum concurrent source reads. */
     readConcurrency?: number;
+    /** Maximum sessions committed in one transaction. */
     transactionBatchSize?: number;
 }
 /** Default plugin-owned sidecar path for the active DSH home. */
@@ -37,29 +50,38 @@ export declare function defaultUsageProjectionPath(): string;
 export declare class UsageProjection {
     private readonly db;
     private workerPromise;
-    private refreshRequested;
-    private refreshCompleted;
-    private pendingEnd;
-    private latestRequest;
-    private sessions;
-    private volatile;
+    private nextTicket;
+    private readonly pendingTickets;
     private accepting;
-    private activeQueries;
+    private activeWork;
     private idleWaiters;
     private closePromise;
     private checkpointNeeded;
     constructor(path: string);
-    /** Reconcile every potentially relevant session before returning the range. */
+    /**
+     * Reconcile every potentially relevant session before returning the range.
+     * @param input - Source, workspace view, requested range, and optional bounds.
+     * @returns The exact usage snapshot for `input.query`.
+     */
     query(input: UsageProjectionInput): Promise<UsageSnapshot>;
     /**
      * Join the shared reconciliation worker. A request arriving during a pass is
      * assigned a later ticket, which forces a follow-up source listing.
+     * @param request - Source and bounded reconciliation settings.
+     * @returns Nothing after the request's stable epoch completes.
      */
-    reconcile(request: ReconcileRequest): Promise<void>;
-    /** Stop accepting queries and close SQLite after every active query settles. */
+    reconcile(request: UsageProjectionReconcileInput): Promise<void>;
+    private enqueueReconcile;
+    private ensureWorker;
+    /**
+     * Stop accepting work and close SQLite after every active operation settles.
+     * @returns A promise that resolves after the database closes.
+     */
     close(): Promise<void>;
     private runWorker;
     private reconcileUntilStable;
+    private beginWork;
+    private finishWork;
     private sessionSignature;
     private reconcileListing;
     private removeDeletedSessions;
@@ -69,5 +91,4 @@ export declare class UsageProjection {
     private sessionCanContribute;
     private restoreStep;
 }
-export {};
 //# sourceMappingURL=projection.d.ts.map

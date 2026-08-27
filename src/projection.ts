@@ -37,11 +37,17 @@ interface RebuildResult {
   error?: unknown
 }
 
-interface ReconcileRequest {
+/** Direct projection reconciliation request. */
+export interface UsageProjectionReconcileInput {
+  /** Authoritative session source. */
   corpus: SessionCorpus
+  /** Workspace view used while folding new rows. */
   workspaces: WorkspaceIndex
+  /** Exclusive end used to skip sessions known to start later. */
   end: number
+  /** Maximum concurrent source reads. */
   readConcurrency: number
+  /** Maximum sessions committed in one transaction. */
   transactionBatchSize: number
 }
 
@@ -50,12 +56,31 @@ interface ReconcileOutcome {
   rebuilt: boolean
 }
 
+interface ReconcileSnapshot {
+  sessions: ReadonlyMap<string, CorpusSession>
+  volatile: ReadonlyMap<string, readonly StepUsage[]>
+}
+
+interface ReconcileTicket {
+  id: number
+  request: UsageProjectionReconcileInput
+  resolve: (snapshot: ReconcileSnapshot) => void
+  reject: (error: unknown) => void
+}
+
+/** One exact range query against the projection. */
 export interface UsageProjectionInput {
+  /** Authoritative session source. */
   corpus: SessionCorpus
+  /** Current workspace view. */
   workspaces: WorkspaceIndex
+  /** Requested half-open time window. */
   query: UsageQueryRequest
+  /** Pricing table; built-in rates are used when omitted. */
   pricing?: PricingTable
+  /** Maximum concurrent source reads. */
   readConcurrency?: number
+  /** Maximum sessions committed in one transaction. */
   transactionBatchSize?: number
 }
 
@@ -73,14 +98,10 @@ export function defaultUsageProjectionPath(): string {
 export class UsageProjection {
   private readonly db: DatabaseSync
   private workerPromise: Promise<void> | undefined
-  private refreshRequested = 0
-  private refreshCompleted = 0
-  private pendingEnd = Number.NEGATIVE_INFINITY
-  private latestRequest: ReconcileRequest | undefined
-  private sessions = new Map<string, CorpusSession>()
-  private volatile = new Map<string, readonly StepUsage[]>()
+  private nextTicket = 0
+  private readonly pendingTickets = new Map<number, ReconcileTicket>()
   private accepting = true
-  private activeQueries = 0
+  private activeWork = 0
   private idleWaiters: Array<() => void> = []
   private closePromise: Promise<void> | undefined
   private checkpointNeeded: boolean
@@ -102,19 +123,22 @@ export class UsageProjection {
     this.checkpointNeeded = row.count === 0
   }
 
-  /** Reconcile every potentially relevant session before returning the range. */
+  /**
+   * Reconcile every potentially relevant session before returning the range.
+   * @param input - Source, workspace view, requested range, and optional bounds.
+   * @returns The exact usage snapshot for `input.query`.
+   */
   async query(input: UsageProjectionInput): Promise<UsageSnapshot> {
-    if (!this.accepting) throw new Error('usage projection is closing')
-    this.activeQueries += 1
+    this.beginWork()
     try {
-      await this.reconcile({
+      const snapshot = await this.enqueueReconcile({
         corpus: input.corpus,
         workspaces: input.workspaces,
         end: input.query.end,
         readConcurrency: input.readConcurrency ?? DEFAULT_PROJECTION_READ_CONCURRENCY,
         transactionBatchSize: input.transactionBatchSize ?? DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE,
       })
-      const steps = this.readIndexedSteps(input.query, input.workspaces.list())
+      const steps = this.readIndexedSteps(input.query, input.workspaces.list(), snapshot)
       return queryUsage({
         steps,
         start: input.query.start,
@@ -122,44 +146,55 @@ export class UsageProjection {
         pricing: input.pricing ?? BUILTIN_PRICING,
       })
     } finally {
-      this.activeQueries -= 1
-      if (this.activeQueries === 0) {
-        const waiters = this.idleWaiters
-        this.idleWaiters = []
-        for (const resolve of waiters) resolve()
-      }
+      this.finishWork()
     }
   }
 
   /**
    * Join the shared reconciliation worker. A request arriving during a pass is
    * assigned a later ticket, which forces a follow-up source listing.
+   * @param request - Source and bounded reconciliation settings.
+   * @returns Nothing after the request's stable epoch completes.
    */
-  async reconcile(request: ReconcileRequest): Promise<void> {
-    if (!this.accepting) throw new Error('usage projection is closing')
-    const ticket = ++this.refreshRequested
-    this.pendingEnd = Math.max(this.pendingEnd, request.end)
-    this.latestRequest = request
+  async reconcile(request: UsageProjectionReconcileInput): Promise<void> {
+    this.beginWork()
+    try {
+      await this.enqueueReconcile(request)
+    } finally {
+      this.finishWork()
+    }
+  }
+
+  private enqueueReconcile(request: UsageProjectionReconcileInput): Promise<ReconcileSnapshot> {
+    const id = ++this.nextTicket
+    const result = new Promise<ReconcileSnapshot>((resolve, reject) => {
+      this.pendingTickets.set(id, { id, request, resolve, reject })
+    })
+    this.ensureWorker()
+    return result
+  }
+
+  private ensureWorker(): void {
     if (this.workerPromise === undefined) {
       const worker = this.runWorker()
       this.workerPromise = worker
       void worker.finally(() => {
-        if (this.workerPromise === worker) this.workerPromise = undefined
+        if (this.workerPromise !== worker) return
+        this.workerPromise = undefined
+        if (this.pendingTickets.size > 0) this.ensureWorker()
       }).catch(() => undefined)
-    }
-    while (this.refreshCompleted < ticket) {
-      const worker = this.workerPromise
-      if (worker === undefined) continue
-      await worker
     }
   }
 
-  /** Stop accepting queries and close SQLite after every active query settles. */
+  /**
+   * Stop accepting work and close SQLite after every active operation settles.
+   * @returns A promise that resolves after the database closes.
+   */
   close(): Promise<void> {
     if (this.closePromise !== undefined) return this.closePromise
     this.accepting = false
     this.closePromise = (async () => {
-      if (this.activeQueries > 0) {
+      if (this.activeWork > 0) {
         await new Promise<void>(resolve => this.idleWaiters.push(resolve))
       }
       this.db.close()
@@ -168,18 +203,44 @@ export class UsageProjection {
   }
 
   private async runWorker(): Promise<void> {
-    while (this.refreshCompleted < this.refreshRequested) {
-      const target = this.refreshRequested
-      const request = this.latestRequest
-      if (request === undefined) throw new Error('usage projection worker has no request')
-      const end = this.pendingEnd
-      this.pendingEnd = Number.NEGATIVE_INFINITY
-      await this.reconcileUntilStable({ ...request, end })
-      this.refreshCompleted = target
+    while (this.pendingTickets.size > 0) {
+      const head = this.pendingTickets.values().next().value
+      if (head === undefined) return
+      const corpus = head.request.corpus
+      try {
+        while (true) {
+          const cohort = [...this.pendingTickets.values()]
+            .filter(ticket => ticket.request.corpus === corpus)
+          const epoch = Math.max(...cohort.map(ticket => ticket.id))
+          const request: UsageProjectionReconcileInput = {
+            corpus,
+            workspaces: cohort[0]?.request.workspaces ?? head.request.workspaces,
+            end: Math.max(...cohort.map(ticket => ticket.request.end)),
+            readConcurrency: Math.min(...cohort.map(ticket => ticket.request.readConcurrency)),
+            transactionBatchSize: Math.min(...cohort.map(ticket => ticket.request.transactionBatchSize)),
+          }
+          const snapshot = await this.reconcileUntilStable(request)
+          const joined = [...this.pendingTickets.values()]
+            .some(ticket => ticket.request.corpus === corpus && ticket.id > epoch)
+          if (joined) continue
+          for (const ticket of cohort) {
+            this.pendingTickets.delete(ticket.id)
+            ticket.resolve(snapshot)
+          }
+          break
+        }
+      } catch (error) {
+        const failed = [...this.pendingTickets.values()]
+          .filter(ticket => ticket.request.corpus === corpus)
+        for (const ticket of failed) {
+          this.pendingTickets.delete(ticket.id)
+          ticket.reject(error)
+        }
+      }
     }
   }
 
-  private async reconcileUntilStable(request: ReconcileRequest): Promise<void> {
+  private async reconcileUntilStable(request: UsageProjectionReconcileInput): Promise<ReconcileSnapshot> {
     let sessions = await request.corpus.listSessions()
     let signature = this.sessionSignature(sessions)
     let outcome = await this.reconcileListing(sessions, request)
@@ -188,19 +249,33 @@ export class UsageProjection {
       const verified = await request.corpus.listSessions()
       const verifiedSignature = this.sessionSignature(verified)
       if (verifiedSignature === signature) {
-        this.sessions = new Map(verified.map(session => [session.id, session]))
-        this.volatile = outcome.volatile
         if (this.checkpointNeeded && rebuilt) {
           this.db.prepare('PRAGMA wal_checkpoint(PASSIVE)').all()
           this.checkpointNeeded = false
         }
-        return
+        return {
+          sessions: new Map(verified.map(session => [session.id, session])),
+          volatile: outcome.volatile,
+        }
       }
       sessions = verified
       signature = verifiedSignature
       outcome = await this.reconcileListing(sessions, request)
       rebuilt ||= outcome.rebuilt
     }
+  }
+
+  private beginWork(): void {
+    if (!this.accepting) throw new Error('usage projection is closing')
+    this.activeWork += 1
+  }
+
+  private finishWork(): void {
+    this.activeWork -= 1
+    if (this.activeWork !== 0) return
+    const waiters = this.idleWaiters
+    this.idleWaiters = []
+    for (const resolve of waiters) resolve()
   }
 
   private sessionSignature(sessions: readonly CorpusSession[]): string {
@@ -211,7 +286,7 @@ export class UsageProjection {
 
   private async reconcileListing(
     sessions: readonly CorpusSession[],
-    request: ReconcileRequest,
+    request: UsageProjectionReconcileInput,
   ): Promise<ReconcileOutcome> {
     const indexed = new Map<string, string>()
     for (const row of this.db.prepare(
@@ -363,6 +438,7 @@ export class UsageProjection {
   private readIndexedSteps(
     query: UsageQueryRequest,
     workspaces: readonly ReturnType<WorkspaceIndex['list']>[number][],
+    snapshot: ReconcileSnapshot,
   ): StepUsage[] {
     const rows = this.db.prepare([
       'SELECT p.session_id, p.time, p.provider, p.model, p.workspace_id, p.workspace_title,',
@@ -374,12 +450,12 @@ export class UsageProjection {
     ].join(' ')).all(query.start, query.end, PROJECTION_VERSION) as Array<Record<string, string | number>>
     const steps: StepUsage[] = []
     for (const row of rows) {
-      const session = this.sessions.get(String(row.session_id))
+      const session = snapshot.sessions.get(String(row.session_id))
       if (!this.sessionCanContribute(session, query.end)) continue
-      steps.push(this.restoreStep(row, workspaces))
+      steps.push(this.restoreStep(row, workspaces, snapshot.sessions))
     }
-    for (const [sessionId, volatileSteps] of this.volatile) {
-      const session = this.sessions.get(sessionId)
+    for (const [sessionId, volatileSteps] of snapshot.volatile) {
+      const session = snapshot.sessions.get(sessionId)
       if (!this.sessionCanContribute(session, query.end)) continue
       const workspace = resolveWorkspace(workspaces, session.id, session.cwd)
       for (const step of volatileSteps) {
@@ -397,9 +473,10 @@ export class UsageProjection {
   private restoreStep(
     row: Record<string, string | number>,
     workspaces: readonly ReturnType<WorkspaceIndex['list']>[number][],
+    sessions: ReadonlyMap<string, CorpusSession>,
   ): StepUsage {
     const sessionId = String(row.session_id)
-    const session = this.sessions.get(sessionId)
+    const session = sessions.get(sessionId)
     const workspace = session === undefined
       ? { id: String(row.workspace_id), title: String(row.workspace_title) }
       : resolveWorkspace(workspaces, session.id, session.cwd)
