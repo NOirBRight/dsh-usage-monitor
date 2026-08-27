@@ -41,7 +41,7 @@
   "scripts": {
     "bundle": "tsdown",
     "build": "tsc -p tsconfig.json && tsdown",
-    "benchmark:projection": "pnpm run build && node scripts/benchmark-projection.mjs",
+    "benchmark:projection": "node scripts/benchmark-projection.mjs",
     "test": "vitest run",
     "pack:check": "node scripts/check-pack.mjs",
     "check": "pnpm run build && pnpm run test && pnpm run pack:check"

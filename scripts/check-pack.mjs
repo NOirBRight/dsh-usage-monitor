@@ -1,4 +1,10 @@
 import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
+
+const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+if (manifest.scripts?.['benchmark:projection'] !== 'node scripts/benchmark-projection.mjs') {
+  throw new Error('published benchmark:projection must run without unpackaged build inputs')
+}
 
 const output = execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
   cwd: new URL('..', import.meta.url),
