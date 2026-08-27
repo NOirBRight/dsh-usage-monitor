@@ -70,12 +70,13 @@ const configIssue = (message: string, key?: keyof Config) => ({
   ...(key === undefined ? {} : { path: [key] }),
 })
 
-/** Standard Schema validator with bounded on-demand defaults. */
+/** Standard Schema validator that accepts an omitted plugin config and applies bounded on-demand defaults. */
 export const Config = {
   '~standard': {
     version: 1 as const,
     vendor: 'dsh-usage-monitor',
     validate(value: unknown) {
+      if (value === undefined) value = {}
       if (!isRecord(value)) return { issues: [configIssue('expected an object')] }
       const projectionWarmup = value.projectionWarmup ?? DEFAULT_CONFIG.projectionWarmup
       const projectionReadConcurrency = value.projectionReadConcurrency ?? DEFAULT_CONFIG.projectionReadConcurrency

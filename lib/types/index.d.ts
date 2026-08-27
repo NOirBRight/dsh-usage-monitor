@@ -28,7 +28,7 @@ export interface Config {
     /** Maximum sessions replaced by one SQLite transaction. */
     projectionTransactionBatchSize: number;
 }
-/** Standard Schema validator with bounded on-demand defaults. */
+/** Standard Schema validator that accepts an omitted plugin config and applies bounded on-demand defaults. */
 export declare const Config: {
     '~standard': {
         version: 1;
