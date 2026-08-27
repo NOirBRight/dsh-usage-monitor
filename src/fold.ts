@@ -26,11 +26,18 @@ export interface StepUsage {
   cacheWriteTokens: number
 }
 
-export interface FoldSessionInput {
+export interface FoldSessionStamp {
   sessionId: string
   workspaceId: string
   workspaceTitle: string
+}
+
+export interface FoldSessionInput extends FoldSessionStamp {
   events: readonly FoldableEvent[]
+}
+
+export interface FoldRawSessionInput extends FoldSessionStamp {
+  content: string
 }
 
 const UNKNOWN = 'unknown'
@@ -101,34 +108,86 @@ const routeOf = (event: FoldableEvent): { provider: string, model: string } | un
 
 const stepKey = (turn: number, step: number): string => `${turn}:${step}`
 
-/** Fold one session's events into per-step usage samples. */
-export function foldSessionUsage(input: FoldSessionInput): StepUsage[] {
-  let provider = UNKNOWN
-  let model = UNKNOWN
-  const byStep = new Map<string, StepUsage>()
-  const order: string[] = []
+class SessionUsageReducer {
+  private provider = UNKNOWN
+  private model = UNKNOWN
+  private readonly byStep = new Map<string, StepUsage>()
+  private readonly order: string[] = []
 
-  for (const event of input.events) {
+  private readonly stamp: FoldSessionStamp
+
+  constructor(stamp: FoldSessionStamp) {
+    this.stamp = {
+      sessionId: stamp.sessionId,
+      workspaceId: stamp.workspaceId,
+      workspaceTitle: stamp.workspaceTitle,
+    }
+  }
+
+  accept(event: FoldableEvent): void {
     const route = routeOf(event)
     if (route !== undefined) {
-      provider = route.provider
-      model = route.model
+      this.provider = route.provider
+      this.model = route.model
     }
     const usage = usageOf(event)
-    if (usage === undefined) continue
+    if (usage === undefined) return
     const key = stepKey(usage.turn, usage.step)
     const sample: StepUsage = {
       time: event.time,
-      sessionId: input.sessionId,
-      workspaceId: input.workspaceId,
-      workspaceTitle: input.workspaceTitle,
-      provider,
-      model,
+      ...this.stamp,
+      provider: this.provider,
+      model: this.model,
       ...usage.buckets,
     }
-    if (!byStep.has(key)) order.push(key)
-    byStep.set(key, sample)
+    if (!this.byStep.has(key)) this.order.push(key)
+    this.byStep.set(key, sample)
   }
 
-  return order.map(key => byStep.get(key)).filter((sample): sample is StepUsage => sample !== undefined)
+  finish(): StepUsage[] {
+    return this.order
+      .map(key => this.byStep.get(key))
+      .filter((sample): sample is StepUsage => sample !== undefined)
+  }
+}
+
+/** Fold one session's events into per-step usage samples. */
+export function foldSessionUsage(input: FoldSessionInput): StepUsage[] {
+  const reducer = new SessionUsageReducer(input)
+  for (const event of input.events) reducer.accept(event)
+  return reducer.finish()
+}
+
+/**
+ * Fold a raw JSONL session without first allocating an event array. Each line
+ * is parsed and reduced before the scanner advances to the next newline.
+ */
+export function foldRawSessionUsage(input: FoldRawSessionInput): StepUsage[] {
+  const reducer = new SessionUsageReducer(input)
+  let start = 0
+  while (start <= input.content.length) {
+    const newline = input.content.indexOf('\n', start)
+    const end = newline === -1 ? input.content.length : newline
+    if (end > start) {
+      const event = parseRawFoldableEvent(input.content.slice(start, end))
+      if (event !== undefined) reducer.accept(event)
+    }
+    if (newline === -1) break
+    start = newline + 1
+  }
+  return reducer.finish()
+}
+
+/** Parse one raw JSONL line when it can participate in usage folding. */
+export function parseRawFoldableEvent(line: string): FoldableEvent | undefined {
+  let record: unknown
+  try {
+    record = JSON.parse(line)
+  } catch {
+    return undefined
+  }
+  if (!isRecord(record)) return undefined
+  const { type, time, data } = record
+  if (typeof type !== 'string' || typeof time !== 'number' || !Number.isFinite(time)) return undefined
+  return { type, time, ...(data === undefined ? {} : { data }) }
 }

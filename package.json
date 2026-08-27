@@ -1,7 +1,7 @@
 {
   "name": "dsh-usage-monitor",
   "description": "Session-log usage dashboard for DeepSeek Harness",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "publishConfig": {
     "access": "public"
   },
@@ -32,6 +32,8 @@
     "lib/client.js",
     "lib/types/**/*.d.ts",
     "cordis.patch.yml",
+    "docs/decisions/0001-bounded-on-demand-projection.md",
+    "scripts/benchmark-projection.mjs",
     "README.md",
     "README.zh.md",
     "LICENSE"
@@ -39,6 +41,7 @@
   "scripts": {
     "bundle": "tsdown",
     "build": "tsc -p tsconfig.json && tsdown",
+    "benchmark:projection": "node scripts/benchmark-projection.mjs",
     "test": "vitest run",
     "pack:check": "node scripts/check-pack.mjs",
     "check": "pnpm run build && pnpm run test && pnpm run pack:check"
@@ -74,6 +77,7 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/cordis-plugin-loader": "^1.0.2",
     "@deepseek-ai/dsh-client-connection": ">=0.1.0-rc.6 <0.1.1 || >=0.1.1-rc.1 <1.0.0",
     "@deepseek-ai/dsh-client-locale": ">=0.1.0-rc.6 <0.1.1 || >=0.1.1-rc.1 <1.0.0",
     "@deepseek-ai/dsh-client-runtime": ">=0.1.0-rc.6 <0.1.1 || >=0.1.1-rc.1 <1.0.0",

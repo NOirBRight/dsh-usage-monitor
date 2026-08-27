@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4
+
+- Make the usage projection on-demand: startup only opens the sidecar and registers RPC, while the first query performs exact revision reconciliation without a full-corpus fallback.
+- Fold raw JSONL incrementally, bound source reads to one by default, and commit replacements in eight-session batches so completed work survives later interruption.
+- Fail exact queries after relevant source or SQLite errors, exclude incomplete or old-version rows, re-list revisions before responding, and wait for active work before closing the database.
+- Configure the sidecar for WAL, `synchronous=NORMAL`, and a bounded busy timeout; add a synthetic 1,346-session / 83,883-step benchmark.
+
 ## 0.2.2
 
 - Widen Host peer ranges to `>=0.1.0-rc.6 <0.1.1 || >=0.1.1-rc.1 <1.0.0`

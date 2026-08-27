@@ -5,19 +5,50 @@
 import type { Context } from '@deepseek-ai/cordis';
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection';
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
-import { type SessionCorpus, type WorkspaceIndex } from './collect.ts';
-import type { FoldableEvent } from './fold.ts';
+import type { SessionCorpus, WorkspaceIndex } from './collect.ts';
+import { type FoldableEvent } from './fold.ts';
 export { USAGE_RPC_CHANNEL, USAGE_QUERY_ENDPOINT, decodeUsageQueryRequest, decodeUsageSnapshot, } from './client-contract.ts';
 export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from './client-contract.ts';
-export { foldSessionUsage } from './fold.ts';
+export { foldRawSessionUsage, foldSessionUsage } from './fold.ts';
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts';
 export { UsageProjection, defaultUsageProjectionPath } from './projection.ts';
+export type { UsageProjectionInput, UsageProjectionReconcileInput } from './projection.ts';
 export { queryUsage } from './query.ts';
 export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts';
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts';
 export declare const name = "dsh-usage-monitor";
 export declare const inject: string[];
 export declare const READ_BUDGET_MS = 20000;
+/** Usage projection plugin configuration. */
+export interface Config {
+    /** Projection work begins only when an RPC needs an exact range. */
+    projectionWarmup: 'on-demand';
+    /** Maximum session logs read concurrently. */
+    projectionReadConcurrency: number;
+    /** Maximum sessions replaced by one SQLite transaction. */
+    projectionTransactionBatchSize: number;
+}
+/** Standard Schema validator that accepts an omitted plugin config and applies bounded on-demand defaults. */
+export declare const Config: {
+    '~standard': {
+        version: 1;
+        vendor: string;
+        validate(value: unknown): {
+            issues: {
+                path?: (keyof Config)[];
+                message: string;
+            }[];
+            value?: never;
+        } | {
+            value: {
+                projectionWarmup: "on-demand";
+                projectionReadConcurrency: number;
+                projectionTransactionBatchSize: number;
+            };
+            issues?: never;
+        };
+    };
+};
 export interface UsageRpcDeps {
     collect: (query: UsageQueryRequest) => Promise<UsageSnapshot>;
 }
@@ -81,6 +112,6 @@ interface WorkspaceRegistryLike {
 }
 export declare function corpusFrom(sessionQuery: SessionQueryLike, persistence: PersistenceLike, sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined): SessionCorpus;
 export declare function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex;
-/** Register the loopback `/usage-monitor` channel. */
-export declare function apply(ctx: Context): void;
+/** Register the loopback `/usage-monitor` channel without reading history. */
+export declare function apply(ctx: Context, config?: Config): void;
 //# sourceMappingURL=index.d.ts.map
