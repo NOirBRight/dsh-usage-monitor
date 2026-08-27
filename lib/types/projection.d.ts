@@ -1,50 +1,73 @@
 /**
- * Durable final-usage projection for range queries.
+ * Durable, revision-aware final-usage projection for exact range queries.
  *
- * The source log remains authoritative. This SQLite sidecar only stores the
- * final usage samples produced by foldSessionUsage for one source revision;
- * it is disposable derived data and is rebuilt per changed session.
+ * Source logs remain authoritative. The SQLite sidecar stores only complete
+ * folds for the current projection version; changed sessions are replaced in
+ * bounded transactions and failed replacements are made visibly incomplete.
  */
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
 import { type SessionCorpus, type WorkspaceIndex } from './collect.ts';
 import { type PricingTable } from './pricing.ts';
+/** Default number of session logs read concurrently. */
+export declare const DEFAULT_PROJECTION_READ_CONCURRENCY = 1;
+/** Default number of sessions committed by one SQLite transaction. */
+export declare const DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE = 8;
+interface ReconcileRequest {
+    corpus: SessionCorpus;
+    workspaces: WorkspaceIndex;
+    end: number;
+    readConcurrency: number;
+    transactionBatchSize: number;
+}
 export interface UsageProjectionInput {
     corpus: SessionCorpus;
     workspaces: WorkspaceIndex;
     query: UsageQueryRequest;
     pricing?: PricingTable;
-    concurrency?: number;
+    readConcurrency?: number;
+    transactionBatchSize?: number;
 }
 /** Default plugin-owned sidecar path for the active DSH home. */
 export declare function defaultUsageProjectionPath(): string;
 /**
- * Reconcile source revisions into a durable final-sample index, then answer a
- * time window from indexed rows. The source adapter stays behind SessionCorpus;
- * callers only provide a corpus, workspace view, and range.
+ * Reconcile source revisions through one shared worker, then answer windows
+ * only from complete rows. Disposal rejects new work and waits for active
+ * queries before closing SQLite.
  */
 export declare class UsageProjection {
     private readonly db;
-    private refreshPromise;
-    /** Number of reconciliation requests observed by callers. */
+    private workerPromise;
     private refreshRequested;
-    /** Number of requests covered by completed passes. */
     private refreshCompleted;
+    private pendingEnd;
+    private latestRequest;
     private sessions;
     private volatile;
-    private closed;
+    private accepting;
+    private activeQueries;
+    private idleWaiters;
+    private closePromise;
+    private checkpointNeeded;
     constructor(path: string);
+    /** Reconcile every potentially relevant session before returning the range. */
     query(input: UsageProjectionInput): Promise<UsageSnapshot>;
     /**
-     * Rebuild only missing/changed source revisions. Concurrent callers share
-     * work, but every caller arriving during a pass also forces one follow-up
-     * listing so a live revision that advanced during the read is not hidden by
-     * the earlier pass.
+     * Join the shared reconciliation worker. A request arriving during a pass is
+     * assigned a later ticket, which forces a follow-up source listing.
      */
-    reconcile(corpus: SessionCorpus, workspaces: WorkspaceIndex, concurrency: number): Promise<void>;
-    close(): void;
-    private reconcileNow;
+    reconcile(request: ReconcileRequest): Promise<void>;
+    /** Stop accepting queries and close SQLite after every active query settles. */
+    close(): Promise<void>;
+    private runWorker;
+    private reconcileUntilStable;
+    private sessionSignature;
+    private reconcileListing;
+    private removeDeletedSessions;
+    private commitBatch;
+    private markBatchStale;
     private readIndexedSteps;
     private sessionCanContribute;
     private restoreStep;
 }
+export {};
 //# sourceMappingURL=projection.d.ts.map

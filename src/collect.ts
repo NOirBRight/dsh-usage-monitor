@@ -3,7 +3,12 @@
  */
 
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
-import { foldSessionUsage, type FoldableEvent, type StepUsage } from './fold.ts'
+import {
+  foldSessionUsage,
+  type FoldableEvent,
+  type FoldSessionStamp,
+  type StepUsage,
+} from './fold.ts'
 import { BUILTIN_PRICING, type PricingTable } from './pricing.ts'
 import { queryUsage } from './query.ts'
 
@@ -24,6 +29,7 @@ export interface CorpusWorkspace {
 export interface SessionCorpus {
   listSessions(): Promise<readonly CorpusSession[]>
   readEvents(sessionId: string): Promise<readonly FoldableEvent[]>
+  foldSession?(stamp: FoldSessionStamp): Promise<readonly StepUsage[]>
 }
 
 export interface WorkspaceIndex {
@@ -128,6 +134,16 @@ export interface CollectUsageInput {
   concurrency?: number
 }
 
+/** Fold one corpus session through its raw-aware adapter when available. */
+export async function foldCorpusSession(
+  corpus: SessionCorpus,
+  stamp: FoldSessionStamp,
+): Promise<readonly StepUsage[]> {
+  if (corpus.foldSession !== undefined) return corpus.foldSession(stamp)
+  const events = await corpus.readEvents(stamp.sessionId)
+  return foldSessionUsage({ ...stamp, events })
+}
+
 export async function mapPool<T, R>(
   items: readonly T[],
   concurrency: number,
@@ -158,12 +174,10 @@ export async function collectUsage(input: CollectUsageInput): Promise<UsageSnaps
     session.createdAt === undefined || session.createdAt < input.query.end)
   const foldOne = async (session: CorpusSession): Promise<readonly StepUsage[]> => {
     const workspace = resolveWorkspace(workspaces, session.id, session.cwd)
-    const events = await input.corpus.readEvents(session.id)
-    return foldSessionUsage({
+    return foldCorpusSession(input.corpus, {
       sessionId: session.id,
       workspaceId: workspace.id,
       workspaceTitle: workspace.title,
-      events,
     })
   }
   const folded = await mapPool(inWindow, input.concurrency ?? 1, async (session) => {

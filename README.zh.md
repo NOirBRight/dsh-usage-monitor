@@ -20,7 +20,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.2
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.4
 dsh web
 ```
 
@@ -31,3 +31,9 @@ dsh web
 ## 数据
 
 走 `ctx.sessionQuery`（含进行中和已落盘会话）。不直接读 `session.jsonl.zstd`，也不读社区插件留下的缓存。
+
+Host 启动时只打开插件自有的 SQLite sidecar，不列举或读取会话历史；第一次查询用量时才开始投影。每次查询返回前，会核对所有可能相关且缺失或已变更的会话；相关源日志或数据库出错时查询失败，不返回陈旧或不完整数据。原始 JSONL 按行即时折叠；后续批次中断时，已经提交的投影批次仍然保留。
+
+Sidecar 使用 WAL、`synchronous=NORMAL` 和有界 busy timeout。源日志读取和 SQLite 事务默认分别限制为 1 个和 8 个会话。经过校验的插件配置提供 `projectionWarmup: on-demand`、`projectionReadConcurrency` 和 `projectionTransactionBatchSize`，默认值分别为 `on-demand`、`1`、`8`。
+
+运行 `pnpm run benchmark:projection` 可执行 1,346 个合成会话、83,883 个合成 step 的负载，输出冷/热查询耗时、堆内存变化、源读取次数和读取并发峰值，不读取生产数据。保证与预期指标见[投影决策](docs/decisions/0001-bounded-on-demand-projection.md)。

@@ -108,6 +108,32 @@ describe('corpusFrom', () => {
     expect(readFrom).not.toHaveBeenCalled()
   })
 
+  it('feeds raw JSONL directly to the fold without materializing a full event array', async () => {
+    const readFrom = vi.fn(async () => {
+      throw new Error('should not validate or materialize raw events')
+    })
+    const content = [
+      JSON.stringify({ type: 'header', version: 7, id: 's1', createdAt: 1 }),
+      'invalid',
+      JSON.stringify(usageHeader),
+      JSON.stringify(usageMessage),
+    ].join('\n')
+    const corpus = corpusFrom(
+      { listSessions: async () => [{ header: { id: 's1' } }] },
+      { listSnapshots: async () => [], readRaw: async () => ({ content }), readFrom },
+      undefined,
+    )
+
+    const steps = await corpus.foldSession?.({
+      sessionId: 's1',
+      workspaceId: 'w1',
+      workspaceTitle: 'Repo',
+    })
+    expect(steps).toHaveLength(1)
+    expect(steps?.[0]).toMatchObject({ provider: 'kimi-coding', model: 'k3', uncachedInputTokens: 2 })
+    expect(readFrom).not.toHaveBeenCalled()
+  })
+
   it('falls back to readFrom when no raw artifact exists', async () => {
     const corpus = corpusFrom(
       { listSessions: async () => [{ header: { id: 's1' } }] },

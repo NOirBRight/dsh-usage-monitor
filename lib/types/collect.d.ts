@@ -2,7 +2,7 @@
  * Walk a session corpus, fold each log, and answer a usage window.
  */
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
-import { type FoldableEvent, type StepUsage } from './fold.ts';
+import { type FoldableEvent, type FoldSessionStamp, type StepUsage } from './fold.ts';
 import { type PricingTable } from './pricing.ts';
 export interface CorpusSession {
     id: string;
@@ -19,6 +19,7 @@ export interface CorpusWorkspace {
 export interface SessionCorpus {
     listSessions(): Promise<readonly CorpusSession[]>;
     readEvents(sessionId: string): Promise<readonly FoldableEvent[]>;
+    foldSession?(stamp: FoldSessionStamp): Promise<readonly StepUsage[]>;
 }
 export interface WorkspaceIndex {
     list(): readonly CorpusWorkspace[];
@@ -60,6 +61,8 @@ export interface CollectUsageInput {
     cache?: FoldCache;
     concurrency?: number;
 }
+/** Fold one corpus session through its raw-aware adapter when available. */
+export declare function foldCorpusSession(corpus: SessionCorpus, stamp: FoldSessionStamp): Promise<readonly StepUsage[]>;
 export declare function mapPool<T, R>(items: readonly T[], concurrency: number, fn: (item: T) => Promise<R>): Promise<R[]>;
 /** Fold every session and return the windowed snapshot. */
 export declare function collectUsage(input: CollectUsageInput): Promise<UsageSnapshot>;
