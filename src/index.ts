@@ -290,6 +290,7 @@ export function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex 
 }
 
 /** Register the loopback `/usage-monitor` channel. */
+
 export function apply(ctx: Context): void {
   const sessionQuery = ctx.get('sessionQuery') as SessionQueryLike
   const workspaceRegistry = ctx.get('workspaceRegistry') as WorkspaceRegistryLike
