@@ -1,4 +1,5 @@
-/** Swap the settings-nav gear for a usage bar-chart glyph. */
+/** Official settings.section slot has no icon field (label/order/locale only).
+ *  Swap the gear for the usage glyph. Missing nav buttons stay silent. */
 
 const LABELS = new Set(['Usage', '用量'])
 const MARK = 'data-dsh-um-icon'
