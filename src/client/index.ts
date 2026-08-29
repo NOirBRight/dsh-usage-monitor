@@ -25,27 +25,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 export const name = 'dsh-usage-monitor-client'
 export const inject = ['slots', 'locale', 'connection']
 
-
-function assertMinVersion(ctx: ClientContext): void {
-  // GitHub installs use a single ref, not a semver range. This hard check
-  // prevents a new tag built for 0.1.2-alpha.1 from silently running on rc.2.
-  // rc.2 users should stay on github:NOirBRight/dsh-usage-monitor#v0.2.2.
-  const boot = (globalThis as unknown as { __DSH_BOOT__?: { graph?: Record<string, unknown> } }).__DSH_BOOT__;
-  if (boot?.graph && '@deepseek-ai/dsh-client-runtime' in boot.graph) {
-    throw new Error('dsh-usage-monitor >=0.2.4 requires DSH >=0.1.2-alpha.1; on DSH 0.1.1-rc.2 use github:NOirBRight/dsh-usage-monitor#v0.2.2');
-  }
-  // Also detect via Host service that only exists on old DSH
-  try {
-    const maybe = (ctx as unknown as { get?: (id: string) => unknown }).get?.('dsh-client-runtime' as never);
-    if (maybe !== undefined) {
-      throw new Error('dsh-usage-monitor >=0.2.4 requires DSH >=0.1.2-alpha.1; on DSH 0.1.1-rc.2 use github:NOirBRight/dsh-usage-monitor#v0.2.2');
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message.includes('requires DSH')) throw e;
-  }
-}
 export function apply(ctx: ClientContext): void {
-  assertMinVersion(ctx);
   const localeNamespace = 'settings.usage-monitor'
   ctx.effect(
     () => ctx.locale.register(localeNamespace, { zh, en }),
