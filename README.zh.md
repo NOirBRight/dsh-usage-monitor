@@ -21,7 +21,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.8
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.9
 dsh web
 ```
 
@@ -40,3 +40,41 @@ dsh web
 打 tag 前跑 `pnpm run check:strict`（顺序同样是单测、类型检查、构建一致性校验、构建、打包，并设置 `PARITY_CHECK_HEAD=1`；若已提交的 `lib/` 与源码构建不一致则失败——即 v0.2.5 漂移防护）。以 `src` 为准，提交重建后的 `lib/`。
 
 设置 → 用量的导航图标是 `ctx.effect` + `MutationObserver` 的 DOM 补丁；`ctx.effect` 释放与接受的 alpha.1 DOM 风险见 `src/client/nav-icon.ts`。
+
+
+## 正式版安装（Latest）
+
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. 正式成品只支持 DeepSeek Harness 0.1.2-alpha.1；发布包只包含构建后的 Host/Client 产物，不包含兄弟仓库源码、本机路径或 link:/workspace: 依赖。
+
+Latest 安装命令（永久不含版本号）：
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+~~~
+
+固定版本安装命令：
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/dsh-usage-monitor.tgz
+~~~
+
+更新、卸载与验证：
+
+~~~sh
+# 更新到最新 Release
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+# 验证加载与版本
+dsh plugin --profile web list
+dsh plugin --profile web doctor
+# 只卸载本插件
+dsh plugin --profile web remove dsh-usage-monitor
+~~~
+
+配置入口：Web 使用「设置」中的本插件页面；Host-only 插件使用 profile 的 dsh.profile.bundles 配置。先复制本 README 的最小 YAML/JSON 示例，再填写凭据或后端地址。
+
+回滚：重新执行固定版本 v0.2.9 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
+
+Release 与完整性：[v0.2.9](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.9) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/SHA256SUMS)。

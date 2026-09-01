@@ -21,7 +21,7 @@ Subscription quotas are not fetched.
 DeepSeek Harness 0.1.0-rc.6 or later is required. Install directly from GitHub:
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.8
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.9
 dsh web
 ```
 
@@ -40,3 +40,41 @@ Reads `ctx.sessionQuery` (live + persisted sessions). Does not scan `session.jso
 For a tag, run `pnpm run check:strict` (the same test, typecheck, parity, build, and pack order with `PARITY_CHECK_HEAD=1`; it fails if the committed `lib/` still differs from the source — the v0.2.5 drift guard). Keep `src` as the source of truth and commit the rebuilt `lib/`.
 
 The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObserver` on `document.body`; see `src/client/nav-icon.ts` for the `ctx.effect` disposer and the accepted alpha.1 DOM risk.
+
+
+## Release installation (Latest)
+
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The release artifact targets DeepSeek Harness 0.1.2-alpha.1 and contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency.
+
+Latest installation (the URL never contains a version):
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+~~~
+
+Fixed-version installation:
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/dsh-usage-monitor.tgz
+~~~
+
+Update, uninstall, and verify:
+
+~~~sh
+# Update to the latest Release
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+# Verify the loaded version
+dsh plugin --profile web list
+dsh plugin --profile web doctor
+# Uninstall only this plugin
+dsh plugin --profile web remove dsh-usage-monitor
+~~~
+
+Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
+
+Rollback: rerun the fixed v0.2.9 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+
+Release and integrity: [v0.2.9](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.9) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/SHA256SUMS).

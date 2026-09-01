@@ -68,24 +68,38 @@ const segmentStyle: CSSProperties = {
   boxShadow: 'inset 0 0 0 1px var(--dsw-alias-border-l2)',
 }
 
-const pillStyle = (active: boolean): CSSProperties => ({
-  display: 'inline-flex',
+const rangeOptionStyle: CSSProperties = {
+  appearance: 'none',
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   height: '100%',
   margin: 0,
   border: 'none',
+  padding: 0,
+  background: 'transparent',
+  cursor: 'pointer',
+}
+
+const rangePillStyle = (active: boolean): CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  border: '1px solid',
+  borderColor: active ? 'var(--dsw-alias-border-l2)' : 'transparent',
   borderRadius: 999,
   padding: '0 8px',
   background: active ? 'var(--dsw-alias-bg-module-platform)' : 'transparent',
   color: active
     ? 'var(--dsw-alias-label-primary)'
     : 'var(--dsw-alias-label-secondary)',
-  boxShadow: active ? '0 1px 2px rgba(15, 23, 42, 0.08)' : 'none',
+  boxShadow: active ? '0 1px 3px rgba(15, 23, 42, 0.12)' : 'none',
+  boxSizing: 'border-box',
   fontSize: 11,
   fontWeight: 650,
   lineHeight: 1,
-  cursor: 'pointer',
   whiteSpace: 'nowrap',
 })
 
@@ -213,12 +227,29 @@ const USAGE_CSS = `
   gap: 4px;
   overflow: hidden;
 }
-.dsh-um-range > button {
+.dsh-um-range > .dsh-um-range-option {
+  appearance: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   min-width: 72px;
-  border-radius: 999px !important;
+  height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
   outline: none;
 }
-.dsh-um-range > button:focus-visible {
+.dsh-um-range-pill {
+  width: 100%;
+  height: 28px;
+  min-width: 0;
+  border-radius: 999px !important;
+}
+.dsh-um-range > .dsh-um-range-option:focus-visible .dsh-um-range-pill {
   box-shadow: inset 0 0 0 2px var(--dsw-alias-label-primary);
 }
 .dsh-um-custom-dates {
@@ -366,10 +397,12 @@ const USAGE_CSS = `
     width: 100% !important;
     margin-left: 0;
   }
-  .dsh-um-range > button {
+  .dsh-um-range > .dsh-um-range-option {
     flex: 1 1 0;
     min-width: 0;
-    padding-inline: 4px;
+  }
+  .dsh-um-range-pill {
+    padding-inline: 4px !important;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -713,12 +746,18 @@ export function UsageDashboard(props: UsageDashboardProps) {
               ]).map(option => (
                 <button
                   key={option.value}
+                  className="dsh-um-range-option"
                   type="button"
                   aria-pressed={range === option.value}
-                  style={pillStyle(range === option.value)}
+                  style={rangeOptionStyle}
                   onClick={() => setRange(option.value)}
                 >
-                  {option.label}
+                  <span
+                    className="dsh-um-range-pill"
+                    style={rangePillStyle(range === option.value)}
+                  >
+                    {option.label}
+                  </span>
                 </button>
               ))}
             </div>
