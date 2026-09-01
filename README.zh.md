@@ -4,15 +4,15 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的用量看板。从会话日志里折出供应商上报的 token usage，在设置页画图。
 
-![设置 → 用量：汇总格、堆叠图、供应商表](docs/screenshots/settings-usage.png)
+![设置 → 用量：汇总格、堆叠图、供应商卡片](docs/screenshots/settings-usage.png)
 
 ## 展示
 
 - Tokens、请求数、输出 token、缓存命中率
 - 堆叠图：指标（Token / 请求）× 分组（供应商 / 模型 / 工作区）× 粒度（日 / 周）
 - 近一周、近一月、自定义范围
-- 底表跟随当前 By 分组
-- 窄屏改用全宽 Token 汇总、紧凑次要指标、可横向滚动的图例和 Token 占比卡片，替代桌面五列表格
+- 响应式总览统一使用全宽 Token 汇总、紧凑次要指标、堆叠图和跟随当前 By 分组的 Token 占比卡片
+- 窄屏下卡片收为单列，图例可横向滚动
 
 不查询订阅额度。
 
@@ -21,7 +21,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.7
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.8
 dsh web
 ```
 

@@ -1,4 +1,4 @@
-/** Scrollable By-group table: same four numbers as the summary tiles. */
+/** Responsive By-group cards: same four numbers as the summary tiles. */
 import type { BreakdownRow } from '../chart.ts';
 export interface UsageTableProps {
     rows: readonly BreakdownRow[];
