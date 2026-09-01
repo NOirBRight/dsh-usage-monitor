@@ -41,7 +41,8 @@
     "build": "tsc -p tsconfig.json && tsdown",
     "test": "vitest run",
     "pack:check": "node scripts/check-pack.mjs",
-    "check": "pnpm run build && pnpm run test && pnpm run pack:check"
+    "check": "pnpm run build && pnpm run test && pnpm run pack:check",
+    "prototype:usage": "vite src/client/prototypes/mobile-usage --host 127.0.0.1"
   },
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
