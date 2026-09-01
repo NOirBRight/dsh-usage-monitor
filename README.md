@@ -4,15 +4,15 @@ English | [中文](README.zh.md)
 
 Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It folds provider-reported token usage out of session logs and charts it in Settings.
 
-![Settings → Usage: tiles, stacked chart, and provider table](docs/screenshots/settings-usage.png)
+![Settings → Usage: tiles, stacked chart, and provider cards](docs/screenshots/settings-usage.png)
 
 ## What it shows
 
 - Tokens, requests, output tokens, and cache-hit rate
 - Stacked chart with Metric (token / request), By (provider / model / workspace), Group (day / week)
 - Week, month, and custom ranges
-- A breakdown table that follows the current By grouping
-- On narrow screens, a full-width token summary, compact secondary metrics, a scrollable legend, and token-share cards replace the desktop table
+- A responsive overview with a full-width token summary, compact secondary metrics, a stacked chart, and token-share cards that follow the current By grouping
+- On narrow screens, the cards collapse to one column and the chart legend scrolls horizontally
 
 Subscription quotas are not fetched.
 
@@ -21,7 +21,7 @@ Subscription quotas are not fetched.
 DeepSeek Harness 0.1.0-rc.6 or later is required. Install directly from GitHub:
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.7
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.8
 dsh web
 ```
 

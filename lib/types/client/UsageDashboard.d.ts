@@ -4,6 +4,7 @@ import type { UsageSnapshot } from '../client-contract.ts';
 import type { UsageLocaleKey } from './locales.ts';
 export interface UsageDashboardFace {
     t: (key: UsageLocaleKey) => string;
+    locale: string;
     queryUsage: (start: number, end: number) => Promise<UsageSnapshot>;
 }
 export type UsageDashboardProps = PropsRuntime<'settings.section'> & InjectFace<UsageDashboardFace>;

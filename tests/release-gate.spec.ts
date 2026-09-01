@@ -331,7 +331,7 @@ describe("release gate validators", () => {
         ["negotiator@1.0.0", { name: "negotiator", version: "1.0.0", tarball: "negotiator-1.0.0.tgz" }],
       ]),
     };
-    const consumer = buildConsumerPackageJson(graph as any, { name: "dsh-usage-monitor", version: "0.2.7", tarball: "plugin.tgz" });
+    const consumer = buildConsumerPackageJson(graph as any, { name: "dsh-usage-monitor", version: "0.2.8", tarball: "plugin.tgz" });
     expect(consumer.dependencies.negotiator).toContain("0.6.4");
     expect(consumer.overrides[host + ">negotiator"]).toContain("1.0.0");
   });

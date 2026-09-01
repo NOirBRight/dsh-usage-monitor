@@ -27,7 +27,8 @@ describe('UsageTable', () => {
       />,
     )
 
-    expect(markup).toContain('dsh-um-mobile-rows')
+    expect(markup).toContain('dsh-um-breakdown-cards')
+    expect(markup).not.toContain('dsh-um-desktop-table')
     expect(markup).toContain('Share of tokens')
     expect(markup).toContain('11.8B')
     expect(markup).toContain('68.8K Requests')
