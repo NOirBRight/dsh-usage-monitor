@@ -20,6 +20,7 @@ export declare const en: {
     output: string;
     outputHint: string;
     cachedInput: string;
+    shareOfTokens: string;
     unknown: string;
     other: string;
     empty: string;
@@ -55,6 +56,7 @@ export declare const zh: {
     output: string;
     outputHint: string;
     cachedInput: string;
+    shareOfTokens: string;
     unknown: string;
     other: string;
     empty: string;
