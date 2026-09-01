@@ -132,8 +132,13 @@ const USAGE_CSS = `
 .dsh-um * {
   box-sizing: border-box;
 }
-.dsh-um {
+.dsh-um-host {
   container-type: inline-size;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+.dsh-um {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
@@ -141,6 +146,9 @@ const USAGE_CSS = `
   min-height: 0;
   height: 100%;
   overflow: hidden;
+}
+.dsh-um-mobile-rows {
+  display: none;
 }
 .dsh-um-tiles {
   display: grid;
@@ -187,6 +195,191 @@ const USAGE_CSS = `
   position: relative;
   z-index: 2;
   overflow: visible;
+}
+@container (max-width: 559px) {
+  .dsh-um {
+    grid-template-rows: auto auto 250px auto;
+    gap: 12px;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+    padding-bottom: 4px;
+  }
+  .dsh-um-toolbar-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  .dsh-um-menu {
+    min-width: 0;
+  }
+  .dsh-um-menu > button {
+    justify-content: center;
+    width: 100% !important;
+    min-width: 0;
+  }
+  .dsh-um-dropdown-label {
+    display: none;
+  }
+  .dsh-um-dropdown-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dsh-um-range {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+    width: 100% !important;
+    margin-left: 0;
+  }
+  .dsh-um-range > button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dsh-um-tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .dsh-um-tile-primary {
+    grid-column: 1 / -1;
+    min-height: 100px;
+    padding: 16px !important;
+    color: white;
+    background: linear-gradient(135deg, #312e81 0%, #4f46e5 58%, #6d5eea 100%) !important;
+    box-shadow: 0 12px 28px rgba(67, 56, 202, 0.22) !important;
+    overflow: hidden;
+  }
+  .dsh-um-tile-primary .dsh-um-tile-label {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+  .dsh-um-tile-primary .dsh-um-tile-value {
+    margin-top: 8px !important;
+    font-size: 30px !important;
+    letter-spacing: -0.04em;
+  }
+  .dsh-um-tile-secondary {
+    padding: 10px !important;
+    overflow: hidden;
+  }
+  .dsh-um-tile-secondary .dsh-um-tile-label {
+    font-size: 9px !important;
+  }
+  .dsh-um-tile-secondary .dsh-um-tile-value {
+    font-size: 15px !important;
+  }
+  .dsh-um-chart,
+  .dsh-um-chart-shell {
+    height: 250px !important;
+  }
+  .dsh-um-chart-legend {
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+  .dsh-um-chart-legend::-webkit-scrollbar {
+    display: none;
+  }
+  .dsh-um-table {
+    height: auto;
+  }
+  .dsh-um-table > div {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .dsh-um-table-shell {
+    border: none !important;
+    background: transparent !important;
+  }
+  .dsh-um-desktop-table {
+    display: none !important;
+  }
+  .dsh-um-mobile-rows {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+  }
+  .dsh-um-mobile-list-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 2px 2px;
+    font-size: 12px;
+  }
+  .dsh-um-mobile-list-head > span {
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .dsh-um-mobile-row {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+    padding: 11px 12px 10px;
+    border: 1px solid var(--dsw-alias-border-l2);
+    border-radius: 12px;
+    background: var(--dsw-alias-bg-layer-1);
+  }
+  .dsh-um-mobile-row-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .dsh-um-mobile-row-name {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+  }
+  .dsh-um-mobile-row-name > i {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+  }
+  .dsh-um-mobile-row-name > strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dsh-um-mobile-row-value {
+    font-variant-numeric: tabular-nums;
+  }
+  .dsh-um-mobile-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px 10px;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .dsh-um-mobile-row-progress {
+    height: 3px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--dsw-alias-border-l2);
+  }
+  .dsh-um-mobile-row-progress > i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+  }
+  .dsh-um-mobile-empty {
+    min-height: 48px;
+    display: grid;
+    place-items: center;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 12px;
+  }
 }
 `
 
@@ -261,8 +454,8 @@ function UsageDropdown<T extends string>({
           whiteSpace: 'nowrap',
         }}
       >
-        <span>{label}</span>
-        <span style={{ color: 'var(--dsw-alias-label-primary)' }}>{valueLabel}</span>
+        <span className="dsh-um-dropdown-label">{label}</span>
+        <span className="dsh-um-dropdown-value" style={{ color: 'var(--dsw-alias-label-primary)' }}>{valueLabel}</span>
         <Chevron />
       </button>
       {open && (
@@ -443,8 +636,9 @@ export function UsageDashboard(props: UsageDashboardProps) {
       : (t?.('empty') ?? '')
 
   return (
-    <section className="dsh-um" style={pageStyle}>
+    <section className="dsh-um-host" style={pageStyle}>
       <style>{USAGE_CSS}</style>
+      <div className="dsh-um">
       <div className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
         <div className="dsh-um-toolbar-row">
         <UsageDropdown
@@ -532,21 +726,21 @@ export function UsageDashboard(props: UsageDashboardProps) {
       </div>
 
       <div className="dsh-um-tiles">
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('tokens')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.tokens, locale) : pending}</div>
+        <div className="dsh-um-tile-primary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('tokens')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatNumber(summary.tokens, locale) : pending}</div>
         </div>
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('requests')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.requests, locale) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('requests')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatNumber(summary.requests, locale) : pending}</div>
         </div>
-        <div style={tileStyle} title={t?.('outputHint')}>
-          <div style={tileLabelStyle}>{t?.('output')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.outputTokens, locale) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle} title={t?.('outputHint')}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('output')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatNumber(summary.outputTokens, locale) : pending}</div>
         </div>
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('cachedInput')}</div>
-          <div style={tileValueStyle}>{summary ? formatRate(summary.cachedInputRate, unknown) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('cachedInput')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatRate(summary.cachedInputRate, unknown) : pending}</div>
         </div>
       </div>
 
@@ -574,11 +768,13 @@ export function UsageDashboard(props: UsageDashboardProps) {
           requestsLabel={t?.('requests') ?? 'Requests'}
           outputLabel={t?.('output') ?? 'Output'}
           cachedLabel={t?.('cachedInput') ?? 'Cached input'}
+          shareLabel={t?.('shareOfTokens') ?? 'Share of tokens'}
           pending={load.status === 'ready' ? (t?.('empty') ?? '') : pending}
           unknown={unknown}
           locale={locale}
           colors={rowColors}
         />
+      </div>
       </div>
     </section>
   )

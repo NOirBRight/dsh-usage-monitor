@@ -1,7 +1,7 @@
 {
   "name": "dsh-usage-monitor",
   "description": "Session-log usage dashboard for DeepSeek Harness",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "publishConfig": {
     "access": "public"
   },
@@ -40,8 +40,11 @@
     "bundle": "tsdown",
     "build": "tsc -p tsconfig.json && tsdown",
     "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:parity": "node scripts/check-build-parity.mjs",
     "pack:check": "node scripts/check-pack.mjs",
-    "check": "pnpm run build && pnpm run test && pnpm run pack:check"
+    "check": "pnpm run test && pnpm run typecheck && pnpm run check:parity && pnpm run build && pnpm run pack:check",
+    "check:strict": "pnpm run test && pnpm run typecheck && PARITY_CHECK_HEAD=1 pnpm run check:parity && pnpm run build && pnpm run pack:check"
   },
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -81,6 +84,7 @@
     "@types/react-dom": "~18.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "semver": "^7.8.5",
     "tsdown": "^0.22.2",
     "typescript": "^5.9.3",
     "vitest": "^4.1.8"

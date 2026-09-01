@@ -7,10 +7,11 @@ export interface UsageTableProps {
     requestsLabel: string;
     outputLabel: string;
     cachedLabel: string;
+    shareLabel: string;
     pending: string;
     unknown: string;
     locale: string;
     colors: ReadonlyMap<string, string>;
 }
-export declare function UsageTable({ rows, nameLabel, tokensLabel, requestsLabel, outputLabel, cachedLabel, pending, unknown, locale, colors, }: UsageTableProps): import("react").JSX.Element;
+export declare function UsageTable({ rows, nameLabel, tokensLabel, requestsLabel, outputLabel, cachedLabel, shareLabel, pending, unknown, locale, colors, }: UsageTableProps): import("react").JSX.Element;
 //# sourceMappingURL=UsageTable.d.ts.map

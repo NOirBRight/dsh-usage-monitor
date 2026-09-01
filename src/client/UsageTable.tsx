@@ -10,6 +10,7 @@ export interface UsageTableProps {
   requestsLabel: string
   outputLabel: string
   cachedLabel: string
+  shareLabel: string
   pending: string
   unknown: string
   locale: string
@@ -70,6 +71,12 @@ const numStyle: CSSProperties = {
 const formatNumber = (value: number, locale: string): string =>
   new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
 
+const formatCompactNumber = (value: number, locale: string): string =>
+  new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 1,
+    notation: 'compact',
+  }).format(value)
+
 const formatRate = (value: number | null, unknown: string): string => {
   if (value === null) return unknown
   return `${(value * 100).toFixed(1)}%`
@@ -82,21 +89,24 @@ export function UsageTable({
   requestsLabel,
   outputLabel,
   cachedLabel,
+  shareLabel,
   pending,
   unknown,
   locale,
   colors,
 }: UsageTableProps) {
+  const totalTokens = rows.reduce((sum, row) => sum + row.tokens, 0)
+
   return (
-    <div style={shellStyle}>
-      <div style={headStyle}>
+    <div className="dsh-um-table-shell" style={shellStyle}>
+      <div className="dsh-um-desktop-table dsh-um-table-head" style={headStyle}>
         <span>{nameLabel}</span>
         <span style={{ textAlign: 'right' }}>{tokensLabel}</span>
         <span style={{ textAlign: 'right' }}>{requestsLabel}</span>
         <span style={{ textAlign: 'right' }}>{outputLabel}</span>
         <span style={{ textAlign: 'right' }}>{cachedLabel}</span>
       </div>
-      <div style={bodyStyle}>
+      <div className="dsh-um-desktop-table" style={bodyStyle}>
         {rows.length === 0 ? (
           <div style={{ height: 34, display: 'grid', placeItems: 'center', color: 'var(--dsw-alias-label-tertiary)', fontSize: 12 }}>
             {pending}
@@ -119,6 +129,41 @@ export function UsageTable({
             <span style={numStyle}>{formatRate(row.cachedInputRate, unknown)}</span>
           </div>
         ))}
+      </div>
+      <div className="dsh-um-mobile-rows">
+        <div className="dsh-um-mobile-list-head">
+          <strong>{nameLabel}</strong>
+          <span>{shareLabel}</span>
+        </div>
+        {rows.length === 0 ? (
+          <div className="dsh-um-mobile-empty">{pending}</div>
+        ) : rows.map(row => {
+          const share = totalTokens <= 0 ? 0 : Math.min(100, (row.tokens / totalTokens) * 100)
+          return (
+            <article key={row.key} className="dsh-um-mobile-row">
+              <div className="dsh-um-mobile-row-head">
+                <span className="dsh-um-mobile-row-name">
+                  <i style={{ background: colors.get(row.key) ?? 'var(--dsw-alias-label-tertiary)' }} />
+                  <strong>{row.label}</strong>
+                </span>
+                <strong className="dsh-um-mobile-row-value">
+                  {formatCompactNumber(row.tokens, locale)}
+                </strong>
+              </div>
+              <div className="dsh-um-mobile-row-meta">
+                <span>{formatCompactNumber(row.requests, locale)} {requestsLabel}</span>
+                <span>{formatCompactNumber(row.outputTokens, locale)} {outputLabel}</span>
+                <span>{formatRate(row.cachedInputRate, unknown)} {cachedLabel}</span>
+              </div>
+              <div className="dsh-um-mobile-row-progress" aria-label={`${tokensLabel}: ${share.toFixed(1)}%`}>
+                <i style={{
+                  width: `${share}%`,
+                  background: colors.get(row.key) ?? 'var(--dsw-alias-label-tertiary)',
+                }} />
+              </div>
+            </article>
+          )
+        })}
       </div>
     </div>
   )

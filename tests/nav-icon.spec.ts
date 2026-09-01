@@ -21,6 +21,17 @@ class FakeEl {
     return this.attrs.get(name) ?? null
   }
 
+  getAttributeNames(): string[] {
+    return [...this.attrs.keys()]
+  }
+
+  throwOnRemove = false
+
+  removeAttribute(name: string): void {
+    if (this.throwOnRemove) throw new Error('remove failed')
+    this.attrs.delete(name)
+  }
+
   append(...nodes: FakeEl[]): void {
     for (const node of nodes) {
       node.parentElement = this
@@ -66,13 +77,17 @@ class FakeObserver {
   static instances: FakeObserver[] = []
   callback: MutationCallback
   disconnected = false
+  throwOnDisconnect = false
   takeCount = 0
   constructor(callback: MutationCallback) {
     this.callback = callback
     FakeObserver.instances.push(this)
   }
   observe(): void { this.disconnected = false }
-  disconnect(): void { this.disconnected = true }
+  disconnect(): void {
+    if (this.throwOnDisconnect) throw new Error('disconnect failed')
+    this.disconnected = true
+  }
   takeRecords(): MutationRecord[] {
     this.takeCount++
     return []
@@ -180,6 +195,24 @@ describe('installUsageNavIcon', () => {
     expect(button.children[1]?.getAttribute('data-dsh-um-icon')).toBe('usage')
   })
 
+  it('ignores a queued RAF callback after disposal', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    const replacementNav = labeledButton('用量')
+    const replacementButton = replacementNav.children[0]!
+    const buttons = [button]
+    stubDom(buttons)
+    vi.stubGlobal('cancelAnimationFrame', () => {})
+    const stop = installUsageNavIcon()
+    const observer = FakeObserver.instances[0]!
+    observer.deliver([record(nav)])
+    expect(rafs).toHaveLength(1)
+    stop()
+    buttons[0] = replacementButton
+    flush()
+    expect(replacementButton.children[1]!.getAttribute('data-dsh-um-icon')).toBeNull()
+  })
+
   it('disconnects and cancels a pending frame on dispose', () => {
     stubDom()
     const stop = installUsageNavIcon()
@@ -188,5 +221,116 @@ describe('installUsageNavIcon', () => {
     stop()
     expect(FakeObserver.instances[0]?.disconnected).toBe(true)
     flush()
+  })
+
+  it('patches only a unique owner and restores the complete SVG snapshot', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    const svg = button.children[1]!
+    svg.setAttribute('class', 'gear')
+    svg.setAttribute('viewBox', '1 2 3 4')
+    svg.setAttribute('fill', 'currentColor')
+    svg.setAttribute('data-dsh-um-icon', 'legacy')
+    svg.innerHTML = '<path/>'
+    stubDom([button])
+    const stop = installUsageNavIcon()
+    expect(svg.getAttribute('data-dsh-um-icon')).toBe('usage')
+    expect(svg.innerHTML).not.toBe('<path/>')
+    const observer = FakeObserver.instances[0]!
+
+    const duplicate = labeledButton('用量')
+    stubDom([button, duplicate.children[0]!])
+    observer.deliver([record(duplicate)])
+    flush()
+    expect(svg.getAttribute('data-dsh-um-icon')).toBe('legacy')
+    expect(svg.getAttribute('viewBox')).toBe('1 2 3 4')
+    expect(svg.getAttribute('fill')).toBe('currentColor')
+    expect(svg.getAttribute('class')).toBe('gear')
+    expect(svg.innerHTML).toBe('<path/>')
+    expect(duplicate.children[0]!.children[1]!.getAttribute('data-dsh-um-icon')).toBeNull()
+    stop()
+  })
+
+  it('rolls back a previous owner before patching its replacement', () => {
+    const firstNav = labeledButton('Usage')
+    const firstButton = firstNav.children[0]!
+    const firstSvg = firstButton.children[1]!
+    firstSvg.innerHTML = '<path/>'
+    const replacementNav = labeledButton('用量')
+    const replacementButton = replacementNav.children[0]!
+    stubDom([firstButton])
+    const stop = installUsageNavIcon()
+    const observer = FakeObserver.instances[0]!
+    stubDom([replacementButton])
+    observer.deliver([record(replacementNav)])
+    flush()
+    expect(firstSvg.getAttribute('data-dsh-um-icon')).toBeNull()
+    expect(firstSvg.innerHTML).toBe('<path/>')
+    expect(replacementButton.children[1]!.getAttribute('data-dsh-um-icon')).toBe('usage')
+    stop()
+    expect(replacementButton.children[1]!.getAttribute('data-dsh-um-icon')).toBeNull()
+  })
+
+  it('counts a labeled button without an SVG as an owner', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    const duplicate = labeledButton('用量')
+    duplicate.children[0]!.children.pop()
+    stubDom([button])
+    const stop = installUsageNavIcon()
+    const observer = FakeObserver.instances[0]!
+    stubDom([button, duplicate.children[0]!])
+    observer.deliver([record(duplicate)])
+    flush()
+    expect(button.children[1]!.getAttribute('data-dsh-um-icon')).toBeNull()
+    stop()
+  })
+
+  it('retains snapshots when a restore fails and retries on the next mutation', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    const svg = button.children[1]!
+    svg.innerHTML = '<path/>'
+    const duplicateNav = labeledButton('用量')
+    const duplicateButton = duplicateNav.children[0]!
+    const buttons = [button]
+    stubDom(buttons)
+    const stop = installUsageNavIcon()
+    const observer = FakeObserver.instances[0]!
+    svg.throwOnRemove = true
+    buttons.push(duplicateButton)
+    observer.deliver([record(duplicateNav)])
+    expect(() => flush()).toThrow('remove failed')
+    svg.throwOnRemove = false
+    observer.deliver([record(duplicateNav)])
+    flush()
+    expect(svg.getAttribute('data-dsh-um-icon')).toBeNull()
+    expect(svg.innerHTML).toBe('<path/>')
+    stop()
+  })
+
+  it('leaves the page untouched when observer features are unavailable', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    stubDom([button])
+    vi.stubGlobal('MutationObserver', undefined)
+    const stop = installUsageNavIcon()
+    expect(button.children[1]!.getAttribute('data-dsh-um-icon')).toBeNull()
+    stop()
+  })
+
+  it('reports independent cleanup failures as AggregateError', () => {
+    const nav = labeledButton('Usage')
+    const button = nav.children[0]!
+    const svg = button.children[1]!
+    stubDom([button])
+    const stop = installUsageNavIcon()
+    const observer = FakeObserver.instances[0]!
+    observer.throwOnDisconnect = true
+    svg.throwOnRemove = true
+    expect(() => stop()).toThrow(AggregateError)
+    observer.throwOnDisconnect = false
+    svg.throwOnRemove = false
+    expect(() => stop()).not.toThrow()
   })
 })

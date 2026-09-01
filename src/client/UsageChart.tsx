@@ -278,7 +278,7 @@ export function UsageChart({
     : undefined
 
   return (
-    <div style={shellStyle}>
+    <div className="dsh-um-chart-shell" style={shellStyle}>
       <div
         ref={hostRef}
         style={{
@@ -524,6 +524,7 @@ export function UsageChart({
       </div>
       {series.length > 0 && (
         <div
+          className="dsh-um-chart-legend"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
