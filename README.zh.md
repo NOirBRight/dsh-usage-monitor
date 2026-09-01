@@ -4,14 +4,15 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的用量看板。从会话日志里折出供应商上报的 token usage，在设置页画图。
 
-![设置 → 用量：汇总格、堆叠图、供应商表](docs/screenshots/settings-usage.png)
+![设置 → 用量：汇总格、堆叠图、供应商卡片](docs/screenshots/settings-usage.png)
 
 ## 展示
 
 - Tokens、请求数、输出 token、缓存命中率
 - 堆叠图：指标（Token / 请求）× 分组（供应商 / 模型 / 工作区）× 粒度（日 / 周）
 - 近一周、近一月、自定义范围
-- 底表跟随当前 By 分组
+- 响应式总览统一使用全宽 Token 汇总、紧凑次要指标、堆叠图和跟随当前 By 分组的 Token 占比卡片
+- 窄屏下卡片收为单列，图例可横向滚动
 
 不查询订阅额度。
 
@@ -20,7 +21,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.4
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.9
 dsh web
 ```
 
@@ -32,8 +33,48 @@ dsh web
 
 走 `ctx.sessionQuery`（含进行中和已落盘会话）。不直接读 `session.jsonl.zstd`，也不读社区插件留下的缓存。
 
-Host 启动时只打开插件自有的 SQLite sidecar，不列举或读取会话历史；第一次查询用量时才开始投影。每次查询返回前，会核对所有可能相关且缺失或已变更的会话；相关源日志或数据库出错时查询失败，不返回陈旧或不完整数据。原始 JSONL 按行即时折叠；后续批次中断时，已经提交的投影批次仍然保留。
+## 发布
 
-Sidecar 使用 WAL、`synchronous=NORMAL` 和有界 busy timeout。源日志读取和 SQLite 事务默认分别限制为 1 个和 8 个会话。经过校验的插件配置提供 `projectionWarmup: on-demand`、`projectionReadConcurrency` 和 `projectionTransactionBatchSize`，默认值分别为 `on-demand`、`1`、`8`。Loader 条目可省略 `config` 以采用这些默认值；显式非法配置会在插件加载时失败。
+`pnpm run check` 按以下顺序运行完整门禁：单测、TypeScript 类型检查、确定性构建一致性校验（干净临时目录构建 vs 跟踪的 `lib/`）、构建，以及真实 `npm pack` + 不可变固件校验 + 离线安装 + Host/前端 bundle 导入冒烟。打包校验只读取仓库自有的 alpha.1 manifest/tarballs，验证官方 tag/commit 与 registry 完整性，保留按版本区分的父边，包括重复版本；隔离的全新 pnpm consumer 使用无效 registry、offline/no-scripts/no-audit/no-fund、空 `NODE_PATH` 和按父包作用域的本地 tarball 覆盖，不使用 `--legacy-peer-deps` 或 omit/force 绕过。Owner archive 只写入带前缀的临时目录；仓库中的 .tgz 文件仅限 86 个 alpha.1 固件。校验不会在比对前重写工作区 `lib/`，陈旧、缺失或手改的产物都会失败。
 
-运行 `pnpm run benchmark:projection` 可执行 1,346 个合成会话、83,883 个合成 step 的负载，输出冷/热查询耗时、堆内存变化、源读取次数和读取并发峰值，不读取生产数据。保证与预期指标见[投影决策](docs/decisions/0001-bounded-on-demand-projection.md)。
+打 tag 前跑 `pnpm run check:strict`（顺序同样是单测、类型检查、构建一致性校验、构建、打包，并设置 `PARITY_CHECK_HEAD=1`；若已提交的 `lib/` 与源码构建不一致则失败——即 v0.2.5 漂移防护）。以 `src` 为准，提交重建后的 `lib/`。
+
+设置 → 用量的导航图标是 `ctx.effect` + `MutationObserver` 的 DOM 补丁；`ctx.effect` 释放与接受的 alpha.1 DOM 风险见 `src/client/nav-icon.ts`。
+
+
+## 正式版安装（Latest）
+
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. 正式成品只支持 DeepSeek Harness 0.1.2-alpha.1；发布包只包含构建后的 Host/Client 产物，不包含兄弟仓库源码、本机路径或 link:/workspace: 依赖。
+
+Latest 安装命令（永久不含版本号）：
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+~~~
+
+固定版本安装命令：
+
+~~~sh
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/dsh-usage-monitor.tgz
+~~~
+
+更新、卸载与验证：
+
+~~~sh
+# 更新到最新 Release
+dsh plugin --profile web add --force \
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor.tgz
+# 验证加载与版本
+dsh plugin --profile web list
+dsh plugin --profile web doctor
+# 只卸载本插件
+dsh plugin --profile web remove dsh-usage-monitor
+~~~
+
+配置入口：Web 使用「设置」中的本插件页面；Host-only 插件使用 profile 的 dsh.profile.bundles 配置。先复制本 README 的最小 YAML/JSON 示例，再填写凭据或后端地址。
+
+回滚：重新执行固定版本 v0.2.9 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
+
+Release 与完整性：[v0.2.9](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.9) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.9/SHA256SUMS)。

@@ -28,6 +28,7 @@ import {
 
 export interface UsageDashboardFace {
   t: (key: UsageLocaleKey) => string
+  locale: string
   queryUsage: (start: number, end: number) => Promise<UsageSnapshot>
 }
 
@@ -67,24 +68,38 @@ const segmentStyle: CSSProperties = {
   boxShadow: 'inset 0 0 0 1px var(--dsw-alias-border-l2)',
 }
 
-const pillStyle = (active: boolean): CSSProperties => ({
-  display: 'inline-flex',
+const rangeOptionStyle: CSSProperties = {
+  appearance: 'none',
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   height: '100%',
   margin: 0,
   border: 'none',
+  padding: 0,
+  background: 'transparent',
+  cursor: 'pointer',
+}
+
+const rangePillStyle = (active: boolean): CSSProperties => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  border: '1px solid',
+  borderColor: active ? 'var(--dsw-alias-border-l2)' : 'transparent',
   borderRadius: 999,
   padding: '0 8px',
   background: active ? 'var(--dsw-alias-bg-module-platform)' : 'transparent',
   color: active
     ? 'var(--dsw-alias-label-primary)'
     : 'var(--dsw-alias-label-secondary)',
-  boxShadow: active ? '0 1px 2px rgba(15, 23, 42, 0.08)' : 'none',
+  boxShadow: active ? '0 1px 3px rgba(15, 23, 42, 0.12)' : 'none',
+  boxSizing: 'border-box',
   fontSize: 11,
   fontWeight: 650,
   lineHeight: 1,
-  cursor: 'pointer',
   whiteSpace: 'nowrap',
 })
 
@@ -132,20 +147,57 @@ const USAGE_CSS = `
 .dsh-um * {
   box-sizing: border-box;
 }
-.dsh-um {
+.dsh-um-host {
   container-type: inline-size;
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
   min-width: 0;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
+}
+.dsh-um {
+  display: grid;
+  grid-template-rows: auto auto 280px auto;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+  padding-bottom: 4px;
 }
 .dsh-um-tiles {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) minmax(0, 1.05fr);
   gap: 8px;
+}
+.dsh-um-tile-primary {
+  grid-column: 1 / -1;
+  min-height: 108px;
+  padding: 16px !important;
+  overflow: hidden;
+  color: white;
+  background: linear-gradient(135deg, #312e81 0%, #4f46e5 58%, #6d5eea 100%) !important;
+  box-shadow: 0 12px 28px rgba(67, 56, 202, 0.22) !important;
+}
+.dsh-um-tile-primary .dsh-um-tile-label {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+.dsh-um-tile-primary .dsh-um-tile-value {
+  margin-top: 8px !important;
+  font-size: 30px !important;
+  letter-spacing: -0.04em;
+}
+.dsh-um-tile-secondary {
+  min-width: 0;
+  padding: 10px !important;
+  overflow: hidden;
+}
+.dsh-um-tile-secondary .dsh-um-tile-label {
+  overflow: hidden;
+  font-size: 9px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dsh-um-tile-secondary .dsh-um-tile-value {
+  font-size: 17px !important;
 }
 .dsh-um-toolbar {
   display: flex;
@@ -169,29 +221,221 @@ const USAGE_CSS = `
 .dsh-um-range {
   flex: 0 0 auto;
   width: max-content;
-  height: 32px;
+  height: 36px !important;
   margin-left: auto;
+  padding: 4px !important;
+  gap: 4px;
+  overflow: hidden;
 }
-@container (min-width: 560px) {
-  .dsh-um-tiles {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.dsh-um-range > .dsh-um-range-option {
+  appearance: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 72px;
+  height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  outline: none;
+}
+.dsh-um-range-pill {
+  width: 100%;
+  height: 28px;
+  min-width: 0;
+  border-radius: 999px !important;
+}
+.dsh-um-range > .dsh-um-range-option:focus-visible .dsh-um-range-pill {
+  box-shadow: inset 0 0 0 2px var(--dsw-alias-label-primary);
+}
+.dsh-um-custom-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-width: 0;
+}
+.dsh-um-date {
+  padding-inline: 14px 12px !important;
+}
+.dsh-um-date::-webkit-calendar-picker-indicator {
+  margin-inline-start: 8px;
+  margin-inline-end: 2px;
 }
 .dsh-um-chart,
 .dsh-um-table {
   min-height: 0;
   min-width: 0;
-  height: 100%;
+  height: auto;
 }
 .dsh-um-chart {
   position: relative;
   z-index: 2;
   overflow: visible;
 }
+.dsh-um-chart,
+.dsh-um-chart-shell {
+  height: 280px !important;
+}
+.dsh-um-breakdown-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.dsh-um-breakdown-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px 2px;
+  font-size: 12px;
+}
+.dsh-um-breakdown-head > span {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.dsh-um-breakdown-card {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 11px 12px 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-layer-1);
+}
+.dsh-um-breakdown-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.dsh-um-breakdown-card-name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+}
+.dsh-um-breakdown-card-name > i {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+.dsh-um-breakdown-card-name > strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dsh-um-breakdown-card-value {
+  font-variant-numeric: tabular-nums;
+}
+.dsh-um-breakdown-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.dsh-um-breakdown-card-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--dsw-alias-border-l2);
+}
+.dsh-um-breakdown-card-progress > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.dsh-um-breakdown-empty {
+  grid-column: 1 / -1;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+}
+@container (max-width: 559px) {
+  .dsh-um {
+    grid-template-rows: auto auto 250px auto;
+  }
+  .dsh-um-toolbar-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  .dsh-um-menu {
+    min-width: 0;
+  }
+  .dsh-um-menu > button {
+    justify-content: center;
+    width: 100% !important;
+    min-width: 0;
+  }
+  .dsh-um-dropdown-label {
+    display: none;
+  }
+  .dsh-um-dropdown-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dsh-um-range {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+    width: 100% !important;
+    margin-left: 0;
+  }
+  .dsh-um-range > .dsh-um-range-option {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .dsh-um-range-pill {
+    padding-inline: 4px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dsh-um-tile-secondary .dsh-um-tile-value {
+    font-size: 15px !important;
+  }
+  .dsh-um-chart,
+  .dsh-um-chart-shell {
+    height: 250px !important;
+  }
+  .dsh-um-chart-legend {
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+  .dsh-um-chart-legend::-webkit-scrollbar {
+    display: none;
+  }
+  .dsh-um-breakdown-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 `
 
 const formatNumber = (value: number, locale: string): string =>
   new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
+
+const formatCompactNumber = (value: number, locale: string): string =>
+  new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 1,
+    notation: 'compact',
+  }).format(value)
 
 const formatRate = (value: number | null, unknown: string): string => {
   if (value === null) return unknown
@@ -261,8 +505,8 @@ function UsageDropdown<T extends string>({
           whiteSpace: 'nowrap',
         }}
       >
-        <span>{label}</span>
-        <span style={{ color: 'var(--dsw-alias-label-primary)' }}>{valueLabel}</span>
+        <span className="dsh-um-dropdown-label">{label}</span>
+        <span className="dsh-um-dropdown-value" style={{ color: 'var(--dsw-alias-label-primary)' }}>{valueLabel}</span>
         <Chevron />
       </button>
       {open && (
@@ -322,7 +566,7 @@ function UsageDropdown<T extends string>({
 export function UsageDashboard(props: UsageDashboardProps) {
   const t = props.t
   const queryUsage = props.queryUsage
-  const locale = typeof navigator === 'undefined' ? 'en' : navigator.language
+  const locale = props.locale
   const pending = t?.('pending') ?? '—'
   const unknown = t?.('unknown') ?? 'Unknown'
   const [metric, setMetric] = useState<UsageMetric>('token')
@@ -443,110 +687,119 @@ export function UsageDashboard(props: UsageDashboardProps) {
       : (t?.('empty') ?? '')
 
   return (
-    <section className="dsh-um" style={pageStyle}>
+    <section className="dsh-um-host" style={pageStyle}>
       <style>{USAGE_CSS}</style>
-      <div className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
-        <div className="dsh-um-toolbar-row">
-        <UsageDropdown
-          label={t?.('metric') ?? 'Metric'}
-          value={metric}
-          valueLabel={metric === 'token' ? (t?.('token') ?? 'Token') : (t?.('request') ?? 'Request')}
-          open={openMenu === 'metric'}
-          options={[
-            { value: 'token', label: t?.('token') ?? 'Token' },
-            { value: 'request', label: t?.('request') ?? 'Request' },
-          ]}
-          onToggle={() => setOpenMenu(current => current === 'metric' ? null : 'metric')}
-          onSelect={value => {
-            setMetric(value)
-            setOpenMenu(null)
-          }}
-        />
-        <UsageDropdown
-          label={t?.('by') ?? 'By'}
-          value={breakdown}
-          valueLabel={t?.(breakdown) ?? breakdown}
-          open={openMenu === 'by'}
-          options={[
-            { value: 'provider', label: t?.('provider') ?? 'Provider' },
-            { value: 'model', label: t?.('model') ?? 'Model' },
-            { value: 'workspace', label: t?.('workspace') ?? 'Workspace' },
-          ]}
-          onToggle={() => setOpenMenu(current => current === 'by' ? null : 'by')}
-          onSelect={value => {
-            setBreakdown(value)
-            setOpenMenu(null)
-          }}
-        />
-        <UsageDropdown
-          label={t?.('group') ?? 'Group'}
-          value={group}
-          valueLabel={group === 'week' ? (t?.('week') ?? 'Week') : (t?.('day') ?? 'Day')}
-          open={openMenu === 'group'}
-          options={[
-            { value: 'day', label: t?.('day') ?? 'Day' },
-            { value: 'week', label: t?.('week') ?? 'Week' },
-          ]}
-          onToggle={() => setOpenMenu(current => current === 'group' ? null : 'group')}
-          onSelect={value => {
-            setGroup(value)
-            setOpenMenu(null)
-          }}
-        />
-        <div className="dsh-um-range" style={segmentStyle}>
-          {([
-            { value: '7d' as const, label: t?.('rangeWeek') ?? 'Week' },
-            { value: '1m' as const, label: t?.('rangeMonth') ?? 'Month' },
-            { value: 'custom' as const, label: t?.('custom') ?? 'Custom' },
-          ]).map(option => (
-            <button
-              key={option.value}
-              type="button"
-              aria-pressed={range === option.value}
-              style={pillStyle(range === option.value)}
-              onClick={() => setRange(option.value)}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        </div>
-        {range === 'custom' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, minWidth: 0 }}>
-            <input
-              type="date"
-              aria-label={t?.('customStart') ?? 'Start date'}
-              value={toDateInput(custom.start)}
-              onChange={event => setCustom(current => ({ ...current, start: fromDateInput(event.target.value, current.start) }))}
-              style={{ ...dateStyle, width: '100%', minWidth: 0 }}
+      <div className="dsh-um">
+        <div className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
+          <div className="dsh-um-toolbar-row">
+            <UsageDropdown
+              label={t?.('metric') ?? 'Metric'}
+              value={metric}
+              valueLabel={metric === 'token' ? (t?.('token') ?? 'Token') : (t?.('request') ?? 'Request')}
+              open={openMenu === 'metric'}
+              options={[
+                { value: 'token', label: t?.('token') ?? 'Token' },
+                { value: 'request', label: t?.('request') ?? 'Request' },
+              ]}
+              onToggle={() => setOpenMenu(current => current === 'metric' ? null : 'metric')}
+              onSelect={value => {
+                setMetric(value)
+                setOpenMenu(null)
+              }}
             />
-            <input
-              type="date"
-              aria-label={t?.('customEnd') ?? 'End date'}
-              value={toDateInput(custom.end)}
-              onChange={event => setCustom(current => ({ ...current, end: fromDateInput(event.target.value, current.end) }))}
-              style={{ ...dateStyle, width: '100%', minWidth: 0 }}
+            <UsageDropdown
+              label={t?.('by') ?? 'By'}
+              value={breakdown}
+              valueLabel={t?.(breakdown) ?? breakdown}
+              open={openMenu === 'by'}
+              options={[
+                { value: 'provider', label: t?.('provider') ?? 'Provider' },
+                { value: 'model', label: t?.('model') ?? 'Model' },
+                { value: 'workspace', label: t?.('workspace') ?? 'Workspace' },
+              ]}
+              onToggle={() => setOpenMenu(current => current === 'by' ? null : 'by')}
+              onSelect={value => {
+                setBreakdown(value)
+                setOpenMenu(null)
+              }}
             />
+            <UsageDropdown
+              label={t?.('group') ?? 'Group'}
+              value={group}
+              valueLabel={group === 'week' ? (t?.('week') ?? 'Week') : (t?.('day') ?? 'Day')}
+              open={openMenu === 'group'}
+              options={[
+                { value: 'day', label: t?.('day') ?? 'Day' },
+                { value: 'week', label: t?.('week') ?? 'Week' },
+              ]}
+              onToggle={() => setOpenMenu(current => current === 'group' ? null : 'group')}
+              onSelect={value => {
+                setGroup(value)
+                setOpenMenu(null)
+              }}
+            />
+            <div className="dsh-um-range" style={segmentStyle}>
+              {([
+                { value: '7d' as const, label: t?.('rangeWeek') ?? 'Week' },
+                { value: '1m' as const, label: t?.('rangeMonth') ?? 'Month' },
+                { value: 'custom' as const, label: t?.('custom') ?? 'Custom' },
+              ]).map(option => (
+                <button
+                  key={option.value}
+                  className="dsh-um-range-option"
+                  type="button"
+                  aria-pressed={range === option.value}
+                  style={rangeOptionStyle}
+                  onClick={() => setRange(option.value)}
+                >
+                  <span
+                    className="dsh-um-range-pill"
+                    style={rangePillStyle(range === option.value)}
+                  >
+                    {option.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+          {range === 'custom' && (
+            <div className="dsh-um-custom-dates">
+              <input
+                className="dsh-um-date"
+                type="date"
+                aria-label={t?.('customStart') ?? 'Start date'}
+                value={toDateInput(custom.start)}
+                onChange={event => setCustom(current => ({ ...current, start: fromDateInput(event.target.value, current.start) }))}
+                style={{ ...dateStyle, width: '100%', minWidth: 0 }}
+              />
+              <input
+                className="dsh-um-date"
+                type="date"
+                aria-label={t?.('customEnd') ?? 'End date'}
+                value={toDateInput(custom.end)}
+                onChange={event => setCustom(current => ({ ...current, end: fromDateInput(event.target.value, current.end) }))}
+                style={{ ...dateStyle, width: '100%', minWidth: 0 }}
+              />
+            </div>
+          )}
+        </div>
 
       <div className="dsh-um-tiles">
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('tokens')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.tokens, locale) : pending}</div>
+        <div className="dsh-um-tile-primary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('tokens')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatNumber(summary.tokens, locale) : pending}</div>
         </div>
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('requests')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.requests, locale) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('requests')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatCompactNumber(summary.requests, locale) : pending}</div>
         </div>
-        <div style={tileStyle} title={t?.('outputHint')}>
-          <div style={tileLabelStyle}>{t?.('output')}</div>
-          <div style={tileValueStyle}>{summary ? formatNumber(summary.outputTokens, locale) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle} title={t?.('outputHint')}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('output')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatCompactNumber(summary.outputTokens, locale) : pending}</div>
         </div>
-        <div style={tileStyle}>
-          <div style={tileLabelStyle}>{t?.('cachedInput')}</div>
-          <div style={tileValueStyle}>{summary ? formatRate(summary.cachedInputRate, unknown) : pending}</div>
+        <div className="dsh-um-tile-secondary" style={tileStyle}>
+          <div className="dsh-um-tile-label" style={tileLabelStyle}>{t?.('cachedInput')}</div>
+          <div className="dsh-um-tile-value" style={tileValueStyle}>{summary ? formatRate(summary.cachedInputRate, unknown) : pending}</div>
         </div>
       </div>
 
@@ -574,11 +827,13 @@ export function UsageDashboard(props: UsageDashboardProps) {
           requestsLabel={t?.('requests') ?? 'Requests'}
           outputLabel={t?.('output') ?? 'Output'}
           cachedLabel={t?.('cachedInput') ?? 'Cached input'}
+          shareLabel={t?.('shareOfTokens') ?? 'Share of tokens'}
           pending={load.status === 'ready' ? (t?.('empty') ?? '') : pending}
           unknown={unknown}
           locale={locale}
           colors={rowColors}
         />
+      </div>
       </div>
     </section>
   )

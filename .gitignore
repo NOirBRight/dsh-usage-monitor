@@ -4,6 +4,7 @@ lib/types/**/*.d.ts.map
 node_modules/
 .pnpm-store/
 *.tgz
+!fixtures/alpha1/tarballs/*.tgz
 *.tsbuildinfo
 coverage/
 *.log

@@ -1,6 +1,6 @@
 /** Browser half: Usage page inside Settings. */
 
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type { ConnectionHandle } from '@deepseek-ai/dsh-client-connection/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
@@ -53,7 +53,11 @@ export function apply(ctx: ClientContext): void {
     id: 'usage-monitor',
     order: 15,
     label: () => t('nav'),
-    inject: (): UsageDashboardFace => ({ t, queryUsage }),
+    inject: (): UsageDashboardFace => ({
+      t,
+      locale: ctx.locale.getLocale().active,
+      queryUsage,
+    }),
   }, UsageDashboard))
 
   ctx.effect(installUsageNavIcon, 'dsh-usage-monitor: settings nav icon')

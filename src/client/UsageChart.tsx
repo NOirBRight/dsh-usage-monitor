@@ -72,6 +72,8 @@ const formatNumber = (value: number, locale: string): string =>
 
 const formatAxisNumber = (value: number, locale: string): string => {
   const abs = Math.abs(value)
+  if (abs >= 1_000_000_000_000) return `${compact(value / 1_000_000_000_000)}T`
+  if (abs >= 1_000_000_000) return `${compact(value / 1_000_000_000)}B`
   if (abs >= 1_000_000) return `${compact(value / 1_000_000)}M`
   if (abs >= 1_000) return `${compact(value / 1_000)}K`
   return formatNumber(value, locale)
@@ -278,7 +280,7 @@ export function UsageChart({
     : undefined
 
   return (
-    <div style={shellStyle}>
+    <div className="dsh-um-chart-shell" style={shellStyle}>
       <div
         ref={hostRef}
         style={{
@@ -293,6 +295,7 @@ export function UsageChart({
       <div style={{
         display: 'grid',
         gridTemplateColumns: '40px minmax(0, 1fr)',
+        columnGap: 6,
         gridTemplateRows: 'minmax(0, 1fr) 24px',
         minHeight: 0,
         minWidth: 0,
@@ -300,11 +303,12 @@ export function UsageChart({
         padding: '10px 10px 6px 6px',
       }}>
         <div
+          className="dsh-um-chart-axis-y"
           style={{
             display: 'grid',
             gridTemplateRows: 'auto 1fr auto',
             minHeight: 0,
-            padding: '0 4px 0 0',
+            padding: 0,
             fontSize: 10,
             fontWeight: 650,
             color: 'var(--dsw-alias-label-tertiary)',
@@ -524,6 +528,7 @@ export function UsageChart({
       </div>
       {series.length > 0 && (
         <div
+          className="dsh-um-chart-legend"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
