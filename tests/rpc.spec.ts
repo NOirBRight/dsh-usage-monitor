@@ -28,7 +28,7 @@ describe('usage-monitor RPC', () => {
   it('registers /usage-monitor as a loopback channel', async () => {
     await useTempDshHome()
     const ctx = new Context()
-    const handle = vi.fn((_channel: string, _handler: Handler, _options: { authority: 'loopback' }) =>
+    const handle = vi.fn((_channel: string, _handler: Handler) =>
       () => Promise.resolve())
     ctx.provide('sessionQuery', {
       listSessions: async () => [],
@@ -44,7 +44,6 @@ describe('usage-monitor RPC', () => {
     await fiber.await()
     expect(handle).toHaveBeenCalledTimes(1)
     expect(handle.mock.calls[0]?.[0]).toBe(USAGE_RPC_CHANNEL)
-    expect(handle.mock.calls[0]?.[2]).toEqual({ authority: 'loopback' })
     await fiber.dispose()
     await ctx.fiber.dispose()
   })

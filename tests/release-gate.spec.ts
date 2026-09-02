@@ -148,7 +148,7 @@ describe("release gate validators", () => {
   });
 
   it("rejects hybrid official and registry provenance records", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha1/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
     const registry = structuredClone(manifest);
     const registryEntry = registry.packages.find((entry: any) => entry.kind === "registry");
     registryEntry.source = "registry-source";
@@ -160,12 +160,12 @@ describe("release gate validators", () => {
   });
 
   it("rejects a tampered fixture archive", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha1/manifest.json", import.meta.url), "utf8"));
-    const entry = manifest.packages.find((candidate: any) => candidate.name === "negotiator" && candidate.version === "1.0.0");
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const entry = manifest.packages.find((candidate: any) => candidate.kind === "registry");
     const temporaryRoot = await mkdtemp("/tmp/dsh-usage-monitor-tamper-");
     const archive = temporaryRoot + "/" + entry.tarball;
     try {
-      await copyFile(new URL("../fixtures/alpha1/tarballs/" + entry.tarball, import.meta.url), archive);
+      await copyFile(new URL("../fixtures/alpha4/tarballs/" + entry.tarball, import.meta.url), archive);
       const bytes = await readFile(archive);
       bytes[bytes.length - 1] ^= 1;
       await writeFile(archive, bytes);
@@ -177,19 +177,19 @@ describe("release gate validators", () => {
   });
 
   it("rejects a missing fixture tarball", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha1/manifest.json", import.meta.url), "utf8"));
-    const files = manifest.packages.map((entry: any) => entry.tarball).filter((file: string) => file !== "negotiator-1.0.0.tgz");
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const files = manifest.packages.map((entry: any) => entry.tarball).slice(1);
     expect(() => assertFixtureFiles(manifest, files)).toThrow(/missing/);
   });
 
   it("rejects an archive with the wrong package version", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha1/manifest.json", import.meta.url), "utf8"));
-    const entry = manifest.packages.find((candidate: any) => candidate.name === "negotiator" && candidate.version === "1.0.0");
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const entry = manifest.packages.find((candidate: any) => candidate.kind === "registry");
     expect(() => assertArchiveRecord(entry, { bytes: entry.bytes, sha256: entry.sha256, integrity: entry.integrity }, { name: entry.name, version: "0.0.0" })).toThrow(/version mismatch/);
   });
 
   it("rejects an unlisted fixture tarball", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha1/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
     const files = manifest.packages.map((entry: any) => entry.tarball);
     expect(() => assertFixtureFiles(manifest, [...files, "unlisted.tgz"])).toThrow(/ignored/);
   });
@@ -229,10 +229,10 @@ describe("release gate validators", () => {
     const temporaryRoot = await mkdtemp(join(tmpdir(), "dsh-usage-monitor-fixture-link-"));
     const linkedDirectory = temporaryRoot + "/tarballs";
     try {
-      await symlink(fileURLToPath(new URL("../fixtures/alpha1/tarballs", import.meta.url)), linkedDirectory, "junction");
+      await symlink(fileURLToPath(new URL("../fixtures/alpha4/tarballs", import.meta.url)), linkedDirectory, "junction");
       const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
       await expect(loadFixtureGraph({
-        manifestPath: fileURLToPath(new URL("../fixtures/alpha1/manifest.json", import.meta.url)),
+        manifestPath: fileURLToPath(new URL("../fixtures/alpha4/manifest.json", import.meta.url)),
         tarballDirectory: linkedDirectory,
         peerDependencies: packageJson.peerDependencies,
       })).rejects.toThrow(/real directory/);
@@ -303,36 +303,37 @@ describe("release gate validators", () => {
     expect(() => assertFixtureEdges(manifest, metadata, { "fixture-root": "^1.0.0" })).toThrow(/no matching package declaration/);
   });
 
-  it("keeps duplicate package versions on locked parent edges", async () => {
+  it("keeps Alpha.4 package versions on locked parent edges", async () => {
     const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
     const graph = await loadFixtureGraph({
-      manifestPath: fileURLToPath(new URL("../fixtures/alpha1/manifest.json", import.meta.url)),
-      tarballDirectory: fileURLToPath(new URL("../fixtures/alpha1/tarballs", import.meta.url)),
+      manifestPath: fileURLToPath(new URL("../fixtures/alpha4/manifest.json", import.meta.url)),
+      tarballDirectory: fileURLToPath(new URL("../fixtures/alpha4/tarballs", import.meta.url)),
       peerDependencies: packageJson.peerDependencies,
     });
-    const hostEdge = graph.manifest.edges.find((edge: any) => edge.parent === "@deepseek-ai/dsh-host-webserver@0.1.2-alpha.1" && edge.name === "negotiator");
-    expect(hostEdge.child).toBe("negotiator@1.0.0");
+    const hostEdge = graph.manifest.edges.find((edge: any) => edge.name === "@deepseek-ai/cordis");
+    expect(hostEdge).toBeDefined();
+    if (hostEdge === undefined) return;
     const tampered = structuredClone(graph.manifest);
-    const edge = tampered.edges.find((candidate: any) => candidate.parent === hostEdge.parent && candidate.name === "negotiator");
-    edge.child = "negotiator@0.6.4";
-    expect(() => assertFixtureEdges(tampered, graph.metadata, packageJson.peerDependencies)).toThrow(/range/);
+    const edge = tampered.edges.find((candidate: any) => candidate.parent === hostEdge.parent && candidate.name === hostEdge.name);
+    edge.child = "@deepseek-ai/cordis@3.0.0";
+    expect(() => assertFixtureEdges(tampered, graph.metadata, packageJson.peerDependencies)).toThrow(/unknown package|range/);
   });
 
   it("builds scoped local-tarball overrides without collapsing versions", () => {
-    const host = "@deepseek-ai/dsh-host-webserver@0.1.2-alpha.1";
+    const host = "@deepseek-ai/dsh-client-connection@0.1.2-alpha.4";
     const graph = {
       manifest: {
-        consumer: { direct: ["negotiator@0.6.4", host], overrides: [{ parent: host, dependency: "negotiator", child: "negotiator@1.0.0" }] },
-        edges: [{ parent: host, field: "dependencies", name: "negotiator", specifier: "^1.0.0", child: "negotiator@1.0.0", optional: false }],
+        consumer: { direct: ["@deepseek-ai/cordis@3.0.0", host], overrides: [{ parent: host, dependency: "@deepseek-ai/cordis", child: "@deepseek-ai/cordis@4.0.2" }] },
+        edges: [{ parent: host, field: "dependencies", name: "@deepseek-ai/cordis", specifier: "^4.0.0", child: "@deepseek-ai/cordis@4.0.2", optional: false }],
       },
       records: new Map([
-        ["negotiator@0.6.4", { name: "negotiator", version: "0.6.4", tarball: "negotiator-0.6.4.tgz" }],
-        [host, { name: "@deepseek-ai/dsh-host-webserver", version: "0.1.2-alpha.1", tarball: "deepseek-ai-dsh-host-webserver-0.1.2-alpha.1.tgz" }],
-        ["negotiator@1.0.0", { name: "negotiator", version: "1.0.0", tarball: "negotiator-1.0.0.tgz" }],
+        ["@deepseek-ai/cordis@3.0.0", { name: "@deepseek-ai/cordis", version: "3.0.0", tarball: "deepseek-ai-cordis-3.0.0.tgz" }],
+        [host, { name: "@deepseek-ai/dsh-client-connection", version: "0.1.2-alpha.4", tarball: "deepseek-ai-dsh-client-connection-0.1.2-alpha.4.tgz" }],
+        ["@deepseek-ai/cordis@4.0.2", { name: "@deepseek-ai/cordis", version: "4.0.2", tarball: "deepseek-ai-cordis-4.0.2.tgz" }],
       ]),
     };
     const consumer = buildConsumerPackageJson(graph as any, { name: "dsh-usage-monitor", version: "0.2.8", tarball: "plugin.tgz" });
-    expect(consumer.dependencies.negotiator).toContain("0.6.4");
-    expect(consumer.overrides[host + ">negotiator"]).toContain("1.0.0");
+    expect(consumer.dependencies["@deepseek-ai/cordis"]).toContain("3.0.0");
+    expect(consumer.overrides[host + ">@deepseek-ai/cordis"]).toContain("4.0.2");
   });
 });

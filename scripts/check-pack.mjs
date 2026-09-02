@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Verify the published plugin against immutable alpha.1 fixture artifacts. */
+/** Verify the published plugin against immutable Alpha.4 fixture artifacts. */
 
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
@@ -26,8 +26,8 @@ function runPack(destination, env) {
 async function main() {
   const sourcePackage = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
   const fixtureGraph = await loadFixtureGraph({
-    manifestPath: join(root, "fixtures/alpha1/manifest.json"),
-    tarballDirectory: join(root, "fixtures/alpha1/tarballs"),
+    manifestPath: join(root, "fixtures/alpha4/manifest.json"),
+    tarballDirectory: join(root, "fixtures/alpha4/tarballs"),
     peerDependencies: sourcePackage.peerDependencies,
   });
   let temporaryRoot;

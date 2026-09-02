@@ -4,6 +4,7 @@
  */
 import type { Context } from '@deepseek-ai/cordis';
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection';
+import { SessionId, SessionLogOffset } from '@deepseek-ai/dsh-session';
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
 import type { SessionCorpus, WorkspaceIndex } from './collect.ts';
 import { type FoldableEvent } from './fold.ts';
@@ -73,13 +74,13 @@ interface PersistenceLike {
     locate?(meta: SessionHeaderLike): {
         path: string;
     } | undefined;
-    readFrom?(id: unknown, fromSeq: number, signal?: AbortSignal): Promise<{
+    readFrom?(id: ReturnType<typeof SessionId>, fromSeq: ReturnType<typeof SessionLogOffset>, signal?: AbortSignal): Promise<{
         events: readonly FoldableEvent[];
     }>;
-    inspect?(id: unknown, signal?: AbortSignal): Promise<{
+    inspect?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{
         events: readonly FoldableEvent[];
     }>;
-    readRaw?(id: unknown, signal?: AbortSignal): Promise<{
+    readRaw?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{
         content: string;
     } | undefined>;
 }
@@ -94,7 +95,7 @@ export declare function parseRawEvents(content: string): readonly FoldableEvent[
 interface LiveSessionLike {
     id: unknown;
     seq: number;
-    events: readonly FoldableEvent[];
+    snapshotEvents(): readonly FoldableEvent[];
     header: SessionHeaderLike;
 }
 interface SessionStoreLike {
@@ -112,6 +113,7 @@ interface WorkspaceRegistryLike {
 }
 export declare function corpusFrom(sessionQuery: SessionQueryLike, persistence: PersistenceLike, sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined): SessionCorpus;
 export declare function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex;
+/** Register the loopback `/usage-monitor` channel. */
 /** Register the loopback `/usage-monitor` channel without reading history. */
 export declare function apply(ctx: Context, config?: Config): void;
 //# sourceMappingURL=index.d.ts.map

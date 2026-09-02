@@ -6,6 +6,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection'
 import type {} from '@deepseek-ai/dsh-client-connection'
+import { SessionId, SessionLogOffset } from '@deepseek-ai/dsh-session'
 import {
   USAGE_QUERY_ENDPOINT,
   USAGE_RPC_CHANNEL,
@@ -13,9 +14,21 @@ import {
 } from './client-contract.ts'
 import { stat } from 'node:fs/promises'
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
-import { FoldCache, collectUsage, type SessionCorpus, type WorkspaceIndex } from './collect.ts'
-import { UsageProjection, defaultUsageProjectionPath } from './projection.ts'
-import type { FoldableEvent } from './fold.ts'
+import type { SessionCorpus, WorkspaceIndex } from './collect.ts'
+import {
+  DEFAULT_PROJECTION_READ_CONCURRENCY,
+  DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE,
+  UsageProjection,
+  defaultUsageProjectionPath,
+} from './projection.ts'
+import {
+  foldRawSessionUsage,
+  foldSessionUsage,
+  parseRawFoldableEvent,
+  type FoldableEvent,
+  type FoldSessionStamp,
+  type StepUsage,
+} from './fold.ts'
 
 export {
   USAGE_RPC_CHANNEL,
@@ -24,9 +37,10 @@ export {
   decodeUsageSnapshot,
 } from './client-contract.ts'
 export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from './client-contract.ts'
-export { foldSessionUsage } from './fold.ts'
+export { foldRawSessionUsage, foldSessionUsage } from './fold.ts'
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts'
 export { UsageProjection, defaultUsageProjectionPath } from './projection.ts'
+export type { UsageProjectionInput, UsageProjectionReconcileInput } from './projection.ts'
 export { queryUsage } from './query.ts'
 export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts'
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts'
@@ -34,9 +48,62 @@ export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart
 export const name = 'dsh-usage-monitor'
 export const inject = ['sessionQuery', 'workspaceRegistry', 'sessionPersistence']
 
-const READ_CONCURRENCY = 8
 export const READ_BUDGET_MS = 20_000
-const WARM_LOOKBACK_MS = 32 * 24 * 60 * 60 * 1000
+
+/** Usage projection plugin configuration. */
+export interface Config {
+  /** Projection work begins only when an RPC needs an exact range. */
+  projectionWarmup: 'on-demand'
+  /** Maximum session logs read concurrently. */
+  projectionReadConcurrency: number
+  /** Maximum sessions replaced by one SQLite transaction. */
+  projectionTransactionBatchSize: number
+}
+
+const DEFAULT_CONFIG: Config = {
+  projectionWarmup: 'on-demand',
+  projectionReadConcurrency: DEFAULT_PROJECTION_READ_CONCURRENCY,
+  projectionTransactionBatchSize: DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE,
+}
+
+const configIssue = (message: string, key?: keyof Config) => ({
+  message,
+  ...(key === undefined ? {} : { path: [key] }),
+})
+
+/** Standard Schema validator that accepts an omitted plugin config and applies bounded on-demand defaults. */
+export const Config = {
+  '~standard': {
+    version: 1 as const,
+    vendor: 'dsh-usage-monitor',
+    validate(value: unknown) {
+      if (value === undefined) value = {}
+      if (!isRecord(value)) return { issues: [configIssue('expected an object')] }
+      const projectionWarmup = value.projectionWarmup ?? DEFAULT_CONFIG.projectionWarmup
+      const projectionReadConcurrency = value.projectionReadConcurrency ?? DEFAULT_CONFIG.projectionReadConcurrency
+      const projectionTransactionBatchSize = value.projectionTransactionBatchSize
+        ?? DEFAULT_CONFIG.projectionTransactionBatchSize
+      const issues = []
+      if (projectionWarmup !== 'on-demand') {
+        issues.push(configIssue("must be 'on-demand'", 'projectionWarmup'))
+      }
+      if (!Number.isSafeInteger(projectionReadConcurrency) || Number(projectionReadConcurrency) < 1) {
+        issues.push(configIssue('must be a positive safe integer', 'projectionReadConcurrency'))
+      }
+      if (!Number.isSafeInteger(projectionTransactionBatchSize) || Number(projectionTransactionBatchSize) < 1) {
+        issues.push(configIssue('must be a positive safe integer', 'projectionTransactionBatchSize'))
+      }
+      if (issues.length > 0) return { issues }
+      return {
+        value: {
+          projectionWarmup: 'on-demand',
+          projectionReadConcurrency: Number(projectionReadConcurrency),
+          projectionTransactionBatchSize: Number(projectionTransactionBatchSize),
+        } satisfies Config,
+      }
+    },
+  },
+}
 
 function internalError(message: string) {
   return {
@@ -122,9 +189,9 @@ interface PersistenceLike {
     revision: unknown
   }>>
   locate?(meta: SessionHeaderLike): { path: string } | undefined
-  readFrom?(id: unknown, fromSeq: number, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
-  inspect?(id: unknown, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
-  readRaw?(id: unknown, signal?: AbortSignal): Promise<{ content: string } | undefined>
+  readFrom?(id: ReturnType<typeof SessionId>, fromSeq: ReturnType<typeof SessionLogOffset>, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
+  inspect?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
+  readRaw?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{ content: string } | undefined>
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -139,18 +206,16 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
  */
 export function parseRawEvents(content: string): readonly FoldableEvent[] {
   const events: FoldableEvent[] = []
-  for (const line of content.split('\n')) {
-    if (line.length === 0) continue
-    let record: unknown
-    try {
-      record = JSON.parse(line)
-    } catch {
-      continue
+  let start = 0
+  while (start <= content.length) {
+    const newline = content.indexOf('\n', start)
+    const end = newline === -1 ? content.length : newline
+    if (end > start) {
+      const event = parseRawFoldableEvent(content.slice(start, end))
+      if (event !== undefined) events.push(event)
     }
-    if (!isRecord(record)) continue
-    const { type, time, data } = record
-    if (typeof type !== 'string' || typeof time !== 'number' || !Number.isFinite(time)) continue
-    events.push({ type, time, ...(data === undefined ? {} : { data }) })
+    if (newline === -1) break
+    start = newline + 1
   }
   return events
 }
@@ -158,7 +223,7 @@ export function parseRawEvents(content: string): readonly FoldableEvent[] {
 interface LiveSessionLike {
   id: unknown
   seq: number
-  events: readonly FoldableEvent[]
+  snapshotEvents(): readonly FoldableEvent[]
   header: SessionHeaderLike
 }
 
@@ -196,15 +261,38 @@ async function readPersistedEvents(
   sessionId: string,
 ): Promise<readonly FoldableEvent[]> {
   return withBudget(READ_BUDGET_MS, async (signal) => {
+    const id = SessionId(sessionId)
     if (persistence.readRaw !== undefined) {
-      const raw = await persistence.readRaw(sessionId, signal)
+      const raw = await persistence.readRaw(id, signal)
       if (raw !== undefined) return parseRawEvents(raw.content)
     }
     if (persistence.readFrom !== undefined) {
-      return (await persistence.readFrom(sessionId, 0, signal)).events
+      return (await persistence.readFrom(id, SessionLogOffset(0), signal)).events
     }
     if (persistence.inspect !== undefined) {
-      return (await persistence.inspect(sessionId, signal)).events
+      return (await persistence.inspect(id, signal)).events
+    }
+    return []
+  }, 'session read timed out')
+}
+
+async function foldPersistedSession(
+  persistence: PersistenceLike,
+  stamp: FoldSessionStamp,
+): Promise<readonly StepUsage[]> {
+  return withBudget(READ_BUDGET_MS, async (signal) => {
+    const id = SessionId(stamp.sessionId)
+    if (persistence.readRaw !== undefined) {
+      const raw = await persistence.readRaw(id, signal)
+      if (raw !== undefined) return foldRawSessionUsage({ ...stamp, content: raw.content })
+    }
+    if (persistence.readFrom !== undefined) {
+      const events = (await persistence.readFrom(id, SessionLogOffset(0), signal)).events
+      return foldSessionUsage({ ...stamp, events })
+    }
+    if (persistence.inspect !== undefined) {
+      const events = (await persistence.inspect(id, signal)).events
+      return foldSessionUsage({ ...stamp, events })
     }
     return []
   }, 'session read timed out')
@@ -272,8 +360,13 @@ export function corpusFrom(
     },
     async readEvents(sessionId) {
       const live = findLive(getSessions(), sessionId)
-      if (live !== undefined) return live.events
+      if (live !== undefined) return live.snapshotEvents()
       return readPersistedEvents(persistence, sessionId)
+    },
+    async foldSession(stamp) {
+      const live = findLive(getSessions(), stamp.sessionId)
+      if (live !== undefined) return foldSessionUsage({ ...stamp, events: live.snapshotEvents() })
+      return foldPersistedSession(persistence, stamp)
     },
   }
 }
@@ -291,7 +384,8 @@ export function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex 
 
 /** Register the loopback `/usage-monitor` channel. */
 
-export function apply(ctx: Context): void {
+/** Register the loopback `/usage-monitor` channel without reading history. */
+export function apply(ctx: Context, config: Config = DEFAULT_CONFIG): void {
   const sessionQuery = ctx.get('sessionQuery') as SessionQueryLike
   const workspaceRegistry = ctx.get('workspaceRegistry') as WorkspaceRegistryLike
   const persistence = ctx.get('sessionPersistence') as PersistenceLike
@@ -301,46 +395,30 @@ export function apply(ctx: Context): void {
     () => ctx.get('sessions') as SessionStoreLike | undefined,
   )
   const workspaces = workspacesFrom(workspaceRegistry)
-  const cache = new FoldCache()
-  let projection: UsageProjection | undefined
-  try {
-    projection = new UsageProjection(defaultUsageProjectionPath())
-    ctx.effect(() => () => projection?.close(), 'dsh-usage-monitor: close usage projection')
-  } catch {
-    // Keep the in-memory collector as a safe fallback when the sidecar cannot open.
-  }
+  const projection = new UsageProjection(defaultUsageProjectionPath())
+  ctx.effect(() => async () => projection.close(), 'dsh-usage-monitor: close usage projection')
   const inflight = new Map<string, Promise<UsageSnapshot>>()
   const collect = (query: UsageQueryRequest) => {
     const key = `${query.start}:${query.end}`
     const pending = inflight.get(key)
     if (pending !== undefined) return pending
-    const fallback = () => collectUsage({
+    const next = projection.query({
       corpus,
       workspaces,
       query,
-      cache,
-      concurrency: READ_CONCURRENCY,
-    })
-    const next = (projection === undefined
-      ? fallback()
-      : projection.query({ corpus, workspaces, query, concurrency: READ_CONCURRENCY }).catch(() => fallback())
-    ).finally(() => {
+      readConcurrency: config.projectionReadConcurrency,
+      transactionBatchSize: config.projectionTransactionBatchSize,
+    }).finally(() => {
       inflight.delete(key)
     })
     inflight.set(key, next)
     return next
   }
 
-  void collect({
-    start: Date.now() - WARM_LOOKBACK_MS,
-    end: Date.now() + 24 * 60 * 60 * 1000,
-  }).catch(() => undefined)
-
   ctx.inject(['connection'], (connectionCtx) => {
     connectionCtx.connection.rpc.handle(
       USAGE_RPC_CHANNEL,
       createUsageRpcHandler({ collect }),
-      { authority: 'loopback' },
     )
   })
 }

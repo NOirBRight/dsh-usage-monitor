@@ -8,8 +8,8 @@ import { validateArchive } from "./archive.mjs";
 import { walkFiles } from "./walker.mjs";
 
 export const OFFICIAL_REPOSITORY = "https://github.com/deepseek-ai/deepseek-harness.git";
-export const OFFICIAL_TAG = "dsh-v0.1.2-alpha.1";
-export const OFFICIAL_COMMIT = "cd5ef8148158c3a752a658978873241fdf8e2bbc";
+export const OFFICIAL_TAG = "dsh-v0.1.2-alpha.4";
+export const OFFICIAL_COMMIT = "4e84901e6471b79ec0338099867ebb4606d12bb5";
 const REGISTRY = "https://registry.npmjs.org/";
 
 function isRecord(value) {
@@ -72,7 +72,7 @@ function assertRegistryProvenance(entry, id) {
  * @param {Record<string, unknown>} manifest fixture manifest
  */
 export function assertFixtureManifest(manifest) {
-  if (!isRecord(manifest) || manifest.schemaVersion !== 1 || manifest.profile !== "alpha1") throw new Error("fixture manifest must be schemaVersion 1 profile alpha1");
+  if (!isRecord(manifest) || manifest.schemaVersion !== 1 || manifest.profile !== "alpha4") throw new Error("fixture manifest must be schemaVersion 1 profile alpha4");
   if (!isRecord(manifest.official)) throw new Error("fixture manifest has unexpected official provenance");
   assertExactKeys(manifest.official, ["repository", "tag", "commit"], "manifest official provenance");
   if (manifest.official.repository !== OFFICIAL_REPOSITORY || manifest.official.tag !== OFFICIAL_TAG || manifest.official.commit !== OFFICIAL_COMMIT) throw new Error("fixture manifest has unexpected official provenance");
