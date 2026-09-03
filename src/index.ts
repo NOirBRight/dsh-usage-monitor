@@ -13,6 +13,7 @@ import {
   decodeUsageQueryRequest,
 } from './client-contract.ts'
 import { stat } from 'node:fs/promises'
+import { allowDshRuntime } from './compatibility.ts'
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
 import type { SessionCorpus, WorkspaceIndex } from './collect.ts'
 import {
@@ -386,6 +387,8 @@ export function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex 
 
 /** Register the loopback `/usage-monitor` channel without reading history. */
 export function apply(ctx: Context, config: Config = DEFAULT_CONFIG): void {
+  if (!allowDshRuntime(ctx.logger, 'dsh-usage-monitor', ['@deepseek-ai/dsh-session'])) return
+
   const sessionQuery = ctx.get('sessionQuery') as SessionQueryLike
   const workspaceRegistry = ctx.get('workspaceRegistry') as WorkspaceRegistryLike
   const persistence = ctx.get('sessionPersistence') as PersistenceLike

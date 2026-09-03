@@ -22,8 +22,8 @@
       "name": "@deepseek-ai/cordis-plugin-include",
       "version": "1.0.7",
       "tarball": "deepseek-ai-cordis-plugin-include-1.0.7.tgz",
-      "bytes": 8908,
-      "sha256": "d70ba2c89e93cab37ea5a20354ded9e05fbb2240a05004b784fb70d1dcc4afed",
+      "bytes": 8910,
+      "sha256": "afaa57131a8fd9f7c3387c739e13acb84ff180eda3d2939d4afe42e90f10dc67",
       "kind": "official",
       "source": "packages/cordis-plugin-include",
       "provenance": {
@@ -36,8 +36,8 @@
       "name": "@deepseek-ai/cordis-plugin-loader",
       "version": "1.0.3",
       "tarball": "deepseek-ai-cordis-plugin-loader-1.0.3.tgz",
-      "bytes": 25809,
-      "sha256": "fd8783971992ac85dea7eebf02778bca93b3020bbdeed780cd9fd075e0a6ec76",
+      "bytes": 25807,
+      "sha256": "c68fbf2583ac40313f3b89bbd133ef96092442df3711e8f97ac6acdc062b1366",
       "kind": "official",
       "source": "packages/cordis-plugin-loader",
       "provenance": {
@@ -50,8 +50,8 @@
       "name": "@deepseek-ai/cordis",
       "version": "4.0.2",
       "tarball": "deepseek-ai-cordis-4.0.2.tgz",
-      "bytes": 63432,
-      "sha256": "849ec759a89e3dc5681c9e084f0f04102546ec9b59267121885525971223fe0e",
+      "bytes": 63430,
+      "sha256": "8eede312938f4fe70966ac705838a9c07527de6aa995c6625408b1afafa1c5ad",
       "kind": "official",
       "source": "packages/cordis",
       "provenance": {
@@ -64,8 +64,8 @@
       "name": "@deepseek-ai/cosmokit",
       "version": "1.8.3",
       "tarball": "deepseek-ai-cosmokit-1.8.3.tgz",
-      "bytes": 13630,
-      "sha256": "3f8cbd8f6f1eee916e3dad21a57f452e31d1f1f9366959421af24479b5656b93",
+      "bytes": 13628,
+      "sha256": "74c3d1dc50267d04689a249923902dc66b1af501969f34c27c5788ae0417104d",
       "kind": "official",
       "source": "packages/cosmokit",
       "provenance": {
@@ -78,8 +78,8 @@
       "name": "@deepseek-ai/dsh-brand",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-brand-0.1.2-alpha.4.tgz",
-      "bytes": 5222,
-      "sha256": "540a9be818699bbfff385f49e6889c6af6c266b924b8f8773910182e5b18f0d5",
+      "bytes": 5223,
+      "sha256": "f17b976535eb6de2d77e22b5b4d276bbd1cfd19c515129c3aa61acae37632f79",
       "kind": "official",
       "source": "packages/dsh-brand",
       "provenance": {
@@ -93,7 +93,7 @@
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-client-connection-0.1.2-alpha.4.tgz",
       "bytes": 66093,
-      "sha256": "5d11bfded08ab90acaef9bc3633f3c78f6243d9aa1ebd62ab2a547c1b9ad1770",
+      "sha256": "bd26baa5f92413127c2b10ddd6051e45445a997295bb7e0683b9181b557dcf66",
       "kind": "official",
       "source": "packages/dsh-client-connection",
       "provenance": {
@@ -106,8 +106,8 @@
       "name": "@deepseek-ai/dsh-client-locale",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-client-locale-0.1.2-alpha.4.tgz",
-      "bytes": 27416,
-      "sha256": "619a73da534e737eaef9de2a43ea0a7d990636e49e03c00e57d0cd496882fcad",
+      "bytes": 27413,
+      "sha256": "e04b2751fe31bd7bee94ba702aeaa63bd11056fb1f8dd970c5fcd41861c50a0c",
       "kind": "official",
       "source": "packages/dsh-client-locale",
       "provenance": {
@@ -120,8 +120,8 @@
       "name": "@deepseek-ai/dsh-client-ui-renderer",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-client-ui-renderer-0.1.2-alpha.4.tgz",
-      "bytes": 24676,
-      "sha256": "3199422ef14450416a60b28e4c884f351171d3a4c9de42cdd0c1efe072b1e7f3",
+      "bytes": 24677,
+      "sha256": "d9ba4ffc7cb29d76f41c9b9ffdf47568e8d68b8f02830f50cdf2bd6475335e75",
       "kind": "official",
       "source": "packages/dsh-client-ui-renderer",
       "provenance": {
@@ -134,8 +134,8 @@
       "name": "@deepseek-ai/dsh-client-ui-settings",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-client-ui-settings-0.1.2-alpha.4.tgz",
-      "bytes": 27368,
-      "sha256": "9bd1ce93920038879e02dcceb4d51c5fffefb50c46db7efa3dbff5687095b7bb",
+      "bytes": 27367,
+      "sha256": "b845cc9f61d8b98bd297485961ce36dfebf625c7c07131ee97116293a6f46d22",
       "kind": "official",
       "source": "packages/dsh-client-ui-settings",
       "provenance": {
@@ -149,7 +149,7 @@
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-client-ui-slots-0.1.2-alpha.4.tgz",
       "bytes": 25276,
-      "sha256": "4021a93e416f4875c2fa534e4eee68cad450b772c9b8a1edc7aca9e958e41d65",
+      "sha256": "515fbc48e7b430d21d1afb524f176e52b624d4c1919692f59f7324ab49d03e92",
       "kind": "official",
       "source": "packages/dsh-client-ui-slots",
       "provenance": {
@@ -162,8 +162,8 @@
       "name": "@deepseek-ai/dsh-credentials",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-credentials-0.1.2-alpha.4.tgz",
-      "bytes": 17681,
-      "sha256": "1b06e962de3bf99783191ecd20ace60bb55fc0b25e166d2858eaf4feb908a27b",
+      "bytes": 17676,
+      "sha256": "17804f42d1fc83132a085bf5ab87c6bb1a04a9fcfbc84e9e6d9f131452d61dd7",
       "kind": "official",
       "source": "packages/dsh-credentials",
       "provenance": {
@@ -176,8 +176,8 @@
       "name": "@deepseek-ai/dsh-invariants",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-invariants-0.1.2-alpha.4.tgz",
-      "bytes": 11644,
-      "sha256": "088088f7e35f30a929a98f6eb1679d8ed81ad1d5b31f510a167f1054b3f9d207",
+      "bytes": 11645,
+      "sha256": "72c006299058363aaf7cfe8d28d529cc669171bf76c2943b2a07f03dd8c945b1",
       "kind": "official",
       "source": "packages/dsh-invariants",
       "provenance": {
@@ -190,8 +190,8 @@
       "name": "@deepseek-ai/dsh-llm",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-llm-0.1.2-alpha.4.tgz",
-      "bytes": 80010,
-      "sha256": "5c7316bbfe7d4a469d40f5efc77d51ffa9903ee8f483f0ccb8f654a9978b8ee2",
+      "bytes": 80011,
+      "sha256": "87625f7dbc8d72947c31ebb118850f7a0d0b33449dfffb328654d9728f9adf71",
       "kind": "official",
       "source": "packages/dsh-llm",
       "provenance": {
@@ -204,8 +204,8 @@
       "name": "@deepseek-ai/dsh-scope",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-scope-0.1.2-alpha.4.tgz",
-      "bytes": 13305,
-      "sha256": "0f70eed5138985d87bd3890795c2d7812dbb1fc66d5108a090481cd4c26ffe3d",
+      "bytes": 13304,
+      "sha256": "5cdec8135b1e54406c50695697a201594ca03532165a89e1dfdab59b44fb8662",
       "kind": "official",
       "source": "packages/dsh-scope",
       "provenance": {
@@ -218,8 +218,8 @@
       "name": "@deepseek-ai/dsh-session",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-session-0.1.2-alpha.4.tgz",
-      "bytes": 81028,
-      "sha256": "538f7b03010dfb6546bdbf1df4d33ac1d007553fc9277f7aed19ca574a1de93b",
+      "bytes": 81026,
+      "sha256": "54382e891a012c924a18ee609d2bb5a938486c9a0197acc88d2014eac7cc4e90",
       "kind": "official",
       "source": "packages/dsh-session",
       "provenance": {
@@ -233,7 +233,7 @@
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-timeout-0.1.2-alpha.4.tgz",
       "bytes": 9530,
-      "sha256": "864adaf11910f4f940f77219ff400e34b187294a12abb7d1ab6cce659171ba3f",
+      "sha256": "7a949e599b9134d1f2bf8622403d38bf139344bbef9f48cf229476666dcea021",
       "kind": "official",
       "source": "packages/dsh-timeout",
       "provenance": {
@@ -246,8 +246,8 @@
       "name": "@deepseek-ai/dsh-typert-protocol",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-typert-protocol-0.1.2-alpha.4.tgz",
-      "bytes": 17971,
-      "sha256": "a1988a26de629bf6f3c836fa79370a1e7dba429e09dee2fe9de1c432282749c9",
+      "bytes": 17968,
+      "sha256": "334946d4f4cd44aab127f6f8d794f54b5a7bc70ab30c8f6cf9c589462a3d3269",
       "kind": "official",
       "source": "packages/dsh-typert-protocol",
       "provenance": {
@@ -260,8 +260,8 @@
       "name": "@deepseek-ai/dsh-util-crypto",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-util-crypto-0.1.2-alpha.4.tgz",
-      "bytes": 4147,
-      "sha256": "23677212b5661f83e7d177e1d81fdd0986f46b40808fb44edcf1f0153d5b26d5",
+      "bytes": 4146,
+      "sha256": "f7d564cc78ffe278a295da394330e9abbbb44dc5299286fbd986b03cdb471130",
       "kind": "official",
       "source": "packages/dsh-util-crypto",
       "provenance": {
@@ -274,8 +274,8 @@
       "name": "@deepseek-ai/dsh-util-values",
       "version": "0.1.2-alpha.4",
       "tarball": "deepseek-ai-dsh-util-values-0.1.2-alpha.4.tgz",
-      "bytes": 7106,
-      "sha256": "c8f7cad74f4ecdfeac8a9527530e382c9808f1d34c95cb4f9d59349b03e32052",
+      "bytes": 7104,
+      "sha256": "266314df18d1731fe6f0ae878eac2f9746c5f344908dbca75df62ef125e5c2ad",
       "kind": "official",
       "source": "packages/dsh-util-values",
       "provenance": {
@@ -288,8 +288,8 @@
       "name": "@deepseek-ai/schemastery",
       "version": "3.18.2",
       "tarball": "deepseek-ai-schemastery-3.18.2.tgz",
-      "bytes": 20706,
-      "sha256": "ab3e544eb6862d2678ff764cf4ee1f8c76bdc8de73eb2c2939f33b794c591b72",
+      "bytes": 20705,
+      "sha256": "b292877b9fbffd45ad2ad745e29e6e15de999ff1744a7ec1c01086725eef524c",
       "kind": "official",
       "source": "packages/schemastery",
       "provenance": {
@@ -339,15 +339,15 @@
     },
     {
       "name": "js-yaml",
-      "version": "4.2.0",
-      "tarball": "js-yaml-4.2.0.tgz",
-      "bytes": 204299,
-      "sha256": "50bafc4aa4cb263b2d3b3f430535ed8d49294eb107796e767d76a5ca475aca66",
+      "version": "4.3.2",
+      "tarball": "js-yaml-4.3.2.tgz",
+      "bytes": 227545,
+      "sha256": "c7b241d2224cf9253ff53854aa4cee87da91bd889c4d0fa3a3ffd1041ecee5b1",
       "kind": "registry",
-      "integrity": "sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==",
+      "integrity": "sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==",
       "provenance": {
         "registry": "https://registry.npmjs.org/",
-        "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.2.0.tgz"
+        "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.3.2.tgz"
       }
     },
     {
@@ -417,15 +417,15 @@
     },
     {
       "name": "zod",
-      "version": "4.4.3",
-      "tarball": "zod-4.4.3.tgz",
-      "bytes": 759588,
-      "sha256": "ee38f17f533fd500610685a483ae2f413c26f4eb33a51684314563c8d60f279c",
+      "version": "4.5.4",
+      "tarball": "zod-4.5.4.tgz",
+      "bytes": 1054799,
+      "sha256": "51f51d886af1428713bf52b4e795afa43e2b43956b8483c9a92590f4c5a7b296",
       "kind": "registry",
-      "integrity": "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==",
+      "integrity": "sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==",
       "provenance": {
         "registry": "https://registry.npmjs.org/",
-        "resolved": "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz"
+        "resolved": "https://registry.npmjs.org/zod/-/zod-4.5.4.tgz"
       }
     }
   ],
@@ -443,7 +443,7 @@
       "field": "dependencies",
       "name": "js-yaml",
       "specifier": "^4.1.0",
-      "child": "js-yaml@4.2.0",
+      "child": "js-yaml@4.3.2",
       "optional": false
     },
     {
@@ -539,7 +539,7 @@
       "field": "dependencies",
       "name": "zod",
       "specifier": "^4.4.3",
-      "child": "zod@4.4.3",
+      "child": "zod@4.5.4",
       "optional": false
     },
     {
@@ -659,7 +659,7 @@
       "field": "dependencies",
       "name": "zod",
       "specifier": "^4.4.3",
-      "child": "zod@4.4.3",
+      "child": "zod@4.5.4",
       "optional": false
     },
     {
@@ -807,7 +807,7 @@
       "optional": false
     },
     {
-      "parent": "js-yaml@4.2.0",
+      "parent": "js-yaml@4.3.2",
       "field": "dependencies",
       "name": "argparse",
       "specifier": "^2.0.1",
@@ -896,13 +896,13 @@
       "@standard-schema/spec@1.1.0",
       "argparse@2.0.1",
       "js-tokens@4.0.0",
-      "js-yaml@4.2.0",
+      "js-yaml@4.3.2",
       "loose-envify@1.4.0",
       "react-dom@18.3.1",
       "react@18.3.1",
       "scheduler@0.23.2",
       "use-sync-external-store@1.2.0",
-      "zod@4.4.3"
+      "zod@4.5.4"
     ],
     "overrides": []
   }

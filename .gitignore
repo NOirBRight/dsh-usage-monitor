@@ -5,6 +5,9 @@ node_modules/
 .pnpm-store/
 *.tgz
 !fixtures/alpha1/tarballs/*.tgz
+!fixtures/alpha4/
+!fixtures/alpha4/tarballs/
+!fixtures/alpha4/tarballs/*.tgz
 *.tsbuildinfo
 coverage/
 *.log

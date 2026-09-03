@@ -4,9 +4,14 @@ English | [中文](README.zh.md)
 
 Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). It folds provider-reported token usage out of session logs and charts it in Settings.
 
-Compatibility: this release requires DeepSeek Harness `0.1.2-alpha.4` and `@deepseek-ai/cordis@4.0.2`; it is not compatible with Alpha.1–Alpha.3. Users on older runtimes must keep the last plugin tag built for that runtime.
+## Compatibility
 
-![Settings → Usage: tiles, stacked chart, and provider cards](docs/screenshots/settings-usage.png)
+Verified runtimes are DeepSeek Harness `0.1.2-alpha.4` and `0.1.2-rc.1` on Cordis `4.0.2`; this record is evidence, not an allowlist.
+
+Unknown newer runtimes are attempted on a best-effort basis after one warning, and the plugin keeps its normal mount path.
+
+A reproduced failure is blocklisted only afterward; see the [compatibility records](package.json) for the affected version, reason, and evidence.
+
 
 ## What it shows
 
@@ -23,7 +28,7 @@ Subscription quotas are not fetched.
 DeepSeek Harness 0.1.0-rc.6 or later is required. Install directly from GitHub:
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.10
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.11
 dsh web
 ```
 
@@ -43,7 +48,6 @@ For a tag, run `pnpm run check:strict` (the same test, typecheck, parity, build,
 
 The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObserver` on `document.body`; see `src/client/nav-icon.ts` for the `ctx.effect` disposer and the accepted Alpha.4 DOM risk.
 
-
 ## Release installation (Latest)
 
 Session-log usage dashboard with responsive metric cards, charting, and provider shares. The release artifact targets DeepSeek Harness 0.1.2-alpha.4 and contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency.
@@ -59,7 +63,7 @@ Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.10/dsh-usage-monitor.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/dsh-usage-monitor.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -77,6 +81,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.10 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.11 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.10](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.10) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.10/SHA256SUMS).
+Release and integrity: [v0.2.11](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/SHA256SUMS).
