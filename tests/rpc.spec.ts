@@ -18,6 +18,19 @@ afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map(dir => rm(dir, { recursive: true, force: true })))
 })
 
+function stubPersistence(events: unknown[], revisions: Array<{ id: string, revision: string }> = []) {
+  const open = vi.fn(async () => ({
+    read: async () => ({ eventState: 'detached', events }),
+    close: async () => {},
+  }))
+  const stat = vi.fn(async () => undefined)
+  const list = vi.fn(async () => revisions.map(entry => ({
+    header: { id: entry.id },
+    revision: entry.revision,
+  })))
+  return { open, stat, list, persistence: { open, stat, list } }
+}
+
 async function useTempDshHome(): Promise<void> {
   const dir = await mkdtemp(join(tmpdir(), 'usage-rpc-'))
   tempDirs.push(dir)
@@ -33,11 +46,7 @@ describe('usage-monitor RPC', () => {
     ctx.provide('sessionQuery', {
       listSessions: async () => [],
     } as never)
-    ctx.provide('sessionPersistence', {
-      listSnapshots: async () => [],
-      readFrom: async () => ({ events: [] }),
-      inspect: async () => ({ events: [] }),
-    } as never)
+    ctx.provide('sessionPersistence', stubPersistence([]).persistence as never)
     ctx.provide('workspaceRegistry', { list: () => [] } as never)
     ctx.provide('connection', { rpc: { handle } } as never)
     const fiber = ctx.plugin({ inject: [...inject], Config, apply }, {})
@@ -61,15 +70,12 @@ describe('usage-monitor RPC', () => {
     const ctx = new Context()
     let handler: Handler | undefined
     const listSessions = vi.fn(async () => [{ header: { id: 's1', createdAt: 1 } }])
-    const listSnapshots = vi.fn(async () => [{ header: { id: 's1' }, revision: 'r1' }])
-    const readFrom = vi.fn(async () => ({
-      events: [
-        { type: 'request/header', time: 1, data: { header: { config: { provider: 'provider', model: 'model' } } } },
-        { type: 'assistant/message', time: 2, data: { turn: 1, step: 1, usage: { inputTokens: 2, outputTokens: 1 } } },
-      ],
-    }))
+    const stub = stubPersistence([
+      { type: 'request/header', time: 1, data: { header: { config: { provider: 'provider', model: 'model' } } } },
+      { type: 'assistant/message', time: 2, data: { turn: 1, step: 1, usage: { inputTokens: 2, outputTokens: 1 } } },
+    ], [{ id: 's1', revision: 'r1' }])
     ctx.provide('sessionQuery', { listSessions } as never)
-    ctx.provide('sessionPersistence', { listSnapshots, readFrom } as never)
+    ctx.provide('sessionPersistence', stub.persistence as never)
     ctx.provide('workspaceRegistry', { list: () => [] } as never)
     ctx.provide('connection', {
       rpc: {
@@ -82,13 +88,14 @@ describe('usage-monitor RPC', () => {
     const fiber = ctx.plugin({ inject: [...inject], Config, apply }, {})
     await fiber.await()
     expect(listSessions).not.toHaveBeenCalled()
-    expect(listSnapshots).not.toHaveBeenCalled()
-    expect(readFrom).not.toHaveBeenCalled()
+    expect(stub.list).not.toHaveBeenCalled()
+    expect(stub.open).not.toHaveBeenCalled()
 
     const result = await handler?.(USAGE_QUERY_ENDPOINT, { start: 0, end: 10 }, new AbortController().signal)
     expect(result?.ok).toBe(true)
     expect(listSessions).toHaveBeenCalled()
-    expect(readFrom).toHaveBeenCalledTimes(1)
+    expect(stub.open).toHaveBeenCalledTimes(1)
+    expect(stub.open.mock.calls[0]?.[1]).toBe('read')
     await fiber.dispose()
     await ctx.fiber.dispose()
   })
@@ -97,19 +104,14 @@ describe('usage-monitor RPC', () => {
     await useTempDshHome()
     const ctx = new Context()
     let handler: Handler | undefined
-    const readFrom = vi.fn(async () => ({
-      events: [
-        { type: 'request/header', time: 1, data: { header: { config: { provider: 'provider', model: 'model' } } } },
-        { type: 'assistant/message', time: Number.POSITIVE_INFINITY, data: { turn: 1, step: 1, usage: { inputTokens: 2, outputTokens: 1 } } },
-      ],
-    }))
+    const stub = stubPersistence([
+      { type: 'request/header', time: 1, data: { header: { config: { provider: 'provider', model: 'model' } } } },
+      { type: 'assistant/message', time: Number.POSITIVE_INFINITY, data: { turn: 1, step: 1, usage: { inputTokens: 2, outputTokens: 1 } } },
+    ], [{ id: 's1', revision: 'r1' }])
     ctx.provide('sessionQuery', {
       listSessions: async () => [{ header: { id: 's1', createdAt: 1 } }],
     } as never)
-    ctx.provide('sessionPersistence', {
-      listSnapshots: async () => [{ header: { id: 's1' }, revision: 'r1' }],
-      readFrom,
-    } as never)
+    ctx.provide('sessionPersistence', stub.persistence as never)
     ctx.provide('workspaceRegistry', { list: () => [] } as never)
     ctx.provide('connection', {
       rpc: {
@@ -124,7 +126,7 @@ describe('usage-monitor RPC', () => {
 
     const result = await handler?.(USAGE_QUERY_ENDPOINT, { start: 0, end: 10 }, new AbortController().signal)
     expect(result?.ok).toBe(false)
-    expect(readFrom).toHaveBeenCalledTimes(1)
+    expect(stub.open).toHaveBeenCalledTimes(1)
     await fiber.dispose()
     await ctx.fiber.dispose()
   })

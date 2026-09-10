@@ -292,7 +292,7 @@ function runSmoke(plugin) {
     '  get(key) {',
     '    if (key === "sessionQuery") return { listSessions: async () => [] };',
     '    if (key === "workspaceRegistry") return { list: () => [] };',
-    '    if (key === "sessionPersistence") return {};',
+    '    if (key === "sessionPersistence") return { list: async () => [] };',
     '    if (key === "sessions") return undefined;',
     '    throw new Error("unexpected host dependency " + key);',
     '  },',

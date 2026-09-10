@@ -6,13 +6,20 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection'
 import type {} from '@deepseek-ai/dsh-client-connection'
-import { SessionId, SessionLogOffset } from '@deepseek-ai/dsh-session'
+import { SessionId } from '@deepseek-ai/dsh-session'
+import type {
+  SessionAccess,
+  SessionHandle,
+  SessionPersistenceListOptions,
+  SessionPersistenceOpenOptions,
+  SessionPersistenceSnapshot,
+  SessionPersistenceStatOptions,
+} from '@deepseek-ai/dsh-session-persistence'
 import {
   USAGE_QUERY_ENDPOINT,
   USAGE_RPC_CHANNEL,
   decodeUsageQueryRequest,
 } from './client-contract.ts'
-import { stat } from 'node:fs/promises'
 import { allowDshRuntime } from './compatibility.ts'
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts'
 import type { SessionCorpus, WorkspaceIndex } from './collect.ts'
@@ -23,7 +30,6 @@ import {
   defaultUsageProjectionPath,
 } from './projection.ts'
 import {
-  foldRawSessionUsage,
   foldSessionUsage,
   parseRawFoldableEvent,
   type FoldableEvent,
@@ -184,15 +190,20 @@ interface SessionQueryLike {
   }>>
 }
 
-interface PersistenceLike {
-  listSnapshots?(signal?: AbortSignal): Promise<Array<{
-    header: SessionHeaderLike
-    revision: unknown
-  }>>
-  locate?(meta: SessionHeaderLike): { path: string } | undefined
-  readFrom?(id: ReturnType<typeof SessionId>, fromSeq: ReturnType<typeof SessionLogOffset>, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
-  inspect?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{ events: readonly FoldableEvent[] }>
-  readRaw?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{ content: string } | undefined>
+/**
+ * Handle-based persistence surface used for cold reads. Mirrors the target
+ * SessionPersistence public API (open/read/close plus stat/list): a `read`
+ * handle never takes write ownership, so cold reads work while another handle
+ * or process holds the write lock, and every opened handle is closed on a
+ * determined finally path. There is no probing fallback: a missing method is
+ * a backend incompatibility, and a failed read propagates instead of folding
+ * as an empty log (missing must not read as zero, partial must not read as
+ * complete).
+ */
+export interface ColdReadPersistence {
+  open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>
+  stat(id: SessionId, options?: SessionPersistenceStatOptions): Promise<SessionPersistenceSnapshot | undefined>
+  list(options?: SessionPersistenceListOptions): Promise<readonly SessionPersistenceSnapshot[]>
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -252,89 +263,57 @@ const findLive = (
   ?? sessions?.get(sessionId)
 
 /**
- * Read one persisted session's events. The raw-artifact path comes first: it
- * skips the host's strict event validation, so sessions carrying event types
- * unknown to this build still fold instead of failing their read outright —
- * a failed read is never cached and would be retried on every single query.
+ * Read one persisted session's validated events through a read handle. The
+ * handle is always closed; backend failures (missing session, refused
+ * vocabulary, torn reads) propagate to the caller and are never cached as
+ * folds, so the next query retries them instead of trusting a fake empty log.
  */
 async function readPersistedEvents(
-  persistence: PersistenceLike,
+  persistence: ColdReadPersistence,
   sessionId: string,
 ): Promise<readonly FoldableEvent[]> {
   return withBudget(READ_BUDGET_MS, async (signal) => {
-    const id = SessionId(sessionId)
-    if (persistence.readRaw !== undefined) {
-      const raw = await persistence.readRaw(id, signal)
-      if (raw !== undefined) return parseRawEvents(raw.content)
+    const handle = await persistence.open(SessionId(sessionId), 'read', { signal })
+    try {
+      return (await handle.read(0, undefined, { signal })).events
+    } finally {
+      await handle.close()
     }
-    if (persistence.readFrom !== undefined) {
-      return (await persistence.readFrom(id, SessionLogOffset(0), signal)).events
-    }
-    if (persistence.inspect !== undefined) {
-      return (await persistence.inspect(id, signal)).events
-    }
-    return []
   }, 'session read timed out')
 }
 
 async function foldPersistedSession(
-  persistence: PersistenceLike,
+  persistence: ColdReadPersistence,
   stamp: FoldSessionStamp,
 ): Promise<readonly StepUsage[]> {
   return withBudget(READ_BUDGET_MS, async (signal) => {
-    const id = SessionId(stamp.sessionId)
-    if (persistence.readRaw !== undefined) {
-      const raw = await persistence.readRaw(id, signal)
-      if (raw !== undefined) return foldRawSessionUsage({ ...stamp, content: raw.content })
-    }
-    if (persistence.readFrom !== undefined) {
-      const events = (await persistence.readFrom(id, SessionLogOffset(0), signal)).events
+    const handle = await persistence.open(SessionId(stamp.sessionId), 'read', { signal })
+    try {
+      const events = (await handle.read(0, undefined, { signal })).events
       return foldSessionUsage({ ...stamp, events })
+    } finally {
+      await handle.close()
     }
-    if (persistence.inspect !== undefined) {
-      const events = (await persistence.inspect(id, signal)).events
-      return foldSessionUsage({ ...stamp, events })
-    }
-    return []
   }, 'session read timed out')
 }
 
 /**
- * Build the session-id → cache-revision index. The backend's own snapshot
- * listing wins; when that rejects — one malformed artifact poisons the whole
- * listing — fall back to stat-ing each located artifact so unchanged sessions
- * keep hitting the fold cache.
+ * Build the session-id → cache-revision index from one target listing. When
+ * the listing rejects, every session reads revision-less (a cache miss that
+ * re-reads) rather than inheriting a stale or fabricated revision.
  */
 async function resolveRevisionIndex(
-  persistence: PersistenceLike,
-  records: readonly { header: SessionHeaderLike }[],
+  persistence: ColdReadPersistence,
   signal: AbortSignal,
 ): Promise<Map<string, string>> {
-  if (persistence.listSnapshots !== undefined) {
-    const snapshots = await persistence.listSnapshots(signal).catch(() => undefined)
-    if (snapshots !== undefined) {
-      return new Map(snapshots.map(snapshot => [String(snapshot.header.id), String(snapshot.revision)]))
-    }
-  }
-  const revisions = new Map<string, string>()
-  if (persistence.locate === undefined) return revisions
-  for (const record of records) {
-    signal.throwIfAborted()
-    try {
-      const location = persistence.locate(record.header)
-      if (location === undefined) continue
-      const info = await stat(location.path, { bigint: true })
-      revisions.set(String(record.header.id), `${info.size}:${info.mtimeNs}`)
-    } catch {
-      // Absent artifact or unusable location: leave the session revision-less.
-    }
-  }
-  return revisions
+  const snapshots = await persistence.list({ signal }).catch(() => undefined)
+  if (snapshots === undefined) return new Map()
+  return new Map(snapshots.map(snapshot => [String(snapshot.header.id), String(snapshot.revision)]))
 }
 
 export function corpusFrom(
   sessionQuery: SessionQueryLike,
-  persistence: PersistenceLike,
+  persistence: ColdReadPersistence,
   sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined,
 ): SessionCorpus {
   const getSessions = typeof sessions === 'function' ? sessions : () => sessions
@@ -343,7 +322,7 @@ export function corpusFrom(
       const store = getSessions()
       return withBudget(READ_BUDGET_MS, async (signal) => {
         const records = await sessionQuery.listSessions(signal)
-        const revisionById = await resolveRevisionIndex(persistence, records, signal)
+        const revisionById = await resolveRevisionIndex(persistence, signal)
         return records.map(record => {
           const id = String(record.header.id)
           const live = record.live === true ? findLive(store, id) : undefined
@@ -391,7 +370,7 @@ export function apply(ctx: Context, config: Config = DEFAULT_CONFIG): void {
 
   const sessionQuery = ctx.get('sessionQuery') as SessionQueryLike
   const workspaceRegistry = ctx.get('workspaceRegistry') as WorkspaceRegistryLike
-  const persistence = ctx.get('sessionPersistence') as PersistenceLike
+  const persistence = ctx.get('sessionPersistence') as ColdReadPersistence
   const corpus = corpusFrom(
     sessionQuery,
     persistence,

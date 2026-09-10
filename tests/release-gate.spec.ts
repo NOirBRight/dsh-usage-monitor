@@ -148,7 +148,7 @@ describe("release gate validators", () => {
   });
 
   it("rejects hybrid official and registry provenance records", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const registry = structuredClone(manifest);
     const registryEntry = registry.packages.find((entry: any) => entry.kind === "registry");
     registryEntry.source = "registry-source";
@@ -160,12 +160,12 @@ describe("release gate validators", () => {
   });
 
   it("rejects a tampered fixture archive", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const entry = manifest.packages.find((candidate: any) => candidate.kind === "registry");
     const temporaryRoot = await mkdtemp("/tmp/dsh-usage-monitor-tamper-");
     const archive = temporaryRoot + "/" + entry.tarball;
     try {
-      await copyFile(new URL("../fixtures/alpha4/tarballs/" + entry.tarball, import.meta.url), archive);
+      await copyFile(new URL("../fixtures/rc1/tarballs/" + entry.tarball, import.meta.url), archive);
       const bytes = await readFile(archive);
       bytes[bytes.length - 1] ^= 1;
       await writeFile(archive, bytes);
@@ -177,19 +177,19 @@ describe("release gate validators", () => {
   });
 
   it("rejects a missing fixture tarball", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const files = manifest.packages.map((entry: any) => entry.tarball).slice(1);
     expect(() => assertFixtureFiles(manifest, files)).toThrow(/missing/);
   });
 
   it("rejects an archive with the wrong package version", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const entry = manifest.packages.find((candidate: any) => candidate.kind === "registry");
     expect(() => assertArchiveRecord(entry, { bytes: entry.bytes, sha256: entry.sha256, integrity: entry.integrity }, { name: entry.name, version: "0.0.0" })).toThrow(/version mismatch/);
   });
 
   it("rejects an unlisted fixture tarball", async () => {
-    const manifest = JSON.parse(await readFile(new URL("../fixtures/alpha4/manifest.json", import.meta.url), "utf8"));
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const files = manifest.packages.map((entry: any) => entry.tarball);
     expect(() => assertFixtureFiles(manifest, [...files, "unlisted.tgz"])).toThrow(/ignored/);
   });
@@ -229,10 +229,10 @@ describe("release gate validators", () => {
     const temporaryRoot = await mkdtemp(join(tmpdir(), "dsh-usage-monitor-fixture-link-"));
     const linkedDirectory = temporaryRoot + "/tarballs";
     try {
-      await symlink(fileURLToPath(new URL("../fixtures/alpha4/tarballs", import.meta.url)), linkedDirectory, "junction");
+      await symlink(fileURLToPath(new URL("../fixtures/rc1/tarballs", import.meta.url)), linkedDirectory, "junction");
       const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
       await expect(loadFixtureGraph({
-        manifestPath: fileURLToPath(new URL("../fixtures/alpha4/manifest.json", import.meta.url)),
+        manifestPath: fileURLToPath(new URL("../fixtures/rc1/manifest.json", import.meta.url)),
         tarballDirectory: linkedDirectory,
         peerDependencies: packageJson.peerDependencies,
       })).rejects.toThrow(/real directory/);
@@ -303,11 +303,11 @@ describe("release gate validators", () => {
     expect(() => assertFixtureEdges(manifest, metadata, { "fixture-root": "^1.0.0" })).toThrow(/no matching package declaration/);
   });
 
-  it("keeps Alpha.4 package versions on locked parent edges", async () => {
+  it("keeps rc.1 package versions on locked parent edges", async () => {
     const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
     const graph = await loadFixtureGraph({
-      manifestPath: fileURLToPath(new URL("../fixtures/alpha4/manifest.json", import.meta.url)),
-      tarballDirectory: fileURLToPath(new URL("../fixtures/alpha4/tarballs", import.meta.url)),
+      manifestPath: fileURLToPath(new URL("../fixtures/rc1/manifest.json", import.meta.url)),
+      tarballDirectory: fileURLToPath(new URL("../fixtures/rc1/tarballs", import.meta.url)),
       peerDependencies: packageJson.peerDependencies,
     });
     const hostEdge = graph.manifest.edges.find((edge: any) => edge.name === "@deepseek-ai/cordis");

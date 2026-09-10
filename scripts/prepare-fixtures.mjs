@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/** Build the immutable Alpha.4 offline dependency graph used by pack:check. */
+/** Build the immutable offline dependency graph used by pack:check. */
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import {
@@ -20,19 +20,20 @@ import { fileURLToPath } from 'node:url'
 import { satisfies } from 'semver'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const FIXTURE_ROOT = join(ROOT, 'fixtures', 'alpha4')
+const FIXTURE_PROFILE = process.env.DSH_FIXTURE_PROFILE ?? 'alpha4'
+const FIXTURE_ROOT = join(ROOT, 'fixtures', FIXTURE_PROFILE)
 const TARBALL_ROOT = join(FIXTURE_ROOT, 'tarballs')
 const ALPHA4_TARBALL_ROOT = resolve(process.env.DSH_ALPHA4_TARBALL_DIR ?? '/home/noirbright/.local/opt/dsh-staging/alpha4-tarballs')
 const OLD_TARBALL_ROOT = resolve(process.env.DSH_ALPHA1_TARBALL_DIR ?? join(ROOT, '..', '.alpha4-fixture-backups', 'usage-monitor-alpha1'))
-const ALPHA4 = '0.1.2-alpha.4'
-const OFFICIAL_TAG = 'dsh-v0.1.2-alpha.4'
-const OFFICIAL_COMMIT = '4e84901e6471b79ec0338099867ebb4606d12bb5'
+const ALPHA4 = process.env.DSH_FIXTURE_VERSION ?? '0.1.2-alpha.4'
+const OFFICIAL_TAG = process.env.DSH_OFFICIAL_TAG ?? 'dsh-v0.1.2-alpha.4'
+const OFFICIAL_COMMIT = process.env.DSH_OFFICIAL_COMMIT ?? '4e84901e6471b79ec0338099867ebb4606d12bb5'
 const OFFICIAL_REPOSITORY = 'https://github.com/deepseek-ai/deepseek-harness.git'
 const REGISTRY = 'https://registry.npmjs.org/'
 const FIELDS = ['dependencies', 'optionalDependencies', 'peerDependencies']
 
 function fail(message) {
-  throw new Error('Alpha.4 fixture preparation failed: ' + message)
+  throw new Error('Fixture preparation failed: ' + message)
 }
 
 function run(command, args, options = {}) {
@@ -231,7 +232,7 @@ function main() {
   }
   const manifest = {
     schemaVersion: 1,
-    profile: 'alpha4',
+    profile: FIXTURE_PROFILE,
     official: { tag: OFFICIAL_TAG, commit: OFFICIAL_COMMIT, repository: OFFICIAL_REPOSITORY },
     roots: Object.keys(sourcePackage.peerDependencies ?? {}).sort(),
     packages: records,
@@ -239,8 +240,8 @@ function main() {
     consumer: { direct, overrides },
   }
   writeFileSync(join(FIXTURE_ROOT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n')
-  writeFileSync(join(FIXTURE_ROOT, 'README.md'), '# Alpha.4 pack fixtures\n\nGenerated from the clean Alpha.4 staging checkout and frozen registry archives.\n')
-  console.log(`prepared ${records.length} Alpha.4/registry fixture archives and ${edges.length} dependency edges`)
+  writeFileSync(join(FIXTURE_ROOT, 'README.md'), `# ${FIXTURE_PROFILE} pack fixtures\n\nGenerated from the ${OFFICIAL_TAG} staging set and frozen registry archives.\n`)
+  console.log(`prepared ${records.length} ${FIXTURE_PROFILE}/registry fixture archives and ${edges.length} dependency edges`)
 }
 
 try {

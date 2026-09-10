@@ -26,8 +26,8 @@ function runPack(destination, env) {
 async function main() {
   const sourcePackage = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
   const fixtureGraph = await loadFixtureGraph({
-    manifestPath: join(root, "fixtures/alpha4/manifest.json"),
-    tarballDirectory: join(root, "fixtures/alpha4/tarballs"),
+    manifestPath: join(root, "fixtures/rc1/manifest.json"),
+    tarballDirectory: join(root, "fixtures/rc1/tarballs"),
     peerDependencies: sourcePackage.peerDependencies,
   });
   let temporaryRoot;

@@ -4,7 +4,8 @@
  */
 import type { Context } from '@deepseek-ai/cordis';
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection';
-import { SessionId, SessionLogOffset } from '@deepseek-ai/dsh-session';
+import { SessionId } from '@deepseek-ai/dsh-session';
+import type { SessionAccess, SessionHandle, SessionPersistenceListOptions, SessionPersistenceOpenOptions, SessionPersistenceSnapshot, SessionPersistenceStatOptions } from '@deepseek-ai/dsh-session-persistence';
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
 import type { SessionCorpus, WorkspaceIndex } from './collect.ts';
 import { type FoldableEvent } from './fold.ts';
@@ -66,23 +67,20 @@ interface SessionQueryLike {
         live?: boolean;
     }>>;
 }
-interface PersistenceLike {
-    listSnapshots?(signal?: AbortSignal): Promise<Array<{
-        header: SessionHeaderLike;
-        revision: unknown;
-    }>>;
-    locate?(meta: SessionHeaderLike): {
-        path: string;
-    } | undefined;
-    readFrom?(id: ReturnType<typeof SessionId>, fromSeq: ReturnType<typeof SessionLogOffset>, signal?: AbortSignal): Promise<{
-        events: readonly FoldableEvent[];
-    }>;
-    inspect?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{
-        events: readonly FoldableEvent[];
-    }>;
-    readRaw?(id: ReturnType<typeof SessionId>, signal?: AbortSignal): Promise<{
-        content: string;
-    } | undefined>;
+/**
+ * Handle-based persistence surface used for cold reads. Mirrors the target
+ * SessionPersistence public API (open/read/close plus stat/list): a `read`
+ * handle never takes write ownership, so cold reads work while another handle
+ * or process holds the write lock, and every opened handle is closed on a
+ * determined finally path. There is no probing fallback: a missing method is
+ * a backend incompatibility, and a failed read propagates instead of folding
+ * as an empty log (missing must not read as zero, partial must not read as
+ * complete).
+ */
+export interface ColdReadPersistence {
+    open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>;
+    stat(id: SessionId, options?: SessionPersistenceStatOptions): Promise<SessionPersistenceSnapshot | undefined>;
+    list(options?: SessionPersistenceListOptions): Promise<readonly SessionPersistenceSnapshot[]>;
 }
 /**
  * Parse one raw artifact's text into foldable events. The backend hands back
@@ -111,7 +109,7 @@ interface WorkspaceLike {
 interface WorkspaceRegistryLike {
     list(): readonly WorkspaceLike[];
 }
-export declare function corpusFrom(sessionQuery: SessionQueryLike, persistence: PersistenceLike, sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined): SessionCorpus;
+export declare function corpusFrom(sessionQuery: SessionQueryLike, persistence: ColdReadPersistence, sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined): SessionCorpus;
 export declare function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex;
 /** Register the loopback `/usage-monitor` channel. */
 /** Register the loopback `/usage-monitor` channel without reading history. */
