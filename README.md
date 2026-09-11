@@ -28,7 +28,7 @@ Subscription quotas are not fetched.
 DeepSeek Harness 0.1.0-rc.6 or later is required. Install directly from GitHub:
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.11
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.11-015rc1
 dsh web
 ```
 
@@ -63,7 +63,7 @@ Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/dsh-usage-monitor.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1/dsh-usage-monitor-0.2.11.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -81,6 +81,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.11 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.11-015rc1 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.11](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/SHA256SUMS).
+Release and integrity: [v0.2.11-015rc1](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11-015rc1) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1/SHA256SUMS).

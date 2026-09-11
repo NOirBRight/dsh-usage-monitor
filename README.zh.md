@@ -28,7 +28,7 @@
 需要 DeepSeek Harness 0.1.0-rc.6 或更新。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.11
+dsh plugin --profile web add github:NOirBRight/dsh-usage-monitor#v0.2.11-015rc1
 dsh web
 ```
 
@@ -63,7 +63,7 @@ dsh plugin --profile web add --force \
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/dsh-usage-monitor.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1/dsh-usage-monitor-0.2.11.tgz
 ~~~
 
 更新、卸载与验证：
@@ -81,6 +81,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 配置入口：Web 使用「设置」中的本插件页面；Host-only 插件使用 profile 的 dsh.profile.bundles 配置。先复制本 README 的最小 YAML/JSON 示例，再填写凭据或后端地址。
 
-回滚：重新执行固定版本 v0.2.11 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
+回滚：重新执行固定版本 v0.2.11-015rc1 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
 
-Release 与完整性：[v0.2.11](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11/SHA256SUMS)。
+Release 与完整性：[v0.2.11-015rc1](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11-015rc1) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1/SHA256SUMS)。

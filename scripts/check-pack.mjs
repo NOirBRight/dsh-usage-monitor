@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Verify the published plugin against immutable Alpha.4 fixture artifacts. */
+/** Verify the published plugin against immutable 0.1.5-rc.1 fixture artifacts. */
 
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
