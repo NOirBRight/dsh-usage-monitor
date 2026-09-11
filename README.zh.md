@@ -6,7 +6,7 @@
 
 ## 兼容性
 
-已验证运行时是 DeepSeek Harness `0.1.2-alpha.4` 与 `0.1.2-rc.1`（Cordis `4.0.2`）；这份记录只是证据，不是 allowlist。
+已验证运行时是 DeepSeek Harness `0.1.5-rc.1`（当前）以及历史上的 `0.1.2-alpha.4` / `0.1.2-rc.1`（Cordis `4.0.2`）；这份记录只是证据，不是 allowlist。
 
 未知的新版本会先打一条 warning，再按正常挂载路径 best-effort 尝试，不会因为未验证而跳过。
 
@@ -42,7 +42,7 @@ dsh web
 
 ## 发布
 
-`pnpm run check` 按以下顺序运行完整门禁：单测、TypeScript 类型检查、确定性构建一致性校验（干净临时目录构建 vs 跟踪的 `lib/`）、构建，以及真实 `npm pack` + 不可变 Alpha.4 固件校验 + 离线安装 + Host/前端 bundle 导入冒烟。打包校验只读取仓库自有的 Alpha.4 manifest/tarballs，验证官方 Alpha.4 tag/commit 与 registry 完整性，保留按版本区分的父边；隔离的全新 pnpm consumer 使用无效 registry、offline/no-scripts/no-audit/no-fund、空 `NODE_PATH` 和按父包作用域的本地 tarball 覆盖，不使用 `--legacy-peer-deps` 或 omit/force 绕过。Owner archive 只写入带前缀的临时目录。校验不会在比对前重写工作区 `lib/`，陈旧、缺失或手改的产物都会失败。
+`pnpm run check` 按以下顺序运行完整门禁：单测、TypeScript 类型检查、确定性构建一致性校验（干净临时目录构建 vs 跟踪的 `lib/`）、构建，以及真实 `npm pack` + 不可变 `fixtures/rc1` 校验 + 离线安装 + Host/前端 bundle 导入冒烟。打包校验只读取仓库自有的 0.1.5-rc.1 manifest/tarballs，验证官方 0.1.5-rc.1 tag/commit 与 registry 完整性，保留按版本区分的父边；隔离的全新 pnpm consumer 使用无效 registry、offline/no-scripts/no-audit/no-fund、空 `NODE_PATH` 和按父包作用域的本地 tarball 覆盖，不使用 `--legacy-peer-deps` 或 omit/force 绕过。Owner archive 只写入带前缀的临时目录。校验不会在比对前重写工作区 `lib/`，陈旧、缺失或手改的产物都会失败。
 
 打 tag 前跑 `pnpm run check:strict`（顺序同样是单测、类型检查、构建一致性校验、构建、打包，并设置 `PARITY_CHECK_HEAD=1`；若已提交的 `lib/` 与源码构建不一致则失败——即 v0.2.5 漂移防护）。以 `src` 为准，提交重建后的 `lib/`。
 

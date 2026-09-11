@@ -6,7 +6,7 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 ## Compatibility
 
-Verified runtimes are DeepSeek Harness `0.1.2-alpha.4` and `0.1.2-rc.1` on Cordis `4.0.2`; this record is evidence, not an allowlist.
+Verified runtimes are DeepSeek Harness `0.1.5-rc.1` (current) and historically `0.1.2-alpha.4` / `0.1.2-rc.1` on Cordis `4.0.2`; this record is evidence, not an allowlist.
 
 Unknown newer runtimes are attempted on a best-effort basis after one warning, and the plugin keeps its normal mount path.
 
@@ -42,7 +42,7 @@ Reads `ctx.sessionQuery` (live + persisted sessions). Does not scan `session.jso
 
 ## Release
 
-`pnpm run check` runs the full gate in order: unit tests, TypeScript typecheck, deterministic build-parity (clean temp build vs tracked `lib/`), package build, and a real `npm pack` + immutable Alpha.4 fixture validation + offline install + Host/client import smoke. The pack check reads only the repository-owned Alpha.4 manifest/tarballs, verifies the official Alpha.4 tag/commit and registry integrity, preserves versioned parent edges, and uses a fresh pnpm consumer with an invalid registry, offline/no-scripts/no-audit/no-fund settings, empty `NODE_PATH`, and scoped local-tarball overrides; it uses neither `--legacy-peer-deps` nor omit/force bypasses. The owner archive is written only below the prefixed temporary directory. It does not rewrite `lib/` before comparison, so a stale, missing or hand-edited artifact fails.
+`pnpm run check` runs the full gate in order: unit tests, TypeScript typecheck, deterministic build-parity (clean temp build vs tracked `lib/`), package build, and a real `npm pack` + immutable `fixtures/rc1` validation + offline install + Host/client import smoke. The pack check reads only the repository-owned 0.1.5-rc.1 manifest/tarballs, verifies the official 0.1.5-rc.1 tag/commit and registry integrity, preserves versioned parent edges, and uses a fresh pnpm consumer with an invalid registry, offline/no-scripts/no-audit/no-fund settings, empty `NODE_PATH`, and scoped local-tarball overrides; it uses neither `--legacy-peer-deps` nor omit/force bypasses. The owner archive is written only below the prefixed temporary directory. It does not rewrite `lib/` before comparison, so a stale, missing or hand-edited artifact fails.
 
 For a tag, run `pnpm run check:strict` (the same test, typecheck, parity, build, and pack order with `PARITY_CHECK_HEAD=1`; it fails if the committed `lib/` still differs from the source — the v0.2.5 drift guard). Keep `src` as the source of truth and commit the rebuilt `lib/`.
 
@@ -50,7 +50,7 @@ The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObser
 
 ## Release installation (Latest)
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. The release artifact targets DeepSeek Harness 0.1.2-alpha.4 and contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency.
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The release artifact targets DeepSeek Harness 0.1.5-rc.1 and contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency.
 
 Latest installation (the URL never contains a version):
 
