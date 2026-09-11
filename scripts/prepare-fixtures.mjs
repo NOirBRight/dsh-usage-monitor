@@ -20,14 +20,18 @@ import { fileURLToPath } from 'node:url'
 import { satisfies } from 'semver'
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const FIXTURE_PROFILE = process.env.DSH_FIXTURE_PROFILE ?? 'alpha4'
+const FIXTURE_PROFILE = process.env.DSH_FIXTURE_PROFILE ?? 'rc1'
 const FIXTURE_ROOT = join(ROOT, 'fixtures', FIXTURE_PROFILE)
 const TARBALL_ROOT = join(FIXTURE_ROOT, 'tarballs')
+const RC1_TARBALL_ROOT = resolve(process.env.DSH_RC1_TARBALL_DIR ?? '/home/noirbright/.local/opt/dsh-staging/rc1-tarballs')
 const ALPHA4_TARBALL_ROOT = resolve(process.env.DSH_ALPHA4_TARBALL_DIR ?? '/home/noirbright/.local/opt/dsh-staging/alpha4-tarballs')
 const OLD_TARBALL_ROOT = resolve(process.env.DSH_ALPHA1_TARBALL_DIR ?? join(ROOT, '..', '.alpha4-fixture-backups', 'usage-monitor-alpha1'))
-const ALPHA4 = process.env.DSH_FIXTURE_VERSION ?? '0.1.2-alpha.4'
-const OFFICIAL_TAG = process.env.DSH_OFFICIAL_TAG ?? 'dsh-v0.1.2-alpha.4'
-const OFFICIAL_COMMIT = process.env.DSH_OFFICIAL_COMMIT ?? '4e84901e6471b79ec0338099867ebb4606d12bb5'
+const RC1 = '0.1.5-rc.1'
+const ALPHA4 = '0.1.2-alpha.4'
+const FIXTURE_VERSION = process.env.DSH_FIXTURE_VERSION ?? (FIXTURE_PROFILE === 'rc1' ? RC1 : ALPHA4)
+const OFFICIAL_TAG = process.env.DSH_OFFICIAL_TAG ?? (FIXTURE_PROFILE === 'rc1' ? 'dsh-v0.1.5-rc.1' : 'dsh-v0.1.2-alpha.4')
+const OFFICIAL_COMMIT = process.env.DSH_OFFICIAL_COMMIT ?? (FIXTURE_PROFILE === 'rc1' ? '183f08e9c6dde7e36cd2318eaee70b0da08fb35e' : '4e84901e6471b79ec0338099867ebb4606d12bb5')
+const OFFICIAL_TARBALL_ROOT = FIXTURE_PROFILE === 'rc1' ? RC1_TARBALL_ROOT : ALPHA4_TARBALL_ROOT
 const OFFICIAL_REPOSITORY = 'https://github.com/deepseek-ai/deepseek-harness.git'
 const REGISTRY = 'https://registry.npmjs.org/'
 const FIELDS = ['dependencies', 'optionalDependencies', 'peerDependencies']
@@ -66,7 +70,7 @@ function normalizeRange(name, value, versions) {
   if (typeof value !== 'string' || !value.startsWith('workspace:')) return value
   const operator = value.slice('workspace:'.length)
   const version = versions.get(name)
-    ?? (name === '@deepseek-ai/cordis' ? '4.0.2' : name === '@deepseek-ai/schemastery' ? '3.18.2' : ALPHA4)
+    ?? (name === '@deepseek-ai/cordis' ? '4.0.2' : name === '@deepseek-ai/schemastery' ? '3.18.2' : FIXTURE_VERSION)
   if (operator === '*' || operator === '') return version
   if (operator === '^' || operator === '~') return operator + version
   return operator + version
@@ -108,7 +112,7 @@ function runtimeDependencies(manifest) {
 }
 
 function extractNormalize(source, destination, versions) {
-  const temp = mkdtempSync(join(tmpdir(), 'dsh-usage-monitor-alpha4-'))
+  const temp = mkdtempSync(join(tmpdir(), 'dsh-usage-monitor-fixture-'))
   try {
     run('tar', ['-xzf', source, '-C', temp])
     const packageJson = join(temp, 'package', 'package.json')
@@ -138,9 +142,9 @@ function sourceArchives(directory) {
 
 function main() {
   const sourcePackage = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
-  const alpha4Sources = sourceArchives(ALPHA4_TARBALL_ROOT)
+  const officialSources = sourceArchives(OFFICIAL_TARBALL_ROOT)
   const oldSources = sourceArchives(OLD_TARBALL_ROOT)
-  const versions = new Map(alpha4Sources.map(source => {
+  const versions = new Map(officialSources.map(source => {
     const manifest = manifestOf(source)
     return [manifest.name, manifest.version]
   }))
@@ -149,7 +153,7 @@ function main() {
     const manifest = manifestOf(source)
     if (!manifest.name.startsWith('@deepseek-ai/')) sources.set(packageId(manifest.name, manifest.version), { source, manifest, official: false })
   }
-  for (const source of alpha4Sources) {
+  for (const source of officialSources) {
     const manifest = manifestOf(source)
     sources.set(packageId(manifest.name, manifest.version), { source, manifest, official: manifest.name.startsWith('@deepseek-ai/') })
   }

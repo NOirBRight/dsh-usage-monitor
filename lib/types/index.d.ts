@@ -69,12 +69,15 @@ interface SessionQueryLike {
 }
 /**
  * Handle-based persistence surface used for cold reads. Mirrors the target
- * SessionPersistence public API (open/read/close plus stat/list): a `read`
- * handle never takes write ownership, so cold reads work while another handle
- * or process holds the write lock, and every opened handle is closed on a
- * determined finally path. There is no probing fallback: a missing method is
- * a backend incompatibility, and a failed read propagates instead of folding
- * as an empty log (missing must not read as zero, partial must not read as
+ * SessionPersistence public API (open/read/close plus list, and optional
+ * stat): a `read` handle never takes write ownership, so cold reads work
+ * while another handle or process holds the write lock, and every opened
+ * handle is closed on a determined finally path. Production fold-cache
+ * revisions come from `list()` only; `stat` remains on the Host seam for
+ * callers that need a single-id probe but is not required for the cache
+ * path. There is no probing fallback: a missing method is a backend
+ * incompatibility, and a failed read propagates instead of folding as an
+ * empty log (missing must not read as zero, partial must not read as
  * complete).
  */
 export interface ColdReadPersistence {

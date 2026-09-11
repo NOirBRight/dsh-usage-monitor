@@ -4,7 +4,7 @@
 ### Changed
 
 - Cold reads use the target handle seam: persistence.open(id, 'read') plus handle.read with a determined close/finally path; the read handle never takes write ownership. The readRaw/readFrom/inspect probing chain and its empty-array fallback are removed: failed reads propagate and are never cached as empty folds.
-- Fold-cache revisions come from one target persistence.list() snapshot; a rejected listing reads revision-less (cache miss) instead of stat-ing backend files.
+- Fold-cache revisions come from one target persistence.list() snapshot (list-based cache; optional Host `stat` is unused on this path); a rejected listing reads revision-less (cache miss) instead of stat-ing backend files.
 - DSH peer/dev declarations and the offline pack fixture graph target 0.1.5-rc.1 only (fixtures/rc1).
 
 ## [0.2.11] - 2026-09-03
