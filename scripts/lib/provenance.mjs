@@ -33,7 +33,8 @@ export function packageId(name, version) {
  * @returns {boolean} whether the candidate satisfies the range
  */
 export function satisfiesRange(version, range) {
-  return typeof version === "string" && typeof range === "string" && satisfies(version, range);
+  if (range === "*") return typeof version === "string" && version.length > 0
+  return typeof version === "string" && typeof range === "string" && satisfies(version, range)
 }
 
 function assertExactKeys(value, expected, label) {

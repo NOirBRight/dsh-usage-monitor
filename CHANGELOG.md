@@ -1,11 +1,11 @@
 # Changelog
-## [Unreleased] - DSH 0.1.5-rc.1 migration (W1 P4)
 
-### Changed
+## [0.2.14] - 2026-09-13
 
-- Cold reads use the target handle seam: persistence.open(id, 'read') plus handle.read with a determined close/finally path; the read handle never takes write ownership. The readRaw/readFrom/inspect probing chain and its empty-array fallback are removed: failed reads propagate and are never cached as empty folds.
-- Fold-cache revisions come from one target persistence.list() snapshot (list-based cache; optional Host `stat` is unused on this path); a rejected listing reads revision-less (cache miss) instead of stat-ing backend files.
-- DSH peer/dev declarations and the offline pack fixture graph target 0.1.5-rc.1 only (fixtures/rc1).
+- Fold usage from the JSONL backend's current-generation artifact (`resolveCurrentLog`) as raw JSONL. Host-unknown types (`assistant/chunk`, `tool/code-dispatch`) no longer refuse the session. The projection version is 2 so previously incomplete rows rebuild.
+- Settings → Usage answers from complete projection rows when a session log cannot be rebuilt. Host-refused vocabulary and read timeouts mark that revision incomplete, omit it from the snapshot, and skip it until the source revision changes instead of returning `usage query failed`.
+- DSH Host packages are no longer version-locked. `@deepseek-ai/dsh-*` peers are `*` and optional; unknown Hosts warn once and still mount. Cordis stays `>=4.0.2 <5.0.0`. Compile-target `devDependencies` remain `0.1.5-rc.1`.
+- Fold-cache revisions come from one `persistence.list()` snapshot. A rejected listing reads revision-less instead of inheriting a stale revision.
 
 ## [0.2.11] - 2026-09-03
 

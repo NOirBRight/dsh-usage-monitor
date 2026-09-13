@@ -75,41 +75,70 @@ describe('UsageProjection', () => {
     await restarted.close()
   })
 
-  it('marks stale rows and fails an exact query when a changed source cannot be rebuilt', async () => {
+  it('marks stale rows and answers from remaining complete sessions when a source cannot be rebuilt', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'usage-projection-failure-'))
     tempDirs.push(dir)
-    let revision = 'r1'
-    let fail = false
-    let reads = 0
+    let sessions = [
+      { id: 's1', cwd: '/repo', revision: 'r1' },
+      { id: 's2', cwd: '/repo', revision: 'r1' },
+    ]
+    let failS1 = false
+    const reads: string[] = []
+    const omitted: Array<{ sessionId: string, message: string }> = []
     const corpus = {
-      listSessions: async () => [{ id: 's1', cwd: '/repo', revision }],
-      readEvents: async () => {
-        reads += 1
-        if (fail) throw new Error('broken source')
-        return [header('kimi-coding', 'k3'), message(2, 2)]
+      listSessions: async () => sessions,
+      readEvents: async (id: string) => {
+        reads.push(id)
+        if (id === 's1' && failS1) throw new Error('broken source')
+        if (id === 's1') return [header('kimi-coding', 'k3'), message(2, 2)]
+        return [header('grok', 'grok-4'), message(8, 4)]
       },
     }
-    const projection = new UsageProjection(join(dir, 'index.sqlite'))
+    const projection = new UsageProjection(join(dir, 'index.sqlite'), {
+      onSourceError: (sessionId, error) => {
+        omitted.push({
+          sessionId,
+          message: error instanceof Error ? error.message : String(error),
+        })
+      },
+    })
     const first = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
-    expect(first.summary.requests).toBe(1)
-    expect(reads).toBe(1)
+    expect(first.summary.requests).toBe(2)
+    expect(reads.sort()).toEqual(['s1', 's2'])
 
-    revision = 'r2'
-    fail = true
-    await expect(projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } }))
-      .rejects.toThrow('broken source')
-    expect(reads).toBe(2)
+    sessions = [
+      { id: 's1', cwd: '/repo', revision: 'r2' },
+      { id: 's2', cwd: '/repo', revision: 'r1' },
+    ]
+    failS1 = true
+    reads.length = 0
+    const partial = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
+    expect(partial.summary.requests).toBe(1)
+    expect(partial.events.every(event => event.provider === 'grok')).toBe(true)
+    expect(reads).toEqual(['s1'])
+    expect(omitted).toEqual([{ sessionId: 's1', message: 'broken source' }])
     const db = new DatabaseSync(join(dir, 'index.sqlite'))
     expect(db.prepare('SELECT complete FROM usage_projection_sessions WHERE id = ?').get('s1'))
       .toEqual({ complete: 0 })
+    expect(db.prepare('SELECT complete FROM usage_projection_sessions WHERE id = ?').get('s2'))
+      .toEqual({ complete: 1 })
     expect(db.prepare('SELECT COUNT(*) AS count FROM usage_projection_steps WHERE session_id = ?').get('s1'))
       .toEqual({ count: 0 })
     db.close()
 
-    fail = false
+    reads.length = 0
+    const again = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
+    expect(again.summary.requests).toBe(1)
+    expect(reads).toEqual([])
+
+    failS1 = false
+    sessions = [
+      { id: 's1', cwd: '/repo', revision: 'r3' },
+      { id: 's2', cwd: '/repo', revision: 'r1' },
+    ]
     const recovered = await projection.query({ corpus, workspaces: workspaces(), query: { start: 0, end: 10 } })
-    expect(recovered.summary.requests).toBe(1)
-    expect(reads).toBe(3)
+    expect(recovered.summary.requests).toBe(2)
+    expect(reads).toEqual(['s1'])
     await projection.close()
   })
 
@@ -438,25 +467,31 @@ describe('UsageProjection', () => {
       query: { start: 0, end: 10 },
       transactionBatchSize: 2,
     }
-    await expect(projection.query(input)).rejects.toThrow('interrupted')
+    const partial = await projection.query(input)
+    expect(partial.summary.requests).toBe(2)
     expect(reads).toEqual(['s1', 's2', 's3'])
 
     fail = false
     reads.length = 0
+    const stillPartial = await projection.query(input)
+    expect(stillPartial.summary.requests).toBe(2)
+    expect(reads).toEqual([])
+
+    sessions[2] = { id: 's3', revision: 'r2' }
     const recovered = await projection.query(input)
     expect(recovered.summary.requests).toBe(3)
     expect(reads).toEqual(['s3'])
     await projection.close()
   })
 
-  it('rolls back and marks a whole write batch stale when SQLite rejects one row', async () => {
+  it('rolls back and deletes a whole write batch when SQLite rejects one row', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'usage-projection-rollback-'))
     tempDirs.push(dir)
-    const sessions = ['s1', 's2'].map(id => ({ id, revision: 'r1' }))
-    let invalid = true
+    let revision = 'r1'
+    let invalid = false
     const reads: string[] = []
     const corpus = {
-      listSessions: async () => sessions,
+      listSessions: async () => ['s1', 's2'].map(id => ({ id, revision })),
       readEvents: async (id: string) => {
         reads.push(id)
         return [header('provider', 'model'), message(id === 's2' && invalid ? Number.POSITIVE_INFINITY : 5, 1)]
@@ -469,11 +504,17 @@ describe('UsageProjection', () => {
       query: { start: 0, end: 10 },
       transactionBatchSize: 2,
     }
-    await expect(projection.query(input)).rejects.toThrow()
+    const first = await projection.query(input)
+    expect(first.summary.requests).toBe(2)
     const db = new DatabaseSync(join(dir, 'index.sqlite'))
+    expect(db.prepare('SELECT COUNT(*) AS count FROM usage_projection_sessions').get()).toEqual({ count: 2 })
+
+    revision = 'r2'
+    invalid = true
+    reads.length = 0
+    await expect(projection.query(input)).rejects.toThrow()
+    expect(db.prepare('SELECT id FROM usage_projection_sessions ORDER BY id').all()).toEqual([])
     expect(db.prepare('SELECT COUNT(*) AS count FROM usage_projection_steps').get()).toEqual({ count: 0 })
-    expect(db.prepare('SELECT COUNT(*) AS count FROM usage_projection_sessions WHERE complete = 1').get())
-      .toEqual({ count: 0 })
     db.close()
 
     invalid = false

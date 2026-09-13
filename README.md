@@ -6,12 +6,9 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 ## Compatibility
 
-Verified runtimes are DeepSeek Harness `0.1.5-rc.1` (current) and historically `0.1.2-alpha.4` / `0.1.2-rc.1` on Cordis `4.0.2`; this record is evidence, not an allowlist.
+Host `@deepseek-ai/dsh-*` packages are not version-locked: peers are `*` and optional. `devDependencies` pin the compile target (`0.1.5-rc.1`). Cordis stays `>=4.0.2 <5.0.0`.
 
-Unknown newer runtimes are attempted on a best-effort basis after one warning, and the plugin keeps its normal mount path.
-
-A reproduced failure is blocklisted only afterward; see the [compatibility records](package.json) for the affected version, reason, and evidence.
-
+Verified Hosts in `package.json#dsh.compatibility.dshReleases` are evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
 
 ## What it shows
 
@@ -25,10 +22,10 @@ Subscription quotas are not fetched.
 
 ## Installation
 
-DeepSeek Harness 0.1.0-rc.6 or later is required. Install directly from GitHub:
+Host DSH packages are not version-locked; see Compatibility. Install from GitHub:
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.11.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
 dsh web
 ```
 
@@ -38,7 +35,7 @@ Then open **Settings → Usage**.
 
 ## Data
 
-Reads `ctx.sessionQuery` (live + persisted sessions). Does not scan `session.jsonl.zstd` itself and does not read leftover community cache files.
+Reads `ctx.sessionQuery` (live + persisted sessions). Cold folds prefer the JSONL backend's `resolveCurrentLog` artifact as raw JSONL so Host-unknown event types still contribute usage; the plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
 
 ## Release
 
@@ -50,20 +47,20 @@ The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObser
 
 ## Release installation (Latest)
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. The release artifact targets DeepSeek Harness 0.1.5-rc.1 and contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency.
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check fixtures and compile-target `devDependencies` are 0.1.5-rc.1.
 
 Latest installation (the URL never contains a version):
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.11.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
 ~~~
 
 Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1b/dsh-usage-monitor-0.2.11.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.14/dsh-usage-monitor-0.2.14.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -71,7 +68,7 @@ Update, uninstall, and verify:
 ~~~sh
 # Update to the latest Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.11.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
 # Verify the loaded version
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -81,6 +78,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.11-015rc1b command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.14 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.11-015rc1b](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.11-015rc1b) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.11-015rc1b/SHA256SUMS).
+Release and integrity: [v0.2.14](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.14) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.14/SHA256SUMS).

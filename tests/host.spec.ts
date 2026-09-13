@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
@@ -6,6 +9,8 @@ import type { SessionHandle } from '@deepseek-ai/dsh-session-persistence'
 import { USAGE_QUERY_ENDPOINT } from '../src/client-contract.ts'
 import { corpusFrom, createUsageRpcHandler, parseRawEvents, READ_BUDGET_MS } from '../src/index.ts'
 import type { FoldableEvent } from '../src/fold.ts'
+
+const tempDirs: string[] = []
 
 const usageHeader = {
   type: 'request/header',
@@ -18,8 +23,9 @@ const usageMessage = {
   data: { turn: 1, step: 1, usage: { inputTokens: 2, outputTokens: 1 } },
 }
 
-afterEach(() => {
+afterEach(async () => {
   vi.useRealTimers()
+  await Promise.all(tempDirs.splice(0).map(dir => rm(dir, { recursive: true, force: true })))
 })
 
 describe('corpusFrom', () => {
@@ -102,6 +108,56 @@ describe('corpusFrom', () => {
     const steps = await corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' })
     expect(steps).toHaveLength(1)
     expect(steps?.[0]).toMatchObject({ provider: 'kimi-coding', model: 'k3', uncachedInputTokens: 2 })
+    expect(stub.closed).toEqual(['s1'])
+  })
+
+  it('folds Host-unknown event types from resolveCurrentLog without opening a handle', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-raw-log-'))
+    tempDirs.push(dir)
+    const path = join(dir, 'session.jsonl')
+    await writeFile(path, [
+      JSON.stringify({ type: 'session', id: 's1' }),
+      JSON.stringify({ type: 'ponytail/mode', time: 1, ignorable: true }),
+      JSON.stringify(usageHeader),
+      JSON.stringify({
+        type: 'assistant/chunk',
+        time: 2,
+        data: { turn: 1, step: 1, chunk: { type: 'usage', usage: { inputTokens: 3, outputTokens: 1 } } },
+      }),
+      JSON.stringify({ type: 'tool/code-dispatch', time: 3, data: {} }),
+    ].join('\n'))
+    const stub = stubPersistence(storedEvents)
+    const corpus = corpusFrom(sessions, {
+      ...stub.persistence,
+      resolveCurrentLog: async () => path,
+    }, undefined)
+    const steps = await corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' })
+    expect(steps).toEqual([expect.objectContaining({
+      provider: 'kimi-coding',
+      model: 'k3',
+      uncachedInputTokens: 3,
+      outputTokens: 1,
+    })])
+    expect(stub.opened).toEqual([])
+  })
+
+  it('folds from a vocabulary-refusal location instead of failing the session', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'usage-refusal-log-'))
+    tempDirs.push(dir)
+    const path = join(dir, 'session.jsonl')
+    await writeFile(path, [
+      JSON.stringify(usageHeader),
+      JSON.stringify(usageMessage),
+    ].join('\n'))
+    const stub = stubPersistence(storedEvents, {
+      readError: Object.assign(new Error('unknown event type'), {
+        name: 'SessionFormatUnsupportedError',
+        location: { kind: 'jsonl', path },
+      }),
+    })
+    const corpus = corpusFrom(sessions, stub.persistence, undefined)
+    const steps = await corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' })
+    expect(steps).toHaveLength(1)
     expect(stub.closed).toEqual(['s1'])
   })
 

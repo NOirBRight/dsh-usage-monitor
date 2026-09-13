@@ -2,8 +2,10 @@
  * Durable, revision-aware final-usage projection for exact range queries.
  *
  * Source logs remain authoritative. The SQLite sidecar stores only complete
- * folds for the current projection version; changed sessions are replaced in
- * bounded transactions and failed replacements are made visibly incomplete.
+ * folds for the current projection version. A changed session is replaced in a
+ * bounded transaction. A source fold failure marks that revision incomplete and
+ * omits it until the source revision changes. A batch write failure deletes the
+ * batch's session rows so the next query retries the write.
  */
 
 import { mkdirSync } from 'node:fs'
@@ -23,13 +25,24 @@ import type { StepUsage } from './fold.ts'
 import { BUILTIN_PRICING, type PricingTable } from './pricing.ts'
 import { queryUsage } from './query.ts'
 
-const PROJECTION_VERSION = 1
+const PROJECTION_VERSION = 2
 const BUSY_TIMEOUT_MS = 5_000
 
 /** Default number of session logs read concurrently. */
 export const DEFAULT_PROJECTION_READ_CONCURRENCY = 1
 /** Default number of sessions committed by one SQLite transaction. */
 export const DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE = 8
+
+/** Optional Host-side hooks for projection reconciliation. */
+export interface UsageProjectionHooks {
+  /**
+   * Called when a source fold throws. A persisted revision is marked incomplete;
+   * a live revision-less session is dropped from the sidecar instead.
+   * @param sessionId - session whose fold failed.
+   * @param error - the source error.
+   */
+  onSourceError?(sessionId: string, error: unknown): void
+}
 
 interface RebuildResult {
   session: CorpusSession
@@ -97,6 +110,7 @@ export function defaultUsageProjectionPath(): string {
  */
 export class UsageProjection {
   private readonly db: DatabaseSync
+  private readonly onSourceError: UsageProjectionHooks['onSourceError']
   private workerPromise: Promise<void> | undefined
   private nextTicket = 0
   private readonly pendingTickets = new Map<number, ReconcileTicket>()
@@ -106,7 +120,12 @@ export class UsageProjection {
   private closePromise: Promise<void> | undefined
   private checkpointNeeded: boolean
 
-  constructor(path: string) {
+  /**
+   * @param path - SQLite sidecar path.
+   * @param hooks - optional Host diagnostics for omitted sessions.
+   */
+  constructor(path: string, hooks?: UsageProjectionHooks) {
+    this.onSourceError = hooks?.onSourceError
     mkdirSync(dirname(path), { recursive: true })
     this.db = new DatabaseSync(path)
     this.db.exec([
@@ -290,7 +309,7 @@ export class UsageProjection {
   ): Promise<ReconcileOutcome> {
     const indexed = new Map<string, string>()
     for (const row of this.db.prepare(
-      'SELECT id, revision FROM usage_projection_sessions WHERE projection_version = ? AND complete = 1',
+      'SELECT id, revision FROM usage_projection_sessions WHERE projection_version = ?',
     ).all(PROJECTION_VERSION) as Array<{ id: string, revision: string }>) {
       indexed.set(row.id, row.revision)
     }
@@ -321,24 +340,24 @@ export class UsageProjection {
           }
         },
       )
-      let firstError: unknown
+      let commitError: unknown
       try {
         this.commitBatch(results)
       } catch (error) {
-        firstError = error
-        this.markBatchStale(results.map(result => result.session))
+        commitError = error
+        this.deleteBatchSessions(results.map(result => result.session))
       }
       for (const result of results) {
         if (result.session.revision === undefined && result.steps !== undefined) {
           volatile.set(result.session.id, result.steps)
         }
-        if (firstError === undefined && result.error !== undefined) firstError = result.error
+        if (result.error !== undefined) this.onSourceError?.(result.session.id, result.error)
         result.steps = undefined
         result.error = undefined
       }
       results.length = 0
       batch.length = 0
-      if (firstError !== undefined) throw firstError
+      if (commitError !== undefined) throw commitError
     }
     return { volatile, rebuilt: rebuild.length > 0 }
   }
@@ -415,18 +434,14 @@ export class UsageProjection {
     }
   }
 
-  private markBatchStale(sessions: readonly CorpusSession[]): void {
-    const markStale = this.db.prepare(
-      'INSERT INTO usage_projection_sessions (id, revision, projection_version, complete) VALUES (?, ?, ?, 0) ON CONFLICT(id) DO UPDATE SET revision = excluded.revision, projection_version = excluded.projection_version, complete = 0',
-    )
+  private deleteBatchSessions(sessions: readonly CorpusSession[]): void {
     const deleteSteps = this.db.prepare('DELETE FROM usage_projection_steps WHERE session_id = ?')
     const deleteSession = this.db.prepare('DELETE FROM usage_projection_sessions WHERE id = ?')
     this.db.exec('BEGIN')
     try {
       for (const session of sessions) {
         deleteSteps.run(session.id)
-        if (session.revision === undefined) deleteSession.run(session.id)
-        else markStale.run(session.id, session.revision, PROJECTION_VERSION)
+        deleteSession.run(session.id)
       }
       this.db.exec('COMMIT')
     } catch (error) {

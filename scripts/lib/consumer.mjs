@@ -170,6 +170,11 @@ export function buildConsumerPackageJson(graph, plugin) {
     type: "module",
     dependencies,
     overrides,
+    pnpm: {
+      peerDependencyRules: {
+        allowAny: ["@deepseek-ai/dsh-*"],
+      },
+    },
   };
 }
 function workspaceOverrides(overrides) {

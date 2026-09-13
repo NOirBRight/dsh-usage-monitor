@@ -2,8 +2,10 @@
  * Durable, revision-aware final-usage projection for exact range queries.
  *
  * Source logs remain authoritative. The SQLite sidecar stores only complete
- * folds for the current projection version; changed sessions are replaced in
- * bounded transactions and failed replacements are made visibly incomplete.
+ * folds for the current projection version. A changed session is replaced in a
+ * bounded transaction. A source fold failure marks that revision incomplete and
+ * omits it until the source revision changes. A batch write failure deletes the
+ * batch's session rows so the next query retries the write.
  */
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
 import { type SessionCorpus, type WorkspaceIndex } from './collect.ts';
@@ -12,6 +14,16 @@ import { type PricingTable } from './pricing.ts';
 export declare const DEFAULT_PROJECTION_READ_CONCURRENCY = 1;
 /** Default number of sessions committed by one SQLite transaction. */
 export declare const DEFAULT_PROJECTION_TRANSACTION_BATCH_SIZE = 8;
+/** Optional Host-side hooks for projection reconciliation. */
+export interface UsageProjectionHooks {
+    /**
+     * Called when a source fold throws. A persisted revision is marked incomplete;
+     * a live revision-less session is dropped from the sidecar instead.
+     * @param sessionId - session whose fold failed.
+     * @param error - the source error.
+     */
+    onSourceError?(sessionId: string, error: unknown): void;
+}
 /** Direct projection reconciliation request. */
 export interface UsageProjectionReconcileInput {
     /** Authoritative session source. */
@@ -49,6 +61,7 @@ export declare function defaultUsageProjectionPath(): string;
  */
 export declare class UsageProjection {
     private readonly db;
+    private readonly onSourceError;
     private workerPromise;
     private nextTicket;
     private readonly pendingTickets;
@@ -57,7 +70,11 @@ export declare class UsageProjection {
     private idleWaiters;
     private closePromise;
     private checkpointNeeded;
-    constructor(path: string);
+    /**
+     * @param path - SQLite sidecar path.
+     * @param hooks - optional Host diagnostics for omitted sessions.
+     */
+    constructor(path: string, hooks?: UsageProjectionHooks);
     /**
      * Reconcile every potentially relevant session before returning the range.
      * @param input - Source, workspace view, requested range, and optional bounds.
@@ -86,7 +103,7 @@ export declare class UsageProjection {
     private reconcileListing;
     private removeDeletedSessions;
     private commitBatch;
-    private markBatchStale;
+    private deleteBatchSessions;
     private readIndexedSteps;
     private sessionCanContribute;
     private restoreStep;
