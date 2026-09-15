@@ -1,8 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [0.2.15] - 2026-09-16
 
 - Fold live sessions through `sessionPersistence.inspect` / `readRaw` instead of deprecated `snapshotEvents`. A Host that exposes none of inspect, readRaw, the JSONL current-log helper, or a read handle fails the session instead of folding it as empty. The fold still skips unknown events, including `image/offload`.
+- Compatibility table records Lab-verified `0.1.6-alpha.1`.
 
 ## [0.2.14] - 2026-09-13
 

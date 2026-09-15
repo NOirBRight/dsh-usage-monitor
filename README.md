@@ -25,7 +25,7 @@ Subscription quotas are not fetched.
 Host DSH packages are not version-locked; see Compatibility. Install from GitHub:
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
 dsh web
 ```
 
@@ -53,14 +53,14 @@ Latest installation (the URL never contains a version):
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
 ~~~
 
 Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.14/dsh-usage-monitor-0.2.14.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/dsh-usage-monitor-0.2.15.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -68,7 +68,7 @@ Update, uninstall, and verify:
 ~~~sh
 # Update to the latest Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.14.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
 # Verify the loaded version
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -78,6 +78,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.14 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.15 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.14](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.14) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.14/SHA256SUMS).
+Release and integrity: [v0.2.15](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.15) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/SHA256SUMS).
