@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.16] - 2026-09-16
+
+- Loud failure names every persistence fallback: inspect, readRaw, resolveCurrentLog, or open. `readRaw` that returns an artifact skips inspect.
+
 ## [0.2.15] - 2026-09-16
 
 - Fold live sessions through `sessionPersistence.inspect` / `readRaw` instead of deprecated `snapshotEvents`. A Host that exposes none of inspect, readRaw, the JSONL current-log helper, or a read handle fails the session instead of folding it as empty. The fold still skips unknown events, including `image/offload`.

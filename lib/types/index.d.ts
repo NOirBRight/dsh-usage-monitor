@@ -68,9 +68,8 @@ interface SessionQueryLike {
     }>>;
 }
 /**
- * Persistence surface used for usage reads. Named `inspect` / `readRaw` are
- * the live and persisted log path; a host that exposes neither rejects
- * instead of folding an empty session. `open` / `list` / `stat` remain the
+ * Persistence surface used for usage reads. Named `readRaw` then `inspect`
+ * are the live and persisted log path. `open` / `list` / `stat` remain the
  * handle-based Target Release equivalents: a `read` handle never takes write
  * ownership and is always closed. Fold-cache revisions come from `list()`.
  *
@@ -78,8 +77,10 @@ interface SessionQueryLike {
  * the SessionPersistence Service Definition), folds read that artifact as raw
  * JSONL so Host-unknown event types still contribute usage. Otherwise the
  * handle seam is used; a vocabulary refusal that carries a diagnostic path is
- * folded from that artifact. Missing sessions and other backend failures
- * propagate and are never cached as empty folds.
+ * folded from that artifact. A host that exposes none of inspect, readRaw,
+ * resolveCurrentLog, or open rejects instead of folding an empty session.
+ * Missing sessions and other backend failures propagate and are never cached
+ * as empty folds.
  */
 export interface ColdReadPersistence {
     open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>;

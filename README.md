@@ -25,7 +25,7 @@ Subscription quotas are not fetched.
 Host DSH packages are not version-locked; see Compatibility. Install from GitHub:
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 dsh web
 ```
 
@@ -35,7 +35,7 @@ Then open **Settings → Usage**.
 
 ## Data
 
-Reads `ctx.sessionQuery` (live + persisted sessions). Folds go through `sessionPersistence.inspect` / `readRaw` when the Host exposes them; otherwise the JSONL `resolveCurrentLog` artifact or a read handle. A Host with none of those methods fails the session instead of folding it as empty. Raw JSONL keeps Host-unknown event types (`image/offload` is skipped by the fold). The plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
+Reads `ctx.sessionQuery` (live + persisted sessions). Folds go through `sessionPersistence.readRaw` then `inspect` when the Host exposes them; a returned raw artifact is the full log, so inspect is not also called. Otherwise the JSONL `resolveCurrentLog` artifact or a read handle. A Host with none of those methods fails the session instead of folding it as empty. Raw JSONL keeps Host-unknown event types (`image/offload` is skipped by the fold). The plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
 
 ## Release
 
@@ -53,14 +53,14 @@ Latest installation (the URL never contains a version):
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 ~~~
 
 Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/dsh-usage-monitor-0.2.16.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -68,7 +68,7 @@ Update, uninstall, and verify:
 ~~~sh
 # Update to the latest Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 # Verify the loaded version
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -78,6 +78,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.15 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.16 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.15](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.15) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/SHA256SUMS).
+Release and integrity: [v0.2.16](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.16) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/SHA256SUMS).

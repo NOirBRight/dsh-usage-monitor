@@ -144,9 +144,9 @@ describe('corpusFrom', () => {
       stat: async () => undefined,
       list: async () => [],
     } as never, undefined)
-    await expect(corpus.readEvents('s1')).rejects.toThrow('sessionPersistence.inspect/readRaw is required')
+    await expect(corpus.readEvents('s1')).rejects.toThrow('sessionPersistence.inspect, readRaw, resolveCurrentLog, or open is required')
     await expect(corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' }))
-      .rejects.toThrow('sessionPersistence.inspect/readRaw is required')
+      .rejects.toThrow('sessionPersistence.inspect, readRaw, resolveCurrentLog, or open is required')
   })
 
   it('keeps live.seq as the fold-cache revision', async () => {

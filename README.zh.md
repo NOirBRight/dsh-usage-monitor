@@ -25,7 +25,7 @@
 宿主 DSH 包不锁定发行号，见兼容性。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 dsh web
 ```
 
@@ -35,7 +35,7 @@ dsh web
 
 ## 数据
 
-走 `ctx.sessionQuery`（含进行中和已落盘会话）。有 `sessionPersistence.inspect` / `readRaw` 时经它们折算；否则用 JSONL 的 `resolveCurrentLog` 产物或 read handle。这些方法都不存在时会话失败，不折成空用量。Raw JSONL 保留宿主不认识的事件类型（`image/offload` 由 fold 跳过）。插件不自行拼会话目录，也不读社区插件留下的缓存。完全读不到的会话会从快照中省略，页面仍展示其余已完成的行。
+走 `ctx.sessionQuery`（含进行中和已落盘会话）。先 `sessionPersistence.readRaw`，再 `inspect`；`readRaw` 已返回产物时不再调 inspect。否则用 JSONL 的 `resolveCurrentLog` 产物或 read handle。这些方法都不存在时会话失败，不折成空用量。Raw JSONL 保留宿主不认识的事件类型（`image/offload` 由 fold 跳过）。插件不自行拼会话目录，也不读社区插件留下的缓存。完全读不到的会话会从快照中省略，页面仍展示其余已完成的行。
 
 ## 发布
 
@@ -53,14 +53,14 @@ Latest 安装命令（永久不含版本号）：
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 ~~~
 
 固定版本安装命令：
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/dsh-usage-monitor-0.2.16.tgz
 ~~~
 
 更新、卸载与验证：
@@ -68,7 +68,7 @@ dsh plugin --profile web add --force \
 ~~~sh
 # 更新到最新 Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.15.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
 # 验证加载与版本
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -78,6 +78,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 配置入口：Web 使用「设置」中的本插件页面；Host-only 插件使用 profile 的 dsh.profile.bundles 配置。先复制本 README 的最小 YAML/JSON 示例，再填写凭据或后端地址。
 
-回滚：重新执行固定版本 v0.2.15 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
+回滚：重新执行固定版本 v0.2.16 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
 
-Release 与完整性：[v0.2.15](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.15) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.15/SHA256SUMS)。
+Release 与完整性：[v0.2.16](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.16) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/SHA256SUMS)。

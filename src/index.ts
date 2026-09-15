@@ -193,9 +193,8 @@ interface SessionQueryLike {
 }
 
 /**
- * Persistence surface used for usage reads. Named `inspect` / `readRaw` are
- * the live and persisted log path; a host that exposes neither rejects
- * instead of folding an empty session. `open` / `list` / `stat` remain the
+ * Persistence surface used for usage reads. Named `readRaw` then `inspect`
+ * are the live and persisted log path. `open` / `list` / `stat` remain the
  * handle-based Target Release equivalents: a `read` handle never takes write
  * ownership and is always closed. Fold-cache revisions come from `list()`.
  *
@@ -203,8 +202,10 @@ interface SessionQueryLike {
  * the SessionPersistence Service Definition), folds read that artifact as raw
  * JSONL so Host-unknown event types still contribute usage. Otherwise the
  * handle seam is used; a vocabulary refusal that carries a diagnostic path is
- * folded from that artifact. Missing sessions and other backend failures
- * propagate and are never cached as empty folds.
+ * folded from that artifact. A host that exposes none of inspect, readRaw,
+ * resolveCurrentLog, or open rejects instead of folding an empty session.
+ * Missing sessions and other backend failures propagate and are never cached
+ * as empty folds.
  */
 export interface ColdReadPersistence {
   open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>
@@ -309,12 +310,14 @@ async function withReadHandle<T>(
   }
 }
 
-const PERSISTENCE_READ_REQUIRED = 'sessionPersistence.inspect/readRaw is required'
+const PERSISTENCE_READ_REQUIRED = 'sessionPersistence.inspect, readRaw, resolveCurrentLog, or open is required'
 
 /**
- * Prefer named `readRaw` / `inspect`. If the Host has neither, read the JSONL
- * current-log artifact or open a read handle. A vocabulary refusal's
- * `location.path` is a last-resort artifact path, not a probe of extra APIs.
+ * Prefer named `readRaw`, then `inspect`. A raw artifact is the full log, so
+ * inspect is not also called when `readRaw` returns content. If the Host
+ * has neither, read the JSONL current-log artifact or open a read handle. A
+ * vocabulary refusal's `location.path` is a last-resort artifact path, not
+ * a probe of extra APIs.
  */
 async function loadPersistedFoldSource(
   persistence: ColdReadPersistence,
