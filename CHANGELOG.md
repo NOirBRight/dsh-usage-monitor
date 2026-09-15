@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Fold live sessions through `sessionPersistence.inspect` / `readRaw` instead of deprecated `snapshotEvents`. A Host that exposes none of inspect, readRaw, the JSONL current-log helper, or a read handle fails the session instead of folding it as empty. The fold still skips unknown events, including `image/offload`.
+
 ## [0.2.14] - 2026-09-13
 
 - Fold usage from the JSONL backend's current-generation artifact (`resolveCurrentLog`) as raw JSONL. Host-unknown types (`assistant/chunk`, `tool/code-dispatch`) no longer refuse the session. The projection version is 2 so previously incomplete rows rebuild.

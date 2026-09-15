@@ -79,12 +79,86 @@ describe('corpusFrom', () => {
     expect(stub.closed).toEqual(['s1'])
   })
 
-  it('prefers the live snapshot and never opens persistence for it', async () => {
-    const live = { id: 's1', seq: 9, header: { id: 's1' }, snapshotEvents: () => [usageHeader] as readonly FoldableEvent[] }
+  it('reads a live session through inspect and never calls snapshotEvents', async () => {
+    const snapshotEvents = vi.fn(() => {
+      throw new Error('snapshotEvents is deprecated')
+    })
+    const live = { id: 's1', seq: 9, header: { id: 's1' }, snapshotEvents }
+    const inspect = vi.fn(async () => ({ events: [usageHeader] as readonly FoldableEvent[] }))
     const stub = stubPersistence(storedEvents)
-    const corpus = corpusFrom(sessions, stub.persistence, { get: (id: unknown) => String(id) === 's1' ? live : undefined, list: () => [live] })
+    const corpus = corpusFrom(
+      { listSessions: async () => [{ header: { id: 's1' }, live: true }] },
+      { ...stub.persistence, inspect },
+      { get: (id: unknown) => String(id) === 's1' ? live : undefined, list: () => [live] },
+    )
     expect(await corpus.readEvents('s1')).toHaveLength(1)
+    expect(snapshotEvents).not.toHaveBeenCalled()
+    expect(inspect).toHaveBeenCalled()
     expect(stub.opened).toEqual([])
+  })
+
+  it('folds a live session through inspect and never calls snapshotEvents', async () => {
+    const snapshotEvents = vi.fn(() => {
+      throw new Error('snapshotEvents is deprecated')
+    })
+    const live = { id: 's1', seq: 9, header: { id: 's1' }, snapshotEvents }
+    const inspect = vi.fn(async () => ({ events: storedEvents as readonly FoldableEvent[] }))
+    const stub = stubPersistence(storedEvents)
+    const corpus = corpusFrom(
+      { listSessions: async () => [{ header: { id: 's1' }, live: true }] },
+      { ...stub.persistence, inspect },
+      { get: (id: unknown) => String(id) === 's1' ? live : undefined, list: () => [live] },
+    )
+    const steps = await corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' })
+    expect(steps).toHaveLength(1)
+    expect(steps?.[0]).toMatchObject({ provider: 'kimi-coding', model: 'k3', uncachedInputTokens: 2 })
+    expect(snapshotEvents).not.toHaveBeenCalled()
+    expect(stub.opened).toEqual([])
+  })
+
+  it('reads a persisted session through inspect without opening a handle', async () => {
+    const inspect = vi.fn(async () => ({ events: storedEvents as readonly FoldableEvent[] }))
+    const stub = stubPersistence(storedEvents)
+    const corpus = corpusFrom(sessions, { ...stub.persistence, inspect }, undefined)
+    expect(await corpus.readEvents('s1')).toHaveLength(2)
+    expect(inspect).toHaveBeenCalled()
+    expect(stub.opened).toEqual([])
+  })
+
+  it('reads a persisted session through readRaw without inspecting', async () => {
+    const content = [JSON.stringify(usageHeader), JSON.stringify(usageMessage)].join('\n')
+    const readRaw = vi.fn(async () => ({ content }))
+    const inspect = vi.fn(async () => {
+      throw new Error('should not inspect')
+    })
+    const stub = stubPersistence(storedEvents)
+    const corpus = corpusFrom(sessions, { ...stub.persistence, readRaw, inspect }, undefined)
+    expect(await corpus.readEvents('s1')).toHaveLength(2)
+    expect(readRaw).toHaveBeenCalled()
+    expect(inspect).not.toHaveBeenCalled()
+    expect(stub.opened).toEqual([])
+  })
+
+  it('fails when inspect and readRaw are missing instead of folding an empty session', async () => {
+    const corpus = corpusFrom(sessions, {
+      stat: async () => undefined,
+      list: async () => [],
+    } as never, undefined)
+    await expect(corpus.readEvents('s1')).rejects.toThrow('sessionPersistence.inspect/readRaw is required')
+    await expect(corpus.foldSession?.({ sessionId: 's1', workspaceId: 'w1', workspaceTitle: 'Repo' }))
+      .rejects.toThrow('sessionPersistence.inspect/readRaw is required')
+  })
+
+  it('keeps live.seq as the fold-cache revision', async () => {
+    const live = { id: 's1', seq: 9, header: { id: 's1' } }
+    const stub = stubPersistence(storedEvents)
+    const corpus = corpusFrom(
+      { listSessions: async () => [{ header: { id: 's1' }, live: true }] },
+      stub.persistence,
+      { get: (id: unknown) => String(id) === 's1' ? live : undefined, list: () => [live] },
+    )
+    const [record] = await corpus.listSessions()
+    expect(record?.revision).toBe('live:9')
   })
 
   it('lets a missing session propagate instead of folding it as zero', async () => {

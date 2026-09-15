@@ -109,6 +109,28 @@ describe('foldSessionUsage', () => {
     expect(events).toEqual([])
   })
 
+  it('ignores unknown events including image/offload', () => {
+    const events = foldSessionUsage({
+      ...stamp,
+      events: [
+        header(1, 'kimi-coding', 'k3'),
+        { type: 'image/offload', time: 2, data: { id: 'img-1' } },
+        { type: 'future/event', time: 3, data: { payload: true } },
+        message(4, 1, 1, { inputTokens: 4, outputTokens: 2 }),
+      ],
+    })
+    expect(events).toEqual([{
+      time: 4,
+      ...stamp,
+      provider: 'kimi-coding',
+      model: 'k3',
+      uncachedInputTokens: 4,
+      outputTokens: 2,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+    }])
+  })
+
   it('folds raw JSONL incrementally with the same replacements and route changes', () => {
     const events = [
       header(1, 'openai-codex', 'gpt-5.6-sol'),

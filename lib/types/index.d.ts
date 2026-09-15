@@ -68,16 +68,18 @@ interface SessionQueryLike {
     }>>;
 }
 /**
- * Persistence surface used for cold usage reads. Mirrors SessionPersistence
- * `open`/`list`/`stat`. A `read` handle never takes write ownership and is
- * always closed. Fold-cache revisions come from `list()`.
+ * Persistence surface used for usage reads. Named `inspect` / `readRaw` are
+ * the live and persisted log path; a host that exposes neither rejects
+ * instead of folding an empty session. `open` / `list` / `stat` remain the
+ * handle-based Target Release equivalents: a `read` handle never takes write
+ * ownership and is always closed. Fold-cache revisions come from `list()`.
  *
  * When the JSONL backend exposes `resolveCurrentLog` (runtime method, not on
- * the SessionPersistence Service Definition), cold folds read that artifact
- * as raw JSONL so Host-unknown event types still contribute usage. Otherwise
- * the handle seam is used; a vocabulary refusal that carries a diagnostic
- * path is folded from that artifact. Missing sessions and other backend
- * failures propagate and are never cached as empty folds.
+ * the SessionPersistence Service Definition), folds read that artifact as raw
+ * JSONL so Host-unknown event types still contribute usage. Otherwise the
+ * handle seam is used; a vocabulary refusal that carries a diagnostic path is
+ * folded from that artifact. Missing sessions and other backend failures
+ * propagate and are never cached as empty folds.
  */
 export interface ColdReadPersistence {
     open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>;
@@ -88,6 +90,20 @@ export interface ColdReadPersistence {
      * vocabulary. Absent on backends that do not keep one file per session.
      */
     resolveCurrentLog?(id: SessionId, signal?: AbortSignal): Promise<string | undefined>;
+    /**
+     * Logical event log for a live or persisted session, without taking write
+     * ownership. Absent on hosts that only expose the handle seam.
+     */
+    inspect?(id: SessionId, signal?: AbortSignal): Promise<{
+        events: readonly FoldableEvent[];
+    }>;
+    /**
+     * Verbatim artifact text for a session. `undefined` means the artifact is
+     * absent, not that the backend lacks the method.
+     */
+    readRaw?(id: SessionId, signal?: AbortSignal): Promise<{
+        content: string;
+    } | undefined>;
 }
 /**
  * Parse one raw artifact's text into foldable events. The backend hands back
@@ -100,7 +116,6 @@ export declare function parseRawEvents(content: string): readonly FoldableEvent[
 interface LiveSessionLike {
     id: unknown;
     seq: number;
-    snapshotEvents(): readonly FoldableEvent[];
     header: SessionHeaderLike;
 }
 interface SessionStoreLike {

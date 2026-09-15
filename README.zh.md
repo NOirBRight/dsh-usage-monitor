@@ -35,7 +35,7 @@ dsh web
 
 ## 数据
 
-走 `ctx.sessionQuery`（含进行中和已落盘会话）。冷读优先用 JSONL 后端 `resolveCurrentLog` 给出的产物当 raw JSONL 折算，宿主不认识的事件类型仍计入用量；插件不自行拼会话目录，也不读社区插件留下的缓存。完全读不到的会话会从快照中省略，页面仍展示其余已完成的行。
+走 `ctx.sessionQuery`（含进行中和已落盘会话）。有 `sessionPersistence.inspect` / `readRaw` 时经它们折算；否则用 JSONL 的 `resolveCurrentLog` 产物或 read handle。这些方法都不存在时会话失败，不折成空用量。Raw JSONL 保留宿主不认识的事件类型（`image/offload` 由 fold 跳过）。插件不自行拼会话目录，也不读社区插件留下的缓存。完全读不到的会话会从快照中省略，页面仍展示其余已完成的行。
 
 ## 发布
 

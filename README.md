@@ -35,7 +35,7 @@ Then open **Settings → Usage**.
 
 ## Data
 
-Reads `ctx.sessionQuery` (live + persisted sessions). Cold folds prefer the JSONL backend's `resolveCurrentLog` artifact as raw JSONL so Host-unknown event types still contribute usage; the plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
+Reads `ctx.sessionQuery` (live + persisted sessions). Folds go through `sessionPersistence.inspect` / `readRaw` when the Host exposes them; otherwise the JSONL `resolveCurrentLog` artifact or a read handle. A Host with none of those methods fails the session instead of folding it as empty. Raw JSONL keeps Host-unknown event types (`image/offload` is skipped by the fold). The plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
 
 ## Release
 
