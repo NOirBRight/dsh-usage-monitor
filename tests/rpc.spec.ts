@@ -49,6 +49,7 @@ describe('usage-monitor RPC', () => {
     ctx.provide('sessionPersistence', stubPersistence([]).persistence as never)
     ctx.provide('workspaceRegistry', { list: () => [] } as never)
     ctx.provide('connection', { rpc: { handle } } as never)
+    ctx.provide('webServer', { register: () => () => {} } as never)
     const fiber = ctx.plugin({ inject: [...inject], Config, apply }, {})
     await fiber.await()
     expect(handle).toHaveBeenCalledTimes(1)
@@ -85,6 +86,7 @@ describe('usage-monitor RPC', () => {
         },
       },
     } as never)
+    ctx.provide('webServer', { register: () => () => {} } as never)
     const fiber = ctx.plugin({ inject: [...inject], Config, apply }, {})
     await fiber.await()
     expect(listSessions).not.toHaveBeenCalled()
@@ -121,6 +123,7 @@ describe('usage-monitor RPC', () => {
         },
       },
     } as never)
+    ctx.provide('webServer', { register: () => () => {} } as never)
     const fiber = ctx.plugin({ inject: [...inject], Config, apply }, {})
     await fiber.await()
 

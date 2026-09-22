@@ -33,6 +33,7 @@ async function createLoader() {
       handle: () => () => Promise.resolve(),
     },
   } as never)
+  context.provide('webServer', { register: () => () => {} } as never)
   await context.plugin(Loader)
   context.loader.internal = {
     version: 'v2',

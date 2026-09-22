@@ -55,7 +55,7 @@ export { estimateCost, lookupPricing, BUILTIN_PRICING } from './pricing.ts'
 export { buildStackedSeries, breakdownOf, breakdownRows, niceMax } from './chart.ts'
 
 export const name = 'dsh-usage-monitor'
-export const inject = ['sessionQuery', 'workspaceRegistry', 'sessionPersistence']
+export const inject = ['sessionQuery', 'workspaceRegistry', 'sessionPersistence', 'webServer']
 
 export const READ_BUDGET_MS = 20_000
 
@@ -480,7 +480,7 @@ export function apply(ctx: Context, config: Config = DEFAULT_CONFIG): void {
     return next
   }
 
-  ctx.inject(['connection'], (connectionCtx) => {
+  ctx.inject(['connection', 'webServer'], (connectionCtx) => {
     connectionCtx.connection.rpc.handle(
       USAGE_RPC_CHANNEL,
       createUsageRpcHandler({ collect }),

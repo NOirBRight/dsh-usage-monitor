@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.17
+
+- Declare `webServer` on the Host `inject` list (and nested Connection scope) so `connection.rpc.handle` can mount Usage RPC on DSH 0.1.6+ inject enforcement.
+
 ## [0.2.16] - 2026-09-16
 
 - Loud failure names every persistence fallback: inspect, readRaw, resolveCurrentLog, or open. `readRaw` that returns an artifact skips inspect.
