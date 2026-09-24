@@ -1,6 +1,6 @@
 /** Browser-safe constants and JSON decoders shared by Host and Web faces. */
-/** Private Connection RPC channel used by this package's Host and Web faces. */
-export declare const USAGE_RPC_CHANNEL = "/usage-monitor";
+/** Exact authenticated Host Fetch method for the usage RPC route. */
+export declare const USAGE_RPC_METHOD = "plugin-rpc/usage-monitor";
 /** Windowed usage snapshot. */
 export declare const USAGE_QUERY_ENDPOINT = "usage/query";
 /** Token buckets reported by one model step. */

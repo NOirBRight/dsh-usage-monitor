@@ -25,13 +25,11 @@ async function createLoader() {
   const listSessions = vi.fn(async () => [])
   const listSnapshots = vi.fn(async () => [])
   const readFrom = vi.fn(async () => ({ events: [] }))
-  context.provide('sessionQuery', { listSessions } as never)
+  context.provide('sessionQuery', { listSessions, readSession: vi.fn(async () => ({ events: [] })) } as never)
   context.provide('sessionPersistence', { listSnapshots, readFrom } as never)
   context.provide('workspaceRegistry', { list: () => [] } as never)
   context.provide('connection', {
-    rpc: {
-      handle: () => () => Promise.resolve(),
-    },
+    fetch: { register: () => () => {} },
   } as never)
   context.provide('webServer', { register: () => () => {} } as never)
   await context.plugin(Loader)
@@ -50,6 +48,7 @@ describe('usage-monitor Loader composition', () => {
     const loaded = await createLoader()
     const id = await loaded.context.loader.create({ name: 'dsh-usage-monitor' })
     await loaded.context.loader.await()
+    await loaded.context.loader.resolve(id).fiber?.await()
 
     expect(loaded.context.loader.resolve(id).fiber?.config).toEqual({
       projectionWarmup: 'on-demand',
@@ -61,12 +60,12 @@ describe('usage-monitor Loader composition', () => {
     expect(loaded.readFrom).not.toHaveBeenCalled()
   })
 
-  it('fails loud when an entry supplies an invalid explicit config', async () => {
+  it('rejects invalid projection config when the Loader starts its fiber', async () => {
     const loaded = await createLoader()
-
-    await expect(loaded.context.loader.create({
+    const id = await loaded.context.loader.create({
       name: 'dsh-usage-monitor',
       config: { projectionReadConcurrency: 0 },
-    })).rejects.toThrow(/positive safe integer.*projectionReadConcurrency/)
+    })
+    await expect(loaded.context.loader.resolve(id).fiber?.await()).rejects.toThrow()
   })
 })

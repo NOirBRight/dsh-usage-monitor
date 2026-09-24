@@ -6,7 +6,7 @@
 
 ## 兼容性
 
-宿主 `@deepseek-ai/dsh-*` 不锁定发行号：peer 为 `*` 且 optional。`devDependencies` 钉编译目标（`0.1.5-rc.1`）。Cordis 保持 `>=4.0.2 <5.0.0`。
+宿主 DSH peer 与编译目标将 `@deepseek-ai/dsh-*` 固定为 `0.1.7-alpha.2`；Cordis 使用 `~4.0.4`。可选 peer 让插件在支持集以外仍可加载。
 
 `package.json#dsh.compatibility.dshReleases` 里的已验证宿主是证据，不是允许列表。未知的新宿主告警一次后仍按正常路径挂载。只有复现过的故障才会加入 blocklist。
 
@@ -22,7 +22,7 @@
 
 ## 安装
 
-宿主 DSH 包不锁定发行号，见兼容性。从 GitHub 安装：
+宿主依赖固定为 alpha2 包集，见兼容性。从 GitHub 安装：
 
 ```sh
 dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
@@ -35,7 +35,7 @@ dsh web
 
 ## 数据
 
-走 `ctx.sessionQuery`（含进行中和已落盘会话）。先 `sessionPersistence.readRaw`，再 `inspect`；`readRaw` 已返回产物时不再调 inspect。否则用 JSONL 的 `resolveCurrentLog` 产物或 read handle。这些方法都不存在时会话失败，不折成空用量。Raw JSONL 保留宿主不认识的事件类型（`image/offload` 由 fold 跳过）。插件不自行拼会话目录，也不读社区插件留下的缓存。完全读不到的会话会从快照中省略，页面仍展示其余已完成的行。
+通过公开的 `ctx.sessionQuery.readSession` 读取进行中与已落盘日志；`sessionPersistence.list` 只提供缓存 revision。Usage RPC 使用经过认证的 `/api/plugin-rpc/usage-monitor` Fetch 路由，不检查私有 persistence 方法或会话文件路径。无法读取的会话会省略；只返回折叠后的用量汇总。
 
 ## 发布
 
@@ -47,7 +47,7 @@ dsh web
 
 ## 正式版安装（Latest）
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. 发布包只包含构建后的 Host/Client 产物，不含兄弟仓库源码、本机路径或 link:/workspace: 依赖。打包夹具与编译目标 `devDependencies` 为 0.1.5-rc.1。
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. 发布包只包含构建后的 Host/Client 产物，不含兄弟仓库源码、本机路径或 link:/workspace: 依赖。打包夹具仍是冻结的 0.1.5-rc.1 集合；编译目标 `devDependencies` 固定 DSH `0.1.7-alpha.2`。
 
 Latest 安装命令（永久不含版本号）：
 

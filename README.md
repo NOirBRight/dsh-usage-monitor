@@ -6,7 +6,7 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 ## Compatibility
 
-Host `@deepseek-ai/dsh-*` packages are not version-locked: peers are `*` and optional. `devDependencies` pin the compile target (`0.1.5-rc.1`). Cordis stays `>=4.0.2 <5.0.0`.
+Host DSH peers and compile-target dependencies pin `@deepseek-ai/dsh-*` to `0.1.7-alpha.2`; Cordis is `~4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
 
 Verified Hosts in `package.json#dsh.compatibility.dshReleases` are evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
 
@@ -22,7 +22,7 @@ Subscription quotas are not fetched.
 
 ## Installation
 
-Host DSH packages are not version-locked; see Compatibility. Install from GitHub:
+Host dependencies are pinned to the alpha2 package set; see Compatibility. Install from GitHub:
 
 ```sh
 dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
@@ -35,7 +35,7 @@ Then open **Settings → Usage**.
 
 ## Data
 
-Reads `ctx.sessionQuery` (live + persisted sessions). Folds go through `sessionPersistence.readRaw` then `inspect` when the Host exposes them; a returned raw artifact is the full log, so inspect is not also called. Otherwise the JSONL `resolveCurrentLog` artifact or a read handle. A Host with none of those methods fails the session instead of folding it as empty. Raw JSONL keeps Host-unknown event types (`image/offload` is skipped by the fold). The plugin does not invent session directory layout and does not read leftover community cache files. A session that cannot be read at all is omitted from the snapshot; the page still shows the remaining complete rows.
+Reads live and persisted logs through the public `ctx.sessionQuery.readSession` API; `sessionPersistence.list` supplies cache revisions only. The usage RPC uses the authenticated `/api/plugin-rpc/usage-monitor` Fetch route. It does not inspect private persistence methods or session file paths. Unreadable sessions are omitted; only folded usage aggregates are returned.
 
 ## Release
 
@@ -47,7 +47,7 @@ The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObser
 
 ## Release installation (Latest)
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check fixtures and compile-target `devDependencies` are 0.1.5-rc.1.
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check fixtures remain the frozen 0.1.5-rc.1 set; compile-target `devDependencies` pin DSH `0.1.7-alpha.2`.
 
 Latest installation (the URL never contains a version):
 

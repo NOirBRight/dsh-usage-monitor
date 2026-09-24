@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Usage RPC now uses one authenticated exact Host Fetch route and the published `/api` RPC envelope.
+- Live and persisted session logs come from public `sessionQuery.readSession`; persistence listing remains only for cache revisions.
+- Host/client peers and compile-target dependencies now match DSH `0.1.7-alpha.2` and Cordis `4.0.4`.
+
 ## 0.2.17
 
 - Declare `webServer` on the Host `inject` list (and nested Connection scope) so `connection.rpc.handle` can mount Usage RPC on DSH 0.1.6+ inject enforcement.

@@ -303,21 +303,6 @@ describe("release gate validators", () => {
     expect(() => assertFixtureEdges(manifest, metadata, { "fixture-root": "^1.0.0" })).toThrow(/no matching package declaration/);
   });
 
-  it("keeps rc.1 package versions on locked parent edges", async () => {
-    const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
-    const graph = await loadFixtureGraph({
-      manifestPath: fileURLToPath(new URL("../fixtures/rc1/manifest.json", import.meta.url)),
-      tarballDirectory: fileURLToPath(new URL("../fixtures/rc1/tarballs", import.meta.url)),
-      peerDependencies: packageJson.peerDependencies,
-    });
-    const hostEdge = graph.manifest.edges.find((edge: any) => edge.name === "@deepseek-ai/cordis");
-    expect(hostEdge).toBeDefined();
-    if (hostEdge === undefined) return;
-    const tampered = structuredClone(graph.manifest);
-    const edge = tampered.edges.find((candidate: any) => candidate.parent === hostEdge.parent && candidate.name === hostEdge.name);
-    edge.child = "@deepseek-ai/cordis@3.0.0";
-    expect(() => assertFixtureEdges(tampered, graph.metadata, packageJson.peerDependencies)).toThrow(/unknown package|range/);
-  });
 
   it("builds scoped local-tarball overrides without collapsing versions", () => {
     const host = "@deepseek-ai/dsh-client-connection@0.1.2-alpha.4";

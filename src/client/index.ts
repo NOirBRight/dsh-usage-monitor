@@ -8,7 +8,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
 import {
   USAGE_QUERY_ENDPOINT,
-  USAGE_RPC_CHANNEL,
+  USAGE_RPC_METHOD,
   decodeUsageSnapshot,
 } from '../client-contract.ts'
 import { UsageDashboard } from './UsageDashboard.tsx'
@@ -39,7 +39,10 @@ export function apply(ctx: ClientContext): void {
     const controller = new AbortController()
     const timer = globalThis.setTimeout(() => controller.abort(), 90_000)
     try {
-      const result = await rpc.call(USAGE_RPC_CHANNEL, USAGE_QUERY_ENDPOINT, { start, end }, controller.signal)
+      const result = await rpc.call('/api', USAGE_RPC_METHOD, {
+        endpoint: USAGE_QUERY_ENDPOINT,
+        payload: { start, end },
+      }, controller.signal)
       if (!result.ok) throw new Error(result.error.message)
       const decoded = decodeUsageSnapshot(result.value)
       if (decoded === undefined) throw new Error(t('failed'))

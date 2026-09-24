@@ -4,12 +4,12 @@
  */
 import type { Context } from '@deepseek-ai/cordis';
 import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection';
-import { SessionId } from '@deepseek-ai/dsh-session';
-import type { SessionAccess, SessionHandle, SessionPersistenceListOptions, SessionPersistenceOpenOptions, SessionPersistenceSnapshot, SessionPersistenceStatOptions } from '@deepseek-ai/dsh-session-persistence';
+import type { SessionPersistenceListOptions, SessionPersistenceSnapshot } from '@deepseek-ai/dsh-session-persistence';
+import type { SessionQueryEngine } from '@deepseek-ai/dsh-session-query';
 import type { UsageQueryRequest, UsageSnapshot } from './client-contract.ts';
 import type { SessionCorpus, WorkspaceIndex } from './collect.ts';
 import { type FoldableEvent } from './fold.ts';
-export { USAGE_RPC_CHANNEL, USAGE_QUERY_ENDPOINT, decodeUsageQueryRequest, decodeUsageSnapshot, } from './client-contract.ts';
+export { USAGE_RPC_METHOD, USAGE_QUERY_ENDPOINT, decodeUsageQueryRequest, decodeUsageSnapshot, } from './client-contract.ts';
 export type { UsageEvent, UsageQueryRequest, UsageSnapshot, UsageSummary } from './client-contract.ts';
 export { foldRawSessionUsage, foldSessionUsage } from './fold.ts';
 export { FoldCache, collectUsage, resolveWorkspace } from './collect.ts';
@@ -61,58 +61,12 @@ interface SessionHeaderLike {
     cwd?: string;
     createdAt?: number;
 }
-interface SessionQueryLike {
-    listSessions(signal?: AbortSignal): Promise<Array<{
-        header: SessionHeaderLike;
-        live?: boolean;
-    }>>;
-}
-/**
- * Persistence surface used for usage reads. Named `readRaw` then `inspect`
- * are the live and persisted log path. `open` / `list` / `stat` remain the
- * handle-based Target Release equivalents: a `read` handle never takes write
- * ownership and is always closed. Fold-cache revisions come from `list()`.
- *
- * When the JSONL backend exposes `resolveCurrentLog` (runtime method, not on
- * the SessionPersistence Service Definition), folds read that artifact as raw
- * JSONL so Host-unknown event types still contribute usage. Otherwise the
- * handle seam is used; a vocabulary refusal that carries a diagnostic path is
- * folded from that artifact. A host that exposes none of inspect, readRaw,
- * resolveCurrentLog, or open rejects instead of folding an empty session.
- * Missing sessions and other backend failures propagate and are never cached
- * as empty folds.
- */
+type SessionQueryLike = Pick<SessionQueryEngine, 'listSessions' | 'readSession'>;
+/** Public persistence surface used only for cold revision snapshots. */
 export interface ColdReadPersistence {
-    open(id: SessionId, access: SessionAccess, options?: SessionPersistenceOpenOptions): Promise<SessionHandle>;
-    stat(id: SessionId, options?: SessionPersistenceStatOptions): Promise<SessionPersistenceSnapshot | undefined>;
     list(options?: SessionPersistenceListOptions): Promise<readonly SessionPersistenceSnapshot[]>;
-    /**
-     * JSONL backend current-generation artifact path, without validating event
-     * vocabulary. Absent on backends that do not keep one file per session.
-     */
-    resolveCurrentLog?(id: SessionId, signal?: AbortSignal): Promise<string | undefined>;
-    /**
-     * Logical event log for a live or persisted session, without taking write
-     * ownership. Absent on hosts that only expose the handle seam.
-     */
-    inspect?(id: SessionId, signal?: AbortSignal): Promise<{
-        events: readonly FoldableEvent[];
-    }>;
-    /**
-     * Verbatim artifact text for a session. `undefined` means the artifact is
-     * absent, not that the backend lacks the method.
-     */
-    readRaw?(id: SessionId, signal?: AbortSignal): Promise<{
-        content: string;
-    } | undefined>;
 }
-/**
- * Parse one raw artifact's text into foldable events. The backend hands back
- * the stored bytes verbatim — including the header line and event types this
- * host does not validate — so every line must fend for itself: unparseable
- * lines and records without a string `type` plus finite numeric `time` are
- * skipped rather than rejected.
- */
+/** Parse caller-supplied raw JSONL into events usable by the usage fold. */
 export declare function parseRawEvents(content: string): readonly FoldableEvent[];
 interface LiveSessionLike {
     id: unknown;
@@ -134,6 +88,6 @@ interface WorkspaceRegistryLike {
 }
 export declare function corpusFrom(sessionQuery: SessionQueryLike, persistence: ColdReadPersistence, sessions: (() => SessionStoreLike | undefined) | SessionStoreLike | undefined): SessionCorpus;
 export declare function workspacesFrom(registry: WorkspaceRegistryLike): WorkspaceIndex;
-/** Register the loopback `/usage-monitor` channel without reading history. */
+/** Register the authenticated usage RPC Fetch route without reading history. */
 export declare function apply(ctx: Context, config?: Config): void;
 //# sourceMappingURL=index.d.ts.map
