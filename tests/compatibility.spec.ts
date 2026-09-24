@@ -1,7 +1,8 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { shouldMountDshRuntime } from '../src/compatibility.ts'
 
-const VERIFIED = new Set(['0.1.7-alpha.2'])
+const VERIFIED = new Set(['0.1.7-alpha.2', '0.1.7-rc.1'])
 
 function logger(warnings: string[]) {
   return { warn(message: string): void { warnings.push(message) } }
@@ -30,10 +31,27 @@ describe('DSH forward compatibility policy', () => {
     ])
   })
 
-  it('does not warn for a verified runtime', () => {
+  it.each([...VERIFIED])('does not warn for verified runtime %s', (version) => {
     const warnings: string[] = []
-    expect(shouldMountDshRuntime(logger(warnings), 'test-plugin', '0.1.7-alpha.2', VERIFIED)).toBe(true)
+    expect(shouldMountDshRuntime(logger(warnings), 'test-plugin', version, VERIFIED)).toBe(true)
     expect(warnings).toEqual([])
+  })
+
+  it('declares the rc.1 compatibility evidence and open DSH dependency ranges', () => {
+    const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
+      dsh?: { compatibility?: { dshReleases?: Record<string, string> } }
+      peerDependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }
+    expect(manifest.dsh?.compatibility?.dshReleases).toEqual({
+      '0.1.7-alpha.2': 'compatible',
+      '0.1.7-rc.1': 'compatible',
+    })
+    for (const section of [manifest.peerDependencies, manifest.devDependencies]) {
+      for (const [name, range] of Object.entries(section ?? {}).filter(([name]) => name.startsWith('@deepseek-ai/dsh-'))) {
+        expect(range, name).toMatch(/^>=(?:0|[1-9]\d*)\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/)
+      }
+    }
   })
 
 })

@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## [0.2.19] - 2026-09-24
 
 - Usage RPC now uses one authenticated exact Host Fetch route and the published `/api` RPC envelope.
 - Live and persisted session logs come from public `sessionQuery.readSession`; persistence listing remains only for cache revisions.
-- Host/client peers and compile-target dependencies now match DSH `0.1.7-alpha.2` and Cordis `4.0.4`.
+- Verify DSH `0.1.7-rc.1` alongside Alpha.2, with open lower-bound ranges for Host/client DSH peers and development dependencies.
 
 ## 0.2.17
 

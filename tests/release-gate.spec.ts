@@ -159,6 +159,14 @@ describe("release gate validators", () => {
     expect(() => assertFixtureManifest(official)).toThrow(/unexpected fields/);
   });
 
+  it("accepts 0.1.7-rc.1 fixture provenance and rejects tag drift", async () => {
+    const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1-0.1.7/manifest.json", import.meta.url), "utf8"));
+    expect(() => assertFixtureManifest(manifest)).not.toThrow();
+    const tampered = structuredClone(manifest);
+    tampered.packages.find((entry: any) => entry.kind === "official").provenance.commit = "unexpected";
+    expect(() => assertFixtureManifest(tampered)).toThrow(/provenance is incomplete/);
+  });
+
   it("rejects a tampered fixture archive", async () => {
     const manifest = JSON.parse(await readFile(new URL("../fixtures/rc1/manifest.json", import.meta.url), "utf8"));
     const entry = manifest.packages.find((candidate: any) => candidate.kind === "registry");
@@ -283,7 +291,23 @@ describe("release gate validators", () => {
       consumer: { direct: ["fixture-root@1.0.0"], overrides: [] },
     };
     const metadata = new Map([["fixture-root@1.0.0", { name: "fixture-root", version: "1.0.0" }]]);
-    expect(() => assertFixtureEdges(manifest, metadata, { "fixture-root": "^1.0.0" })).toThrow(/exactly match plugin peer dependencies/);
+    expect(() => assertFixtureEdges(manifest, metadata, { "fixture-root": "^1.0.0" })).toThrow(/exactly match available plugin peer dependencies/);
+  });
+
+  it("allows an unavailable optional peer to stay outside the frozen fixture roots", () => {
+    const manifest = {
+      roots: ["fixture-root"],
+      packages: [{ name: "fixture-root", version: "1.0.0" }],
+      edges: [],
+      consumer: { direct: ["fixture-root@1.0.0"], overrides: [] },
+    };
+    const metadata = new Map([["fixture-root@1.0.0", { name: "fixture-root", version: "1.0.0" }]]);
+    expect(() => assertFixtureEdges(manifest, metadata, {
+      "fixture-root": "^1.0.0",
+      "optional-peer": ">=2.0.0",
+    }, {
+      "optional-peer": { optional: true },
+    })).not.toThrow();
   });
 
   it("rejects a recorded edge without a package declaration", () => {

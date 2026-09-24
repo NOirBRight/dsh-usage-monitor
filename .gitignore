@@ -8,6 +8,9 @@ node_modules/
 !fixtures/rc1/
 !fixtures/rc1/tarballs/
 !fixtures/rc1/tarballs/*.tgz
+!fixtures/rc1-0.1.7/
+!fixtures/rc1-0.1.7/tarballs/
+!fixtures/rc1-0.1.7/tarballs/*.tgz
 *.tsbuildinfo
 coverage/
 *.log

@@ -31,7 +31,8 @@ const ALPHA4 = '0.1.2-alpha.4'
 const FIXTURE_VERSION = process.env.DSH_FIXTURE_VERSION ?? (FIXTURE_PROFILE === 'rc1' ? RC1 : ALPHA4)
 const OFFICIAL_TAG = process.env.DSH_OFFICIAL_TAG ?? (FIXTURE_PROFILE === 'rc1' ? 'dsh-v0.1.5-rc.1' : 'dsh-v0.1.2-alpha.4')
 const OFFICIAL_COMMIT = process.env.DSH_OFFICIAL_COMMIT ?? (FIXTURE_PROFILE === 'rc1' ? '183f08e9c6dde7e36cd2318eaee70b0da08fb35e' : '4e84901e6471b79ec0338099867ebb4606d12bb5')
-const OFFICIAL_TARBALL_ROOT = FIXTURE_PROFILE === 'rc1' ? RC1_TARBALL_ROOT : ALPHA4_TARBALL_ROOT
+const OFFICIAL_TARBALL_ROOT = resolve(process.env.DSH_FIXTURE_OFFICIAL_TARBALL_DIR
+  ?? (FIXTURE_PROFILE === 'rc1' ? RC1_TARBALL_ROOT : ALPHA4_TARBALL_ROOT))
 const OFFICIAL_REPOSITORY = 'https://github.com/deepseek-ai/deepseek-harness.git'
 const REGISTRY = 'https://registry.npmjs.org/'
 const FIELDS = ['dependencies', 'optionalDependencies', 'peerDependencies']

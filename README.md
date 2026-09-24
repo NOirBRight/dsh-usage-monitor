@@ -6,9 +6,9 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 ## Compatibility
 
-Host DSH peers and compile-target dependencies pin `@deepseek-ai/dsh-*` to `0.1.7-alpha.2`; Cordis is `~4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
+Host DSH peers and development dependencies use the open lower-bound range `>=0.1.7-alpha.2`. The lockfile resolves the tested DSH `0.1.7-rc.1` packages and Cordis `4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
 
-Verified Hosts in `package.json#dsh.compatibility.dshReleases` are evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
+`package.json#dsh.compatibility.dshReleases` records DSH `0.1.7-alpha.2` and `0.1.7-rc.1` as compatible evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
 
 ## What it shows
 
@@ -22,10 +22,10 @@ Subscription quotas are not fetched.
 
 ## Installation
 
-Host dependencies are pinned to the alpha2 package set; see Compatibility. Install from GitHub:
+Host dependencies resolve to the rc.1 package set; see Compatibility. Install from GitHub:
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
 dsh web
 ```
 
@@ -39,7 +39,7 @@ Reads live and persisted logs through the public `ctx.sessionQuery.readSession` 
 
 ## Release
 
-`pnpm run check` runs the full gate in order: unit tests, TypeScript typecheck, deterministic build-parity (clean temp build vs tracked `lib/`), package build, and a real `npm pack` + immutable `fixtures/rc1` validation + offline install + Host/client import smoke. The pack check reads only the repository-owned 0.1.5-rc.1 manifest/tarballs, verifies the official 0.1.5-rc.1 tag/commit and registry integrity, preserves versioned parent edges, and uses a fresh pnpm consumer with an invalid registry, offline/no-scripts/no-audit/no-fund settings, empty `NODE_PATH`, and scoped local-tarball overrides; it uses neither `--legacy-peer-deps` nor omit/force bypasses. The owner archive is written only below the prefixed temporary directory. It does not rewrite `lib/` before comparison, so a stale, missing or hand-edited artifact fails.
+`pnpm run check` runs the full gate in order: unit tests, TypeScript typecheck, deterministic build-parity (clean temp build vs tracked `lib/`), package build, and a real `npm pack` + immutable `fixtures/rc1-0.1.7` validation + offline install + Host/client import smoke. The pack check reads only the repository-owned 0.1.7-rc.1 manifest/tarballs, verifies the official tag/commit and registry integrity, preserves versioned parent edges, and uses a fresh pnpm consumer with an invalid registry, offline/no-scripts/no-audit/no-fund settings, empty `NODE_PATH`, and scoped local-tarball overrides; it uses neither `--legacy-peer-deps` nor omit/force bypasses. The owner archive is written only below the prefixed temporary directory. It does not rewrite `lib/` before comparison, so a stale, missing or hand-edited artifact fails.
 
 For a tag, run `pnpm run check:strict` (the same test, typecheck, parity, build, and pack order with `PARITY_CHECK_HEAD=1`; it fails if the committed `lib/` still differs from the source — the v0.2.5 drift guard). Keep `src` as the source of truth and commit the rebuilt `lib/`.
 
@@ -47,20 +47,20 @@ The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObser
 
 ## Release installation (Latest)
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check fixtures remain the frozen 0.1.5-rc.1 set; compile-target `devDependencies` pin DSH `0.1.7-alpha.2`.
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check uses a frozen DSH 0.1.7-rc.1 graph; the lockfile resolves compile-target DSH dependencies to the same release.
 
 Latest installation (the URL never contains a version):
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
 ~~~
 
 Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/dsh-usage-monitor-0.2.16.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -68,7 +68,7 @@ Update, uninstall, and verify:
 ~~~sh
 # Update to the latest Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.16.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
 # Verify the loaded version
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -78,6 +78,6 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.16 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.19 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.16](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.16) · [SHA256SUMS](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.16/SHA256SUMS).
+Release and integrity: [v0.2.19](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.19) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz.sha256).

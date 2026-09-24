@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Verify the published plugin against immutable 0.1.5-rc.1 fixture artifacts. */
+/** Verify the published plugin against immutable 0.1.7-rc.1 fixture artifacts. */
 
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
@@ -26,9 +26,10 @@ function runPack(destination, env) {
 async function main() {
   const sourcePackage = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
   const fixtureGraph = await loadFixtureGraph({
-    manifestPath: join(root, "fixtures/rc1/manifest.json"),
-    tarballDirectory: join(root, "fixtures/rc1/tarballs"),
+    manifestPath: join(root, "fixtures/rc1-0.1.7/manifest.json"),
+    tarballDirectory: join(root, "fixtures/rc1-0.1.7/tarballs"),
     peerDependencies: sourcePackage.peerDependencies,
+    peerDependenciesMeta: sourcePackage.peerDependenciesMeta,
   });
   let temporaryRoot;
   try {
@@ -50,7 +51,7 @@ async function main() {
     for (const file of packed.files) if (file.endsWith(".js")) assertDependencyClosure(readArchiveFile(archivePath, file), sourcePackage, file, packed.files);
     const consumerRoot = join(temporaryRoot, "consumer");
     await installConsumer({ consumerRoot, pluginPath: archivePath, plugin: { name: sourcePackage.name, version: sourcePackage.version, tarball: info.filename, files: packed.files }, graph: fixtureGraph });
-    console.log("pack check passed: immutable fixture graph and public entrypoints verified");
+    console.log("pack check passed: immutable 0.1.7-rc.1 graph and public entrypoints verified");
   } finally {
     if (temporaryRoot !== undefined) await removeTemporaryDirectory(temporaryRoot, "dsh-usage-monitor-pack-");
   }

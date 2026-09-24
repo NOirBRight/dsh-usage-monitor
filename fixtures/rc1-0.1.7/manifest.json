@@ -1,0 +1,2665 @@
+{
+  "schemaVersion": 1,
+  "profile": "rc1-0.1.7",
+  "official": {
+    "tag": "dsh-v0.1.7-rc.1",
+    "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4",
+    "repository": "https://github.com/deepseek-ai/deepseek-harness.git"
+  },
+  "roots": [
+    "@deepseek-ai/cordis",
+    "@deepseek-ai/dsh-client-connection",
+    "@deepseek-ai/dsh-client-locale",
+    "@deepseek-ai/dsh-client-ui-renderer",
+    "@deepseek-ai/dsh-client-ui-settings",
+    "@deepseek-ai/dsh-client-ui-slots",
+    "@deepseek-ai/dsh-session",
+    "@deepseek-ai/dsh-session-persistence",
+    "@deepseek-ai/dsh-session-query",
+    "react",
+    "react-dom"
+  ],
+  "packages": [
+    {
+      "name": "@deepseek-ai/cordis-plugin-include",
+      "version": "1.0.9",
+      "tarball": "deepseek-ai-cordis-plugin-include-1.0.9.tgz",
+      "bytes": 8427,
+      "sha256": "a4d5479d736b10705fddec21f134fc7ad1fd84656588261eb7a7248012f0fea3",
+      "kind": "official",
+      "source": "packages/cordis-plugin-include",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/cordis-plugin-loader",
+      "version": "1.0.5",
+      "tarball": "deepseek-ai-cordis-plugin-loader-1.0.5.tgz",
+      "bytes": 27405,
+      "sha256": "f072fbcc6631bc267ef2bcd8eb98b31c11ef1f55de6c76d0e02f7e407c460fcf",
+      "kind": "official",
+      "source": "packages/cordis-plugin-loader",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/cordis",
+      "version": "4.0.4",
+      "tarball": "deepseek-ai-cordis-4.0.4.tgz",
+      "bytes": 63652,
+      "sha256": "041d4fb6453613a201f9841821be539c9546d295029d57a43774593efec65529",
+      "kind": "official",
+      "source": "packages/cordis",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/cosmokit",
+      "version": "1.8.5",
+      "tarball": "deepseek-ai-cosmokit-1.8.5.tgz",
+      "bytes": 17190,
+      "sha256": "1b5f991a74a81ee85963faaf398de3c918d459a49490cc2e3039279ddb650e2e",
+      "kind": "official",
+      "source": "packages/cosmokit",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-agent",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-agent-0.1.7-rc.1.tgz",
+      "bytes": 45109,
+      "sha256": "1ca2072d21842ba52351635b1e5295e6dd22f20c54ea6b6f1fe7f3476489bf5f",
+      "kind": "official",
+      "source": "packages/dsh-agent",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-attachment",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-attachment-0.1.7-rc.1.tgz",
+      "bytes": 20060,
+      "sha256": "fa3b550d2d79d52d45bb4aebd1fb82c4c88673db37d415c3f7fc09944799e152",
+      "kind": "official",
+      "source": "packages/dsh-attachment",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-brand",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-brand-0.1.7-rc.1.tgz",
+      "bytes": 6025,
+      "sha256": "a43b8af643f74097e098f61b25c7c79426b689210ae8f4b4475ab4be0e54d4b8",
+      "kind": "official",
+      "source": "packages/dsh-brand",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-connection",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-client-connection-0.1.7-rc.1.tgz",
+      "bytes": 47469,
+      "sha256": "44a199115214dbf0ecb2779a510d698ec015b4e3b2bdd9cd98a8eb67e06e41d7",
+      "kind": "official",
+      "source": "packages/dsh-client-connection",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-locale",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-client-locale-0.1.7-rc.1.tgz",
+      "bytes": 31495,
+      "sha256": "4a686b7dd7c69d014ddcf482707cc90c796fa8507647228638eab61330913b66",
+      "kind": "official",
+      "source": "packages/dsh-client-locale",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-renderer",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-client-ui-renderer-0.1.7-rc.1.tgz",
+      "bytes": 31023,
+      "sha256": "00b45ba2fbdc591cccacb2bf1a25e43f88344f71651344cc3da0de4b3bc06df6",
+      "kind": "official",
+      "source": "packages/dsh-client-ui-renderer",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-settings",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-client-ui-settings-0.1.7-rc.1.tgz",
+      "bytes": 31671,
+      "sha256": "9cfa4981716fd1062cb936fa81e49160f3eeb74f3e165162c298f33aa6613f6a",
+      "kind": "official",
+      "source": "packages/dsh-client-ui-settings",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-client-ui-slots",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-client-ui-slots-0.1.7-rc.1.tgz",
+      "bytes": 30919,
+      "sha256": "ee00466c981dd06dcc6695f91848bbbb7d6756620eaa56e0449fa82389b7af1f",
+      "kind": "official",
+      "source": "packages/dsh-client-ui-slots",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-commands",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-commands-0.1.7-rc.1.tgz",
+      "bytes": 36252,
+      "sha256": "908c563ad42c0b06bf6cacbe9bcc4781fd8d006d422ac60d05b07427a2021da1",
+      "kind": "official",
+      "source": "packages/dsh-commands",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-compaction-image-offload",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-compaction-image-offload-0.1.7-rc.1.tgz",
+      "bytes": 11185,
+      "sha256": "f05be1f38ea1ccca78dc2015854a30682aa86d47ee992f57d821d991a4e0c255",
+      "kind": "official",
+      "source": "packages/dsh-compaction-image-offload",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-compaction",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-compaction-0.1.7-rc.1.tgz",
+      "bytes": 25708,
+      "sha256": "da2e066386d078d6016714530d6ca02e5918c7611f6968034fa1315058c1af7a",
+      "kind": "official",
+      "source": "packages/dsh-compaction",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-credentials",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-credentials-0.1.7-rc.1.tgz",
+      "bytes": 17956,
+      "sha256": "21553f956baf4007e644cc3395f24c33993383441eefabc7d47cba521fa110d6",
+      "kind": "official",
+      "source": "packages/dsh-credentials",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-invariants",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-invariants-0.1.7-rc.1.tgz",
+      "bytes": 12188,
+      "sha256": "de7d4784d6a21ea6bf405df384ce5d65bbcc6887c635d44e0b094983d02577b3",
+      "kind": "official",
+      "source": "packages/dsh-invariants",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-llm",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-llm-0.1.7-rc.1.tgz",
+      "bytes": 99059,
+      "sha256": "30ffd3c8ef917ad2ad616339eb6cbf8c0d10ef2841b2a55016bb4bec95010e35",
+      "kind": "official",
+      "source": "packages/dsh-llm",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-ptc-runtime",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-ptc-runtime-0.1.7-rc.1.tgz",
+      "bytes": 15199,
+      "sha256": "2acf2778da3d6125f10136de2c9baeb508c24eab286164dc3398748a38c94675",
+      "kind": "official",
+      "source": "packages/dsh-ptc-runtime",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-sandbox-policy",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-sandbox-policy-0.1.7-rc.1.tgz",
+      "bytes": 12610,
+      "sha256": "84547c6a403465be4f21b8724857e669ecd36f94b6419bdd102616fb60116464",
+      "kind": "official",
+      "source": "packages/dsh-sandbox-policy",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-sandbox",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-sandbox-0.1.7-rc.1.tgz",
+      "bytes": 18865,
+      "sha256": "937317665855025925fb5e9ca8885b12126a9945f05f9c20777076d7b3618df4",
+      "kind": "official",
+      "source": "packages/dsh-sandbox",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-scope",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-scope-0.1.7-rc.1.tgz",
+      "bytes": 13815,
+      "sha256": "823d3cdbf28a4aa2665905f0b2e7fcc6ed3dc9d270c92b19d5cfdb7f338cf90f",
+      "kind": "official",
+      "source": "packages/dsh-scope",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format-catalog",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-catalog-0.1.7-rc.1.tgz",
+      "bytes": 9123,
+      "sha256": "8c77f9fbc30827f967b92ed91cd87456cf9e4de7226a2fe1b6abc807ccd32d92",
+      "kind": "official",
+      "source": "packages/dsh-session-format-catalog",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format-v0-to-v1",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-v0-to-v1-0.1.7-rc.1.tgz",
+      "bytes": 31230,
+      "sha256": "f4b034b68705cb7f9f4e0a850739fa71e05fbd0ab46a2dd067c17f356409635b",
+      "kind": "official",
+      "source": "packages/dsh-session-format-v0-to-v1",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format-v1-to-v2",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-v1-to-v2-0.1.7-rc.1.tgz",
+      "bytes": 16210,
+      "sha256": "9d6ec19faf504661875b2b3e96edcff9ce81d5e638fccdb7710a0e26a22a820d",
+      "kind": "official",
+      "source": "packages/dsh-session-format-v1-to-v2",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format-v2-to-v3",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-v2-to-v3-0.1.7-rc.1.tgz",
+      "bytes": 26058,
+      "sha256": "4c4459ecbcab0c7a03dd76da44be67c2ef366f3ffa35fc0611f8b5c6c2a8563f",
+      "kind": "official",
+      "source": "packages/dsh-session-format-v2-to-v3",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format-v3-to-v4",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-v3-to-v4-0.1.7-rc.1.tgz",
+      "bytes": 47261,
+      "sha256": "448625bc1ea2fac37f979709216cca70a5158b3948cdcf7ec4e116f4a6a64787",
+      "kind": "official",
+      "source": "packages/dsh-session-format-v3-to-v4",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-format",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-format-0.1.7-rc.1.tgz",
+      "bytes": 13781,
+      "sha256": "43ff946cec97db0c8fc69cfb1b583e4b11df518fffc279df66b0196362391b75",
+      "kind": "official",
+      "source": "packages/dsh-session-format",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-persistence",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-persistence-0.1.7-rc.1.tgz",
+      "bytes": 21693,
+      "sha256": "83d920e49ef9a31d68b92e27df9b8eb2d75948b0c096dd6bcbc3fb7f4d267064",
+      "kind": "official",
+      "source": "packages/dsh-session-persistence",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-projection-cache",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-projection-cache-0.1.7-rc.1.tgz",
+      "bytes": 18688,
+      "sha256": "912c0d4517f5907d88f75e30afd401e117c20eb2f300f56a05036365a96bee93",
+      "kind": "official",
+      "source": "packages/dsh-session-projection-cache",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-projection",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-projection-0.1.7-rc.1.tgz",
+      "bytes": 21103,
+      "sha256": "ced7fec74d09a744e69405e52afcfaee30c64ef0826563329365d80c0b513c5a",
+      "kind": "official",
+      "source": "packages/dsh-session-projection",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-query",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-query-0.1.7-rc.1.tgz",
+      "bytes": 30740,
+      "sha256": "a5ee67d83fb7545976450a4587af8bc5fbcd2aaaf1ad29e00a4bb79e307f9094",
+      "kind": "official",
+      "source": "packages/dsh-session-query",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-title",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-title-0.1.7-rc.1.tgz",
+      "bytes": 26768,
+      "sha256": "18180e0fdd68173895acc9d05a3451a39afd063261259c565621621f3f151975",
+      "kind": "official",
+      "source": "packages/dsh-session-title",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-session",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-session-0.1.7-rc.1.tgz",
+      "bytes": 87071,
+      "sha256": "a75cc8419ce7f6e3e92e226227aac5f5502777a2b31a26a4070a7ad6c8c5f247",
+      "kind": "official",
+      "source": "packages/dsh-session",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-storage-domain",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-storage-domain-0.1.7-rc.1.tgz",
+      "bytes": 20271,
+      "sha256": "3f08cd0c689de82d93bd8d77a362540a083569802429e06265bd4a7d335c3d1a",
+      "kind": "official",
+      "source": "packages/dsh-storage-domain",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-storage",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-storage-0.1.7-rc.1.tgz",
+      "bytes": 12618,
+      "sha256": "f174accf8d505aaf7c9a0a81fe93ad71988ad809b029153657ac0a0c7106d4d8",
+      "kind": "official",
+      "source": "packages/dsh-storage",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-system-prompt-0.1.7-rc.1.tgz",
+      "bytes": 19276,
+      "sha256": "a03df6a60e3dfaa43073fa97d71a07236dfec3ceb3f4311bd44b726bb601d976",
+      "kind": "official",
+      "source": "packages/dsh-system-prompt",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-timeout",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-timeout-0.1.7-rc.1.tgz",
+      "bytes": 10220,
+      "sha256": "0f57b1ae4b45f903a0173da6f3564a5bb33701b195994d6d40be5f09be3fd8de",
+      "kind": "official",
+      "source": "packages/dsh-timeout",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-tool-todo",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-tool-todo-0.1.7-rc.1.tgz",
+      "bytes": 17276,
+      "sha256": "378f16253bf6a771cdc4576b56733089ba1c2204957aaf5cbf59c7610ceefa39",
+      "kind": "official",
+      "source": "packages/dsh-tool-todo",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-tools",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-tools-0.1.7-rc.1.tgz",
+      "bytes": 143654,
+      "sha256": "92e955d96f2d5b3922ccf4c5f1e72aee1d8259b332e6d6eb2e441df9d361a837",
+      "kind": "official",
+      "source": "packages/dsh-tools",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-typert-protocol",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-typert-protocol-0.1.7-rc.1.tgz",
+      "bytes": 24601,
+      "sha256": "200b9397cfa69bc781de5396da95ed49dac93a30bc2650634325365ca04a52df",
+      "kind": "official",
+      "source": "packages/dsh-typert-protocol",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-user-approval",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-user-approval-0.1.7-rc.1.tgz",
+      "bytes": 17633,
+      "sha256": "cebee800dcd46a1b1c95692cff7e82fa3917ccae168f14b5f427416815713527",
+      "kind": "official",
+      "source": "packages/dsh-user-approval",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-util-crypto",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-util-crypto-0.1.7-rc.1.tgz",
+      "bytes": 4867,
+      "sha256": "867ce2857e0656ce4633bd027844c7c82f7316401c217d92885d0bb8a7153993",
+      "kind": "official",
+      "source": "packages/dsh-util-crypto",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-util-values",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-util-values-0.1.7-rc.1.tgz",
+      "bytes": 8884,
+      "sha256": "9db533f97db123f71856c767564cb8bd91bdfee38255b1d0f2a1c8a21663ca81",
+      "kind": "official",
+      "source": "packages/dsh-util-values",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/dsh-workspace",
+      "version": "0.1.7-rc.1",
+      "tarball": "deepseek-ai-dsh-workspace-0.1.7-rc.1.tgz",
+      "bytes": 41085,
+      "sha256": "15b12418bbebf85fa12f4023bdf7026266e14d5ff530b757a8f89138b55446f5",
+      "kind": "official",
+      "source": "packages/dsh-workspace",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@deepseek-ai/schemastery",
+      "version": "3.18.4",
+      "tarball": "deepseek-ai-schemastery-3.18.4.tgz",
+      "bytes": 22649,
+      "sha256": "ccf56d98aa367f7a06dd24cae87b7786d4c1b63b1eddc5968a731a306dc968f1",
+      "kind": "official",
+      "source": "packages/schemastery",
+      "provenance": {
+        "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+        "tag": "dsh-v0.1.7-rc.1",
+        "commit": "46a7f68b0922371ce7144b668b90e377d8e799f4"
+      }
+    },
+    {
+      "name": "@standard-schema/spec",
+      "version": "1.1.0",
+      "tarball": "standard-schema-spec-1.1.0.tgz",
+      "bytes": 4178,
+      "sha256": "a7cb7268be280ab518d450f8c3b07c86f23417225c0ab53691ed59b3067cceaf",
+      "kind": "registry",
+      "integrity": "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.1.0.tgz"
+      }
+    },
+    {
+      "name": "argparse",
+      "version": "2.0.1",
+      "tarball": "argparse-2.0.1.tgz",
+      "bytes": 39740,
+      "sha256": "27903847fc8215e6fc5a33e81490f7baba66403f8aade33771b988cca097728c",
+      "kind": "registry",
+      "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
+      }
+    },
+    {
+      "name": "js-tokens",
+      "version": "4.0.0",
+      "tarball": "js-tokens-4.0.0.tgz",
+      "bytes": 6542,
+      "sha256": "d884c7a2d8adb5568c1272d92b4f9c62707f4226cf9e7b22e7b957c7361e3c53",
+      "kind": "registry",
+      "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
+      }
+    },
+    {
+      "name": "js-yaml",
+      "version": "4.3.2",
+      "tarball": "js-yaml-4.3.2.tgz",
+      "bytes": 227545,
+      "sha256": "c7b241d2224cf9253ff53854aa4cee87da91bd889c4d0fa3a3ffd1041ecee5b1",
+      "kind": "registry",
+      "integrity": "sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-4.3.2.tgz"
+      }
+    },
+    {
+      "name": "loose-envify",
+      "version": "1.4.0",
+      "tarball": "loose-envify-1.4.0.tgz",
+      "bytes": 2842,
+      "sha256": "1218830a93538a4f730d530138e945ea6a65b45e099ee7a9ea538a05141babdc",
+      "kind": "registry",
+      "integrity": "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz"
+      }
+    },
+    {
+      "name": "node-addon-native-custom-loader",
+      "version": "0.1.6",
+      "tarball": "node-addon-native-custom-loader-0.1.6.tgz",
+      "bytes": 7908,
+      "sha256": "aec357cef05357b0c13611fc91cb61c16010bd347b0c0b9f8edde3f8fe375171",
+      "kind": "registry",
+      "integrity": "sha512-QaW7d8lTcGCXrpNVyFDtID3vrpa7vFdpcY9pql2/9FGFSe7tcSnhQOKZX+1aOWq+pB1d2ZwNnKAdQI5nD9wAXA==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/node-addon-native-custom-loader/-/node-addon-native-custom-loader-0.1.6.tgz"
+      }
+    },
+    {
+      "name": "node-addon-require-builtin-linux-x64-gnu",
+      "version": "0.1.6",
+      "tarball": "node-addon-require-builtin-linux-x64-gnu-0.1.6.tgz",
+      "bytes": 77099,
+      "sha256": "b1e94ba8056ca748bfc91bfee3a837a91fef60dd0f13c7ca25282090b73e34b3",
+      "kind": "registry",
+      "integrity": "sha512-8wCxrFlB2Ld5DhxIm2P+nNFnQ0wjzDE5sXF68EUhLH0X+z313B07TUQFMBKCOkyhZIIBh590dBmhHCuA43No2A==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/node-addon-require-builtin-linux-x64-gnu/-/node-addon-require-builtin-linux-x64-gnu-0.1.6.tgz"
+      }
+    },
+    {
+      "name": "node-addon-require-builtin",
+      "version": "0.1.6",
+      "tarball": "node-addon-require-builtin-0.1.6.tgz",
+      "bytes": 2049,
+      "sha256": "1135999d5de99ff6cb9c1366afd3d83550d8a3d66851ec3c070a88ad0244dd6d",
+      "kind": "registry",
+      "integrity": "sha512-P9ZGMDkloktirLJSggfpxsJ9jog5FItE1Omxpj50UBn3LhD6TS6/yx0jEBXsCGK3P9EtW1EpQVA1QL5gb11GaQ==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/node-addon-require-builtin/-/node-addon-require-builtin-0.1.6.tgz"
+      }
+    },
+    {
+      "name": "react-dom",
+      "version": "18.3.1",
+      "tarball": "react-dom-18.3.1.tgz",
+      "bytes": 1089001,
+      "sha256": "031d4427a99f2f3f6cac18bbbf308594a67e4f47d10f4896fdec446505b040e0",
+      "kind": "registry",
+      "integrity": "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz"
+      }
+    },
+    {
+      "name": "react",
+      "version": "18.3.1",
+      "tarball": "react-18.3.1.tgz",
+      "bytes": 81751,
+      "sha256": "8d9bed01a672e7eaf387942d781ad47c6a43089a30a0306060f9fd5ac7870347",
+      "kind": "registry",
+      "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
+      }
+    },
+    {
+      "name": "scheduler",
+      "version": "0.23.2",
+      "tarball": "scheduler-0.23.2.tgz",
+      "bytes": 17726,
+      "sha256": "e4f1d8fe63a9ab93ef66c92b0ad1af9c1326adbf7f1bd5e9053cac0fee6f26ae",
+      "kind": "registry",
+      "integrity": "sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.23.2.tgz"
+      }
+    },
+    {
+      "name": "zod",
+      "version": "4.6.5",
+      "tarball": "zod-4.6.5.tgz",
+      "bytes": 1052733,
+      "sha256": "a78c0c533de30dc1c4afc259ac43ac06e390cb0da8d2e32eae355301b50b36fc",
+      "kind": "registry",
+      "integrity": "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==",
+      "provenance": {
+        "registry": "https://registry.npmjs.org/",
+        "resolved": "https://registry.npmjs.org/zod/-/zod-4.6.5.tgz"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "parent": "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "field": "dependencies",
+      "name": "js-yaml",
+      "specifier": "^4.1.0",
+      "child": "js-yaml@4.3.2",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "field": "dependencies",
+      "name": "@deepseek-ai/cosmokit",
+      "specifier": "~1.8.5",
+      "child": "@deepseek-ai/cosmokit@1.8.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis-plugin-loader",
+      "specifier": "~1.0.5",
+      "child": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "field": "dependencies",
+      "name": "@deepseek-ai/cosmokit",
+      "specifier": "~1.8.5",
+      "child": "@deepseek-ai/cosmokit@1.8.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "field": "peerDependencies",
+      "name": "node-addon-require-builtin",
+      "specifier": "^0.1.6",
+      "child": "node-addon-require-builtin@0.1.6",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis@4.0.4",
+      "field": "dependencies",
+      "name": "@standard-schema/spec",
+      "specifier": "^1.1.0",
+      "child": "@standard-schema/spec@1.1.0",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis@4.0.4",
+      "field": "dependencies",
+      "name": "@deepseek-ai/cosmokit",
+      "specifier": "~1.8.5",
+      "child": "@deepseek-ai/cosmokit@1.8.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/cordis@4.0.4",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis-plugin-include",
+      "specifier": "~1.0.9",
+      "child": "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/cordis@4.0.4",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis-plugin-loader",
+      "specifier": "~1.0.5",
+      "child": "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-typert-protocol",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-workspace",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-attachment@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-attachment@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-credentials",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-credentials@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-locale@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-locale@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-ui-renderer@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-ui-settings@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-ui-settings@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-client-ui-slots@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-crypto",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-crypto@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-attachment",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-attachment@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-typert-protocol",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-compaction",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-commands",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-credentials@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-credentials@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-credentials@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-crypto",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-crypto@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-typert-protocol",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-timeout",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-timeout@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-ptc-runtime@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-ptc-runtime@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-sandbox",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-sandbox",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v1-to-v2",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v2-to-v3",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v0-to-v1",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-compaction-image-offload",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v3-to-v4",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v3-to-v4@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v0-to-v1",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v0-to-v1",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v1-to-v2",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v3-to-v4@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v3-to-v4@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-v2-to-v3",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format-v3-to-v4@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-timeout",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-timeout@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-storage-domain",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-session-format-catalog",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-title",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-tool-todo",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection-cache",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-persistence",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "optional": true
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-storage",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-storage@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-storage@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-timeout@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-projection",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-tools",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-util-values",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-ptc-runtime",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-ptc-runtime@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-user-approval",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-sandbox",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-sandbox-policy",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/schemastery",
+      "specifier": "~3.18.4",
+      "child": "@deepseek-ai/schemastery@3.18.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-agent",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-llm",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-scope",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-util-crypto@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "zod",
+      "specifier": "^4.4.3",
+      "child": "zod@4.6.5",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "dependencies",
+      "name": "@deepseek-ai/dsh-brand",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/cordis",
+      "specifier": "~4.0.4",
+      "child": "@deepseek-ai/cordis@4.0.4",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session-persistence",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-storage",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-storage@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-invariants",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-storage-domain",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-typert-protocol",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "field": "peerDependencies",
+      "name": "@deepseek-ai/dsh-session",
+      "specifier": "0.1.7-rc.1",
+      "child": "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/schemastery@3.18.4",
+      "field": "dependencies",
+      "name": "@standard-schema/spec",
+      "specifier": "^1.1.0",
+      "child": "@standard-schema/spec@1.1.0",
+      "optional": false
+    },
+    {
+      "parent": "@deepseek-ai/schemastery@3.18.4",
+      "field": "dependencies",
+      "name": "@deepseek-ai/cosmokit",
+      "specifier": "~1.8.5",
+      "child": "@deepseek-ai/cosmokit@1.8.5",
+      "optional": false
+    },
+    {
+      "parent": "js-yaml@4.3.2",
+      "field": "dependencies",
+      "name": "argparse",
+      "specifier": "^2.0.1",
+      "child": "argparse@2.0.1",
+      "optional": false
+    },
+    {
+      "parent": "loose-envify@1.4.0",
+      "field": "dependencies",
+      "name": "js-tokens",
+      "specifier": "^3.0.0 || ^4.0.0",
+      "child": "js-tokens@4.0.0",
+      "optional": false
+    },
+    {
+      "parent": "node-addon-require-builtin-linux-x64-gnu@0.1.6",
+      "field": "dependencies",
+      "name": "node-addon-native-custom-loader",
+      "specifier": "0.1.6",
+      "child": "node-addon-native-custom-loader@0.1.6",
+      "optional": false
+    },
+    {
+      "parent": "node-addon-require-builtin@0.1.6",
+      "field": "dependencies",
+      "name": "node-addon-native-custom-loader",
+      "specifier": "0.1.6",
+      "child": "node-addon-native-custom-loader@0.1.6",
+      "optional": false
+    },
+    {
+      "parent": "node-addon-require-builtin@0.1.6",
+      "field": "optionalDependencies",
+      "name": "node-addon-require-builtin-linux-x64-gnu",
+      "specifier": "0.1.6",
+      "child": "node-addon-require-builtin-linux-x64-gnu@0.1.6",
+      "optional": true
+    },
+    {
+      "parent": "react-dom@18.3.1",
+      "field": "dependencies",
+      "name": "loose-envify",
+      "specifier": "^1.1.0",
+      "child": "loose-envify@1.4.0",
+      "optional": false
+    },
+    {
+      "parent": "react-dom@18.3.1",
+      "field": "dependencies",
+      "name": "scheduler",
+      "specifier": "^0.23.2",
+      "child": "scheduler@0.23.2",
+      "optional": false
+    },
+    {
+      "parent": "react-dom@18.3.1",
+      "field": "peerDependencies",
+      "name": "react",
+      "specifier": "^18.3.1",
+      "child": "react@18.3.1",
+      "optional": false
+    },
+    {
+      "parent": "react@18.3.1",
+      "field": "dependencies",
+      "name": "loose-envify",
+      "specifier": "^1.1.0",
+      "child": "loose-envify@1.4.0",
+      "optional": false
+    },
+    {
+      "parent": "scheduler@0.23.2",
+      "field": "dependencies",
+      "name": "loose-envify",
+      "specifier": "^1.1.0",
+      "child": "loose-envify@1.4.0",
+      "optional": false
+    }
+  ],
+  "consumer": {
+    "direct": [
+      "@deepseek-ai/cordis-plugin-include@1.0.9",
+      "@deepseek-ai/cordis-plugin-loader@1.0.5",
+      "@deepseek-ai/cordis@4.0.4",
+      "@deepseek-ai/cosmokit@1.8.5",
+      "@deepseek-ai/dsh-agent@0.1.7-rc.1",
+      "@deepseek-ai/dsh-attachment@0.1.7-rc.1",
+      "@deepseek-ai/dsh-brand@0.1.7-rc.1",
+      "@deepseek-ai/dsh-client-connection@0.1.7-rc.1",
+      "@deepseek-ai/dsh-client-locale@0.1.7-rc.1",
+      "@deepseek-ai/dsh-client-ui-renderer@0.1.7-rc.1",
+      "@deepseek-ai/dsh-client-ui-settings@0.1.7-rc.1",
+      "@deepseek-ai/dsh-client-ui-slots@0.1.7-rc.1",
+      "@deepseek-ai/dsh-commands@0.1.7-rc.1",
+      "@deepseek-ai/dsh-compaction-image-offload@0.1.7-rc.1",
+      "@deepseek-ai/dsh-compaction@0.1.7-rc.1",
+      "@deepseek-ai/dsh-credentials@0.1.7-rc.1",
+      "@deepseek-ai/dsh-invariants@0.1.7-rc.1",
+      "@deepseek-ai/dsh-llm@0.1.7-rc.1",
+      "@deepseek-ai/dsh-ptc-runtime@0.1.7-rc.1",
+      "@deepseek-ai/dsh-sandbox-policy@0.1.7-rc.1",
+      "@deepseek-ai/dsh-sandbox@0.1.7-rc.1",
+      "@deepseek-ai/dsh-scope@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format-catalog@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format-v0-to-v1@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format-v1-to-v2@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format-v2-to-v3@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format-v3-to-v4@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-format@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-persistence@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-projection-cache@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-projection@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-query@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session-title@0.1.7-rc.1",
+      "@deepseek-ai/dsh-session@0.1.7-rc.1",
+      "@deepseek-ai/dsh-storage-domain@0.1.7-rc.1",
+      "@deepseek-ai/dsh-storage@0.1.7-rc.1",
+      "@deepseek-ai/dsh-system-prompt@0.1.7-rc.1",
+      "@deepseek-ai/dsh-timeout@0.1.7-rc.1",
+      "@deepseek-ai/dsh-tool-todo@0.1.7-rc.1",
+      "@deepseek-ai/dsh-tools@0.1.7-rc.1",
+      "@deepseek-ai/dsh-typert-protocol@0.1.7-rc.1",
+      "@deepseek-ai/dsh-user-approval@0.1.7-rc.1",
+      "@deepseek-ai/dsh-util-crypto@0.1.7-rc.1",
+      "@deepseek-ai/dsh-util-values@0.1.7-rc.1",
+      "@deepseek-ai/dsh-workspace@0.1.7-rc.1",
+      "@deepseek-ai/schemastery@3.18.4",
+      "@standard-schema/spec@1.1.0",
+      "argparse@2.0.1",
+      "js-tokens@4.0.0",
+      "js-yaml@4.3.2",
+      "loose-envify@1.4.0",
+      "node-addon-native-custom-loader@0.1.6",
+      "node-addon-require-builtin-linux-x64-gnu@0.1.6",
+      "node-addon-require-builtin@0.1.6",
+      "react-dom@18.3.1",
+      "react@18.3.1",
+      "scheduler@0.23.2",
+      "zod@4.6.5"
+    ],
+    "overrides": []
+  }
+}

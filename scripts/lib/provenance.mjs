@@ -8,8 +8,12 @@ import { validateArchive } from "./archive.mjs";
 import { walkFiles } from "./walker.mjs";
 
 export const OFFICIAL_REPOSITORY = "https://github.com/deepseek-ai/deepseek-harness.git";
-export const OFFICIAL_TAG = "dsh-v0.1.5-rc.1";
-export const OFFICIAL_COMMIT = "183f08e9c6dde7e36cd2318eaee70b0da08fb35e";
+export const OFFICIAL_RELEASES = Object.freeze({
+  rc1: Object.freeze({ tag: "dsh-v0.1.5-rc.1", commit: "183f08e9c6dde7e36cd2318eaee70b0da08fb35e" }),
+  "rc1-0.1.7": Object.freeze({ tag: "dsh-v0.1.7-rc.1", commit: "46a7f68b0922371ce7144b668b90e377d8e799f4" }),
+});
+export const OFFICIAL_TAG = OFFICIAL_RELEASES.rc1.tag;
+export const OFFICIAL_COMMIT = OFFICIAL_RELEASES.rc1.commit;
 const REGISTRY = "https://registry.npmjs.org/";
 
 function isRecord(value) {
@@ -48,10 +52,10 @@ function registryTarballUrl(name, version) {
   return REGISTRY + name + "/-/" + leaf + "-" + version + ".tgz";
 }
 
-function assertOfficialProvenance(entry, id) {
+function assertOfficialProvenance(entry, id, release) {
   assertExactKeys(entry.provenance, ["repository", "tag", "commit"], "official provenance for " + id);
-  if (entry.provenance.repository !== OFFICIAL_REPOSITORY || entry.provenance.tag !== OFFICIAL_TAG
-    || entry.provenance.commit !== OFFICIAL_COMMIT || typeof entry.source !== "string"
+  if (entry.provenance.repository !== OFFICIAL_REPOSITORY || entry.provenance.tag !== release.tag
+    || entry.provenance.commit !== release.commit || typeof entry.source !== "string"
     || entry.source.length === 0 || (!entry.source.startsWith("packages/") && !entry.source.startsWith("vendor/"))
     || entry.source.startsWith("/") || entry.source.includes("\\") || entry.source.split("/").includes("..")
     || Object.hasOwn(entry, "integrity")) {
@@ -73,10 +77,12 @@ function assertRegistryProvenance(entry, id) {
  * @param {Record<string, unknown>} manifest fixture manifest
  */
 export function assertFixtureManifest(manifest) {
-  if (!isRecord(manifest) || manifest.schemaVersion !== 1 || manifest.profile !== "rc1") throw new Error("fixture manifest must be schemaVersion 1 profile rc1");
+  if (!isRecord(manifest) || manifest.schemaVersion !== 1 || typeof manifest.profile !== "string"
+    || !Object.hasOwn(OFFICIAL_RELEASES, manifest.profile)) throw new Error("fixture manifest has an unsupported DSH release profile");
+  const release = OFFICIAL_RELEASES[manifest.profile];
   if (!isRecord(manifest.official)) throw new Error("fixture manifest has unexpected official provenance");
   assertExactKeys(manifest.official, ["repository", "tag", "commit"], "manifest official provenance");
-  if (manifest.official.repository !== OFFICIAL_REPOSITORY || manifest.official.tag !== OFFICIAL_TAG || manifest.official.commit !== OFFICIAL_COMMIT) throw new Error("fixture manifest has unexpected official provenance");
+  if (manifest.official.repository !== OFFICIAL_REPOSITORY || manifest.official.tag !== release.tag || manifest.official.commit !== release.commit) throw new Error("fixture manifest has unexpected official provenance");
   if (!Array.isArray(manifest.roots) || manifest.roots.length === 0 || new Set(manifest.roots).size !== manifest.roots.length || manifest.roots.some((name) => typeof name !== "string" || name.length === 0)) throw new Error("fixture manifest roots are invalid");
   if (!Array.isArray(manifest.packages) || manifest.packages.length === 0) throw new Error("fixture manifest packages are invalid");
   const identities = new Set();
@@ -89,7 +95,7 @@ export function assertFixtureManifest(manifest) {
     if (entry.kind !== "official" && entry.kind !== "registry") throw new Error("fixture manifest has invalid kind for " + id);
     if (entry.kind === "official") {
       assertExactKeys(entry, ["name", "version", "tarball", "bytes", "sha256", "kind", "source", "provenance"], "official package entry for " + id);
-      assertOfficialProvenance(entry, id);
+      assertOfficialProvenance(entry, id, release);
     } else {
       assertExactKeys(entry, ["name", "version", "tarball", "bytes", "sha256", "kind", "integrity", "provenance"], "registry package entry for " + id);
       assertRegistryProvenance(entry, id);
@@ -148,28 +154,34 @@ function metadataEntries(metadataById, id) {
   return metadata;
 }
 
-function pluginPeerRootIds(manifest, entries, pluginPeerDependencies) {
+function pluginPeerRootIds(manifest, entries, pluginPeerDependencies, pluginPeerDependenciesMeta = {}) {
   if (!isRecord(pluginPeerDependencies)) throw new Error("plugin peer dependencies are required for fixture reachability");
+  if (!isRecord(pluginPeerDependenciesMeta)) throw new Error("plugin peer metadata is required for fixture reachability");
   const peerNames = Object.keys(pluginPeerDependencies);
-  if (!Array.isArray(manifest.roots) || manifest.roots.length !== peerNames.length
-    || new Set(manifest.roots).size !== manifest.roots.length
-    || manifest.roots.some((name) => typeof name !== "string")
-    || peerNames.some((name) => !manifest.roots.includes(name))) {
-    throw new Error("fixture roots must exactly match plugin peer dependencies");
-  }
+  if (!Array.isArray(manifest.roots) || new Set(manifest.roots).size !== manifest.roots.length
+    || manifest.roots.some((name) => typeof name !== "string")) throw new Error("fixture roots must be unique package names");
   const byName = new Map();
   for (const [id, entry] of entries) {
     const list = byName.get(entry.name) ?? [];
     list.push({ id, version: entry.version });
     byName.set(entry.name, list);
   }
-  return peerNames.map((name) => {
+  const rootIds = [];
+  const availablePeerNames = [];
+  for (const name of peerNames) {
     const range = pluginPeerDependencies[name];
     if (typeof range !== "string" || range.trim().length === 0) throw new Error("plugin peer dependency has an invalid range: " + name);
     const candidates = (byName.get(name) ?? []).filter((candidate) => satisfiesRange(candidate.version, range));
+    const optional = isRecord(pluginPeerDependenciesMeta[name]) && pluginPeerDependenciesMeta[name].optional === true;
+    if (candidates.length === 0 && optional && !manifest.roots.includes(name)) continue;
     if (candidates.length !== 1) throw new Error("plugin peer root must select exactly one fixture package@version: " + name);
-    return candidates[0].id;
-  });
+    availablePeerNames.push(name);
+    rootIds.push(candidates[0].id);
+  }
+  if (manifest.roots.length !== availablePeerNames.length || manifest.roots.some((name) => !availablePeerNames.includes(name))) {
+    throw new Error("fixture roots must exactly match available plugin peer dependencies; only unavailable optional peers may be omitted");
+  }
+  return rootIds;
 }
 
 /**
@@ -177,10 +189,11 @@ function pluginPeerRootIds(manifest, entries, pluginPeerDependencies) {
  * @param {Record<string, unknown>} manifest fixture manifest
  * @param {Map<string,Record<string,unknown>>} metadataById archived package metadata keyed by package@version
  * @param {Record<string, unknown>} pluginPeerDependencies published plugin peer dependencies
+ * @param {Record<string,unknown>} pluginPeerDependenciesMeta published peer optionality metadata
  */
-export function assertFixtureEdges(manifest, metadataById, pluginPeerDependencies) {
+export function assertFixtureEdges(manifest, metadataById, pluginPeerDependencies, pluginPeerDependenciesMeta = {}) {
   const entries = new Map(manifest.packages.map((entry) => [packageId(entry.name, entry.version), entry]));
-  const rootIds = pluginPeerRootIds(manifest, entries, pluginPeerDependencies);
+  const rootIds = pluginPeerRootIds(manifest, entries, pluginPeerDependencies, pluginPeerDependenciesMeta);
   const byName = new Map();
   for (const [id, entry] of entries) {
     const list = byName.get(entry.name) ?? [];
@@ -265,10 +278,10 @@ export function assertReachableClosure(manifest, rootIds) {
 
 /**
  * Load and fully validate the repository-owned fixture graph.
- * @param {{manifestPath:string,tarballDirectory:string,peerDependencies:Record<string,unknown>}} paths fixture paths and plugin peers
+ * @param {{manifestPath:string,tarballDirectory:string,peerDependencies:Record<string,unknown>,peerDependenciesMeta?:Record<string,unknown>}} paths fixture paths and plugin peers
  * @returns {Promise<{manifest:Record<string,unknown>,records:Map<string,Record<string,unknown>>,metadata:Map<string,Record<string,unknown>>,tarballDirectory:string}>} validated graph
  */
-export async function loadFixtureGraph({ manifestPath, tarballDirectory, peerDependencies }) {
+export async function loadFixtureGraph({ manifestPath, tarballDirectory, peerDependencies, peerDependenciesMeta = {} }) {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   assertFixtureManifest(manifest);
   const directory = resolve(tarballDirectory);
@@ -288,6 +301,6 @@ export async function loadFixtureGraph({ manifestPath, tarballDirectory, peerDep
     records.set(id, { ...entry, archivePath, archive });
     metadata.set(id, archive.metadata);
   }
-  assertFixtureEdges(manifest, metadata, peerDependencies);
+  assertFixtureEdges(manifest, metadata, peerDependencies, peerDependenciesMeta);
   return { manifest, records, metadata, tarballDirectory: directory };
 }
