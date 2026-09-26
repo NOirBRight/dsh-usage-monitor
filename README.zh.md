@@ -6,7 +6,7 @@
 
 ## 兼容性
 
-宿主 DSH peer 与开发依赖使用无上界的下限范围 `>=0.1.7-alpha.2`。锁文件解析为已测试的 DSH `0.1.7-rc.1` 包与 Cordis `4.0.4`。可选 peer 让插件在支持集以外仍可加载。
+宿主 DSH peer 与开发依赖使用无上界的下限范围 `>=0.1.7-alpha.2`。锁文件解析为 DSH `0.1.7-rc.2` 包与 Cordis `4.0.4`。可选 peer 让插件在支持集以外仍可加载。
 
 `package.json#dsh.compatibility.dshReleases` 将 DSH `0.1.7-alpha.2` 和 `0.1.7-rc.1` 记录为兼容证据，不是允许列表。未知的新宿主告警一次后仍按正常路径挂载。只有复现过的故障才会加入 blocklist。
 
@@ -20,9 +20,11 @@
 
 不查询订阅额度。
 
+Metric、By 或 Group 菜单打开时，Escape 只关闭菜单并将焦点还给触发按钮；没有打开的菜单时，Escape 仍交由设置窗口处理。
+
 ## 安装
 
-宿主依赖解析为 rc.1 包集，见兼容性。从 GitHub 安装：
+宿主开发依赖解析为 rc.2 包集，见兼容性。从 GitHub 安装：
 
 ```sh
 dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
@@ -47,7 +49,7 @@ dsh web
 
 ## 正式版安装（Latest）
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. 发布包只包含构建后的 Host/Client 产物，不含兄弟仓库源码、本机路径或 link:/workspace: 依赖。打包校验使用冻结的 DSH 0.1.7-rc.1 依赖图；锁文件将编译目标 DSH 依赖解析为同一版本。
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. 发布包只包含构建后的 Host/Client 产物，不含兄弟仓库源码、本机路径或 link:/workspace: 依赖。打包校验使用冻结的 DSH 0.1.7-rc.1 依赖图；开发锁文件将 DSH 依赖解析为 0.1.7-rc.2。
 
 Latest 安装命令（永久不含版本号）：
 

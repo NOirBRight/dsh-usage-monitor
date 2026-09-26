@@ -6,7 +6,7 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 ## Compatibility
 
-Host DSH peers and development dependencies use the open lower-bound range `>=0.1.7-alpha.2`. The lockfile resolves the tested DSH `0.1.7-rc.1` packages and Cordis `4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
+Host DSH peers and development dependencies use the open lower-bound range `>=0.1.7-alpha.2`. The lockfile resolves DSH `0.1.7-rc.2` packages and Cordis `4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
 
 `package.json#dsh.compatibility.dshReleases` records DSH `0.1.7-alpha.2` and `0.1.7-rc.1` as compatible evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
 
@@ -18,11 +18,13 @@ Host DSH peers and development dependencies use the open lower-bound range `>=0.
 - A responsive overview with a full-width token summary, compact secondary metrics, a stacked chart, and token-share cards that follow the current By grouping
 - On narrow screens, the cards collapse to one column and the chart legend scrolls horizontally
 
+Escape closes an open Metric, By, or Group menu and restores focus to its trigger. With no menu open, Escape remains available to the Settings dialog.
+
 Subscription quotas are not fetched.
 
 ## Installation
 
-Host dependencies resolve to the rc.1 package set; see Compatibility. Install from GitHub:
+Host development dependencies resolve to the rc.2 package set; see Compatibility. Install from GitHub:
 
 ```sh
 dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
@@ -47,7 +49,7 @@ The Settings → Usage nav icon is a DOM patch via `ctx.effect` + `MutationObser
 
 ## Release installation (Latest)
 
-Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check uses a frozen DSH 0.1.7-rc.1 graph; the lockfile resolves compile-target DSH dependencies to the same release.
+Session-log usage dashboard with responsive metric cards, charting, and provider shares. The published pack contains built Host/Client files only; it has no sibling-repository source, workstation path, link:, or workspace: dependency. Pack-check uses a frozen DSH 0.1.7-rc.1 graph; the development lockfile resolves DSH dependencies to 0.1.7-rc.2.
 
 Latest installation (the URL never contains a version):
 
