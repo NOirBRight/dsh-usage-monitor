@@ -583,7 +583,10 @@ export function UsageDashboard(props: UsageDashboardProps) {
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [load, setLoad] = useState<LoadState>({ status: 'loading' })
   const queryRef = useRef(queryUsage)
+  const toolbarRef = useRef<HTMLDivElement>(null)
+  const openMenuRef = useRef(openMenu)
   queryRef.current = queryUsage
+  openMenuRef.current = openMenu
 
   const span = useMemo(() => rangeToSpan(range, custom), [range, custom])
   const query = useMemo(() => spanToQuery(span), [span])
@@ -594,13 +597,25 @@ export function UsageDashboard(props: UsageDashboardProps) {
       setOpenMenu(null)
     }
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpenMenu(null)
+      if (
+        event.defaultPrevented
+        || event.key !== 'Escape'
+        || event.isComposing
+        || event.ctrlKey
+        || event.altKey
+        || event.metaKey
+        || event.shiftKey
+        || openMenuRef.current === null
+      ) return
+      event.preventDefault()
+      toolbarRef.current?.querySelector<HTMLButtonElement>('button[aria-expanded="true"]')?.focus()
+      setOpenMenu(null)
     }
     document.addEventListener('pointerdown', close)
-    document.addEventListener('keydown', onKey)
+    document.addEventListener('keydown', onKey, true)
     return () => {
       document.removeEventListener('pointerdown', close)
-      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('keydown', onKey, true)
     }
   }, [])
 
@@ -690,7 +705,7 @@ export function UsageDashboard(props: UsageDashboardProps) {
     <section className="dsh-um-host" style={pageStyle}>
       <style>{USAGE_CSS}</style>
       <div className="dsh-um">
-        <div className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
+        <div ref={toolbarRef} className="dsh-um-toolbar" style={toolbarStyle} data-dsh-um-menu>
           <div className="dsh-um-toolbar-row">
             <UsageDropdown
               label={t?.('metric') ?? 'Metric'}

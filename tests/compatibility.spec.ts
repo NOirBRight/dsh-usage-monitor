@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { shouldMountDshRuntime } from '../src/compatibility.ts'
 
-const VERIFIED = new Set(['0.1.7-alpha.2', '0.1.7-rc.1'])
+const VERIFIED = new Set(['0.1.7-alpha.2', '0.1.7-rc.1', '0.1.7-rc.2'])
 
 function logger(warnings: string[]) {
   return { warn(message: string): void { warnings.push(message) } }
@@ -37,7 +37,7 @@ describe('DSH forward compatibility policy', () => {
     expect(warnings).toEqual([])
   })
 
-  it('declares the rc.1 compatibility evidence and open DSH dependency ranges', () => {
+  it('declares the verified compatibility evidence and open DSH dependency ranges', () => {
     const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as {
       dsh?: { compatibility?: { dshReleases?: Record<string, string> } }
       peerDependencies?: Record<string, string>
@@ -46,6 +46,7 @@ describe('DSH forward compatibility policy', () => {
     expect(manifest.dsh?.compatibility?.dshReleases).toEqual({
       '0.1.7-alpha.2': 'compatible',
       '0.1.7-rc.1': 'compatible',
+      '0.1.7-rc.2': 'compatible',
     })
     for (const section of [manifest.peerDependencies, manifest.devDependencies]) {
       for (const [name, range] of Object.entries(section ?? {}).filter(([name]) => name.startsWith('@deepseek-ai/dsh-'))) {
