@@ -73,13 +73,12 @@ dsh plugin --profile web add --force \
   https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 # Verify the loaded version
 dsh plugin --profile web list
-dsh plugin --profile web doctor
 # Uninstall only this plugin
 dsh plugin --profile web remove dsh-usage-monitor
 ~~~
 
 Configuration: use the plugin section in Settings for Web UI plugins, or the profile dsh.profile.bundles entry for Host-only plugins. Start with this README's minimal YAML/JSON example and provide credentials/backend addresses explicitly.
 
-Rollback: rerun the fixed v0.2.19 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
+Rollback: rerun the fixed v0.2.19 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service; never put a source checkout in the production profile.
 
 Release and integrity: [v0.2.20](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.20) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.20/dsh-usage-monitor-0.2.20.tgz.sha256).
