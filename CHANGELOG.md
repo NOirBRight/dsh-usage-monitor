@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.20] - 2026-09-26
+
+- Escape closes only the active Metric, By, or Group menu and restores focus to its trigger; another Escape can dismiss Settings.
+- Verify official DSH 0.1.7-rc.2 with open-ended Host dependency ranges.
+
 ## [0.2.19] - 2026-09-24
 
 - Usage RPC now uses one authenticated exact Host Fetch route and the published `/api` RPC envelope.

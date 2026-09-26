@@ -8,7 +8,7 @@
 
 宿主 DSH peer 与开发依赖使用无上界的下限范围 `>=0.1.7-alpha.2`。锁文件解析为 DSH `0.1.7-rc.2` 包与 Cordis `4.0.4`。可选 peer 让插件在支持集以外仍可加载。
 
-`package.json#dsh.compatibility.dshReleases` 将 DSH `0.1.7-alpha.2` 和 `0.1.7-rc.1` 记录为兼容证据，不是允许列表。未知的新宿主告警一次后仍按正常路径挂载。只有复现过的故障才会加入 blocklist。
+`package.json#dsh.compatibility.dshReleases` 将 DSH `0.1.7-alpha.2`、`0.1.7-rc.1` 和 `0.1.7-rc.2` 记录为兼容证据，不是允许列表。未知的新宿主告警一次后仍按正常路径挂载。只有复现过的故障才会加入 blocklist。
 
 ## 展示
 
@@ -27,7 +27,7 @@ Metric、By 或 Group 菜单打开时，Escape 只关闭菜单并将焦点还给
 宿主开发依赖解析为 rc.2 包集，见兼容性。从 GitHub 安装：
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 dsh web
 ```
 
@@ -55,14 +55,14 @@ Latest 安装命令（永久不含版本号）：
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 ~~~
 
 固定版本安装命令：
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.20/dsh-usage-monitor-0.2.20.tgz
 ~~~
 
 更新、卸载与验证：
@@ -70,7 +70,7 @@ dsh plugin --profile web add --force \
 ~~~sh
 # 更新到最新 Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 # 验证加载与版本
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -82,4 +82,4 @@ dsh plugin --profile web remove dsh-usage-monitor
 
 回滚：重新执行固定版本 v0.2.19 命令，确认插件列表后只重启一次 Web 服务。失败时查看 journalctl --user -u dsh-web.service 与 dsh plugin --profile web doctor，不要把源码 checkout 写入 production profile。
 
-Release 与完整性：[v0.2.19](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.19) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz.sha256)。
+Release 与完整性：[v0.2.20](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.20) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.20/dsh-usage-monitor-0.2.20.tgz.sha256)。

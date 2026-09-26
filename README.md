@@ -8,7 +8,7 @@ Usage dashboard for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-h
 
 Host DSH peers and development dependencies use the open lower-bound range `>=0.1.7-alpha.2`. The lockfile resolves DSH `0.1.7-rc.2` packages and Cordis `4.0.4`. Optional peers let the plugin remain loadable outside the supported set.
 
-`package.json#dsh.compatibility.dshReleases` records DSH `0.1.7-alpha.2` and `0.1.7-rc.1` as compatible evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
+`package.json#dsh.compatibility.dshReleases` records DSH `0.1.7-alpha.2`, `0.1.7-rc.1`, and `0.1.7-rc.2` as compatible evidence, not an allowlist. Unknown newer Hosts warn once and keep the normal mount path. Only a reproduced failure is blocklisted.
 
 ## What it shows
 
@@ -27,7 +27,7 @@ Subscription quotas are not fetched.
 Host development dependencies resolve to the rc.2 package set; see Compatibility. Install from GitHub:
 
 ```sh
-dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+dsh plugin --profile web add --force https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 dsh web
 ```
 
@@ -55,14 +55,14 @@ Latest installation (the URL never contains a version):
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 ~~~
 
 Fixed-version installation:
 
 ~~~sh
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.20/dsh-usage-monitor-0.2.20.tgz
 ~~~
 
 Update, uninstall, and verify:
@@ -70,7 +70,7 @@ Update, uninstall, and verify:
 ~~~sh
 # Update to the latest Release
 dsh plugin --profile web add --force \
-  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.19.tgz
+  https://github.com/NOirBRight/dsh-usage-monitor/releases/latest/download/dsh-usage-monitor-0.2.20.tgz
 # Verify the loaded version
 dsh plugin --profile web list
 dsh plugin --profile web doctor
@@ -82,4 +82,4 @@ Configuration: use the plugin section in Settings for Web UI plugins, or the pro
 
 Rollback: rerun the fixed v0.2.19 command, verify the profile list, then restart the Web service once. Inspect journalctl --user -u dsh-web.service and dsh plugin --profile web doctor; never put a source checkout in the production profile.
 
-Release and integrity: [v0.2.19](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.19) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.19/dsh-usage-monitor-0.2.19.tgz.sha256).
+Release and integrity: [v0.2.20](https://github.com/NOirBRight/dsh-usage-monitor/releases/tag/v0.2.20) · [SHA256](https://github.com/NOirBRight/dsh-usage-monitor/releases/download/v0.2.20/dsh-usage-monitor-0.2.20.tgz.sha256).
