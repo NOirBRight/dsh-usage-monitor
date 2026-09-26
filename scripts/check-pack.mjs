@@ -13,6 +13,17 @@ import { installConsumer } from "./lib/consumer.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const invalidRegistry = "http://127.0.0.1:1/";
+function assertDshHostRanges(manifest) {
+  for (const section of ["dependencies", "optionalDependencies", "devDependencies", "peerDependencies"]) {
+    for (const [name, range] of Object.entries(manifest[section] ?? {})) {
+      if (name !== "@deepseek-ai/dsh" && !name.startsWith("@deepseek-ai/dsh-")) continue;
+      if (typeof range !== "string" || !/^>=\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(range)) {
+        throw new Error(section + "." + name + " must use an unbounded >= lower range");
+      }
+    }
+  }
+}
+
 function runPack(destination, env) {
   const result = spawnSync("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", destination], { cwd: root, env, encoding: "utf8" });
   const stdout = typeof result.stdout === "string" ? result.stdout : "";
@@ -46,6 +57,7 @@ async function main() {
     const info = report[0];
     const archivePath = join(temporaryRoot, "pack", info.filename);
     const packed = await validateArchive(archivePath, { name: sourcePackage.name, version: sourcePackage.version }, { published: true });
+    assertDshHostRanges(packed.metadata);
     assertPackReport(report, sourcePackage);
     assertPackFileSet(info.files.map((entry) => entry.path), packed.files);
     for (const file of packed.files) if (file.endsWith(".js")) assertDependencyClosure(readArchiveFile(archivePath, file), sourcePackage, file, packed.files);
